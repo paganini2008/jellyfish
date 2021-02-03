@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springtribe.framework.gearless.common.HashPartitioner;
 import org.springtribe.framework.gearless.common.TransportClient;
@@ -50,7 +52,7 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	@Autowired
 	private TransportClient transportClient;
 
-	@Qualifier("planktonTaskScheduler")
+	@Qualifier("jellyfishMonitorTaskScheduler")
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
 
@@ -65,26 +67,28 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	}
 
 	@Override
-	protected void onRequestBegin(HttpServletRequest request, String requestId) throws Exception {
+	protected void onRequestBegin(String requestId, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		getStat(request.getServletPath());
 	}
 
 	@Override
-	protected void onRequestEnd(HttpServletRequest request, String requestId, Exception e) throws Exception {
+	protected void onRequestEnd(String requestId, HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
 		final String path = request.getServletPath();
 		Stat stat = getStat(path);
 		stat.totalExecution.incrementAndGet();
 
-		boolean isTimeout = false;
+		boolean timeout = false;
 		if (timeouts.containsKey(path)) {
 			long requestTime = (Long) request.getAttribute(REQUEST_TIMESTAMP);
 			long elapsed = System.currentTimeMillis() - requestTime;
-			isTimeout = elapsed > timeouts.get(path);
+			timeout = elapsed > timeouts.get(path);
 		}
-		if (isTimeout) {
+		if (timeout) {
 			stat.timeoutExecution.incrementAndGet();
 		}
-		if (e != null) {
+		HttpStatus status = HttpStatus.valueOf(response.getStatus());
+		boolean failed = (e != null) || (!status.is2xxSuccessful());
+		if (failed) {
 			stat.failedExecution.incrementAndGet();
 		}
 	}

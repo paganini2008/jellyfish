@@ -7,10 +7,12 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springtribe.framework.gearless.common.HashPartitioner;
 import org.springtribe.framework.gearless.common.TransportClient;
@@ -48,7 +50,7 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 	@Autowired
 	private TransportClient transportClient;
 
-	@Qualifier("planktonTaskExecutor")
+	@Qualifier("jellyfishMonitorTaskExecutor")
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
 
@@ -58,12 +60,12 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 	private String host = NetUtils.getLocalHost();
 
 	@Override
-	protected void onRequestBegin(HttpServletRequest request, String requestId) throws Exception {
+	protected void onRequestBegin(String requestId, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		getConcurrency(request.getServletPath()).incrementAndGet();
 	}
 
 	@Override
-	protected void onRequestEnd(HttpServletRequest request, String requestId, Exception e) throws Exception {
+	protected void onRequestEnd(String requestId, HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
 		if (StringUtils.isBlank(requestId)) {
 			return;
 		}
@@ -72,9 +74,11 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 			return;
 		}
 		final String path = request.getServletPath();
-		final long elapsed = System.currentTimeMillis() - begin.longValue();
-		final int concurrency = getConcurrency(path).decrementAndGet();
-		final boolean isTimeout = isTimeout(path, (Long) request.getAttribute(REQUEST_TIMESTAMP));
+		long elapsed = System.currentTimeMillis() - begin.longValue();
+		int concurrency = getConcurrency(path).decrementAndGet();
+		final boolean timeout = isTimeout(path, (Long) request.getAttribute(REQUEST_TIMESTAMP));
+		HttpStatus status = HttpStatus.valueOf(response.getStatus());
+		final boolean failed = (e != null) || (!status.is2xxSuccessful());
 		Map<String, Object> contextMap = new HashMap<String, Object>();
 		contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
 		contextMap.put("requestId", requestId);
@@ -84,18 +88,19 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 		contextMap.put("path", path);
 		contextMap.put("requestTime", begin.longValue());
 		contextMap.put("elapsed", elapsed);
-		contextMap.put("timeout", isTimeout);
-		contextMap.put("failed", e != null);
+		contextMap.put("timeout", timeout);
+		contextMap.put("failed", failed);
 		contextMap.put("concurrency", concurrency);
+		contextMap.put("httpStatus", status);
 		transportClient.write(TOPIC_NAME, contextMap);
 
 		if (statisticalTracer != null) {
 			taskExecutor.execute(() -> {
-				if (e != null) {
-					statisticalTracer.onException(requestId, path, elapsed, e);
+				if (failed) {
+					statisticalTracer.onError(requestId, path, elapsed, request, response, status, e);
 				}
-				if (isTimeout) {
-					statisticalTracer.onTimeout(requestId, path, elapsed);
+				if (timeout) {
+					statisticalTracer.onTimeout(requestId, path, elapsed, request, response);
 				}
 			});
 		}

@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class MonitorAutoConfiguration implements WebMvcConfigurer {
 
-	@Value("#{'${spring.application.cluster.jellyfish.plankton.excludedUrlPatterns:}'.split(',')}")
+	@Value("#{'${spring.application.cluster.jellyfish.excludedUrlPatterns:}'.split(',')}")
 	private List<String> excludedUrlPatterns = new ArrayList<String>();
 
 	@ConditionalOnMissingBean
@@ -62,23 +62,22 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 		return new HttpTransportClient(brokerUrl);
 	}
 
-	@ConditionalOnMissingBean(name = "planktonTaskExecutor")
+	@ConditionalOnMissingBean(name = "jellyfishMonitorTaskExecutor")
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskExecutor planktonTaskExecutor(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
+	public ThreadPoolTaskExecutor taskExecutor(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 		taskExecutor.setCorePoolSize(maxSize);
 		taskExecutor.setMaxPoolSize(maxSize);
-		taskExecutor.setThreadFactory(new PooledThreadFactory("plankton-task-executor-"));
+		taskExecutor.setThreadFactory(new PooledThreadFactory("jellyfish-monitor-task-executor-"));
 		return taskExecutor;
 	}
 
-	@ConditionalOnMissingBean(name = "planktonTaskScheduler")
+	@ConditionalOnMissingBean(name = "jellyfishMonitorTaskScheduler")
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskScheduler planktonTaskScheduler(
-			@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
+	public ThreadPoolTaskScheduler taskScheduler(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
-		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("plankton-task-scheduler-"));
+		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-monitor-task-scheduler-"));
 		threadPoolTaskScheduler.setWaitForTasksToCompleteOnShutdown(true);
 		threadPoolTaskScheduler.setAwaitTerminationSeconds(60);
 		return threadPoolTaskScheduler;

@@ -9,6 +9,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.github.paganini2008.devtools.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * StatisticalWriter
@@ -16,24 +18,29 @@ import com.github.paganini2008.devtools.StringUtils;
  * @author Jimmy Hoff
  * @version 1.0
  */
+@Slf4j
 public abstract class StatisticalWriter implements HandlerInterceptor {
 
-	static final String REQUEST_ID = "cooper-req-id";
-	static final String REQUEST_TIMESTAMP = "cooper-req-time";
+	static final String REQUEST_ID = "jellyfish-monitor-request-id";
+	static final String REQUEST_TIMESTAMP = "jellyfish-monitor-request-time";
 
 	@Override
 	public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		if (request.getAttribute(REQUEST_TIMESTAMP) == null) {
 			request.setAttribute(REQUEST_TIMESTAMP, System.currentTimeMillis());
 		}
-		onRequestBegin(request, getRequestId(request));
+		onRequestBegin(getRequestId(request), request, response);
 		return true;
 	}
 
 	@Override
 	public final void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e)
 			throws Exception {
-		onRequestEnd(request, getRequestId(request), e);
+		try {
+			onRequestEnd(getRequestId(request), request, response, e);
+		} catch (Exception delta) {
+			log.error(delta.getMessage(), delta);
+		}
 	}
 
 	private String getRequestId(HttpServletRequest request) {
@@ -52,10 +59,10 @@ public abstract class StatisticalWriter implements HandlerInterceptor {
 		return UUID.randomUUID().toString();
 	}
 
-	protected void onRequestBegin(HttpServletRequest request, String requestId) throws Exception {
+	protected void onRequestBegin(String requestId, HttpServletRequest request, HttpServletResponse response) throws Exception {
 	}
 
-	protected void onRequestEnd(HttpServletRequest request, String requestId, Exception e) throws Exception {
+	protected void onRequestEnd(String requestId, HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
 	}
 
 }

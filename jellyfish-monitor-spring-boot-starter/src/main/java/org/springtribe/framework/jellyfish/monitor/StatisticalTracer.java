@@ -1,5 +1,10 @@
 package org.springtribe.framework.jellyfish.monitor;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.HttpStatus;
+
 /**
  * 
  * StatisticalTracer
@@ -9,8 +14,9 @@ package org.springtribe.framework.jellyfish.monitor;
  */
 public interface StatisticalTracer {
 
-	void onException(String requestId, String path, long elapsed, Exception cause);
+	void onError(String requestId, String path, long elapsed, HttpServletRequest request, HttpServletResponse response, HttpStatus status,
+			Exception cause);
 
-	void onTimeout(String requestId, String path, long elapsed);
+	void onTimeout(String requestId, String path, long elapsed, HttpServletRequest request, HttpServletResponse response);
 
 }

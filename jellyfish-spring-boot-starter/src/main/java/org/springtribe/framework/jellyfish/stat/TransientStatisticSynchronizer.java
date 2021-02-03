@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
@@ -27,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransientStatisticSynchronizer implements Runnable, InitializingBean {
 
-	public static final String KEY_PATTERN_TOTAL_SUMMARY = "jellyfish:index:%s";
-	public static final String KEY_PATTERN_REALTIME_SUMMARY = "jellyfish:%s:%s";
+	public static final String KEY_PATTERN_TOTAL_SUMMARY = "jellyfish:%s:catalog:%s";
+	public static final String KEY_PATTERN_REALTIME_SUMMARY = "jellyfish:%s:%s:catalog:%s";
 	private final Map<Catalog, PathSummary> totalSummary = new ConcurrentHashMap<Catalog, PathSummary>();
 	private final Map<Catalog, SequentialMetricsCollector> realtimeCollectors = new ConcurrentHashMap<Catalog, SequentialMetricsCollector>();
 
@@ -40,6 +41,9 @@ public class TransientStatisticSynchronizer implements Runnable, InitializingBea
 
 	@Autowired
 	private MetricsCollectorCustomizer metricsCollectorCustomizer;
+
+	@Value("${spring.application.cluster.name}")
+	private String clusterName;
 
 	private final Map<Catalog, Cache> totalSummaryCaching = new ConcurrentHashMap<Catalog, Cache>();
 	private final MultiMappedMap<Catalog, String, Cache> realtimeSummaryCaching = new MultiMappedMap<Catalog, String, Cache>();
@@ -75,7 +79,7 @@ public class TransientStatisticSynchronizer implements Runnable, InitializingBea
 				final Catalog catalog = entry.getKey();
 				PathSummary pathSummary = entry.getValue();
 				Cache cache = MapUtils.get(totalSummaryCaching, catalog, () -> {
-					String key = String.format(KEY_PATTERN_TOTAL_SUMMARY, catalog.getIdentifier());
+					String key = String.format(KEY_PATTERN_TOTAL_SUMMARY, clusterName, catalog.getIdentifier());
 					return new MetricCache(key, redisTemplate);
 				});
 				cache.putObject("totalExecutionCount", pathSummary.getTotalExecutionCount());
@@ -101,7 +105,7 @@ public class TransientStatisticSynchronizer implements Runnable, InitializingBea
 	private void sync(Catalog catalog, SequentialMetricsCollector metricsCollector, String metric) {
 		Map<String, MetricUnit> metricUnits = metricsCollector.sequence(metric);
 		Cache cache = realtimeSummaryCaching.getIfNecessary(catalog, metric, () -> {
-			String key = String.format(KEY_PATTERN_REALTIME_SUMMARY, metric, catalog.getIdentifier());
+			String key = String.format(KEY_PATTERN_REALTIME_SUMMARY, clusterName, metric, catalog.getIdentifier());
 			return new MetricCache(key, redisTemplate).sortedCache(metricsCollectorCustomizer.getBufferSize(), true, null);
 		});
 		MetricUnit metricUnit;
@@ -111,6 +115,7 @@ public class TransientStatisticSynchronizer implements Runnable, InitializingBea
 			vo.setClusterName(catalog.getClusterName());
 			vo.setApplicationName(catalog.getApplicationName());
 			vo.setHost(catalog.getHost());
+			vo.setCategory(catalog.getCategory());
 			vo.setPath(catalog.getPath());
 			vo.setHighestValue(metricUnit.getHighestValue().longValue());
 			vo.setLowestValue(metricUnit.getLowestValue().longValue());

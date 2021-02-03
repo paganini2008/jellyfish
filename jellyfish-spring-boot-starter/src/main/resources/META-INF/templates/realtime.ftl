@@ -36,7 +36,7 @@
 </script>
 <body>
 	<div id="top">
-		<label id="title">Jellyfish (v2.0)</label>
+		<label id="title">Jellyfish ${version!}</label>
 	</div>
 	<div id="container">
 		<div id="searchBox">

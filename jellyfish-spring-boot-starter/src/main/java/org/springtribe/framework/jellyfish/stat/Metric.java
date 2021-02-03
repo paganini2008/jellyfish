@@ -26,6 +26,7 @@ public class Metric implements Serializable {
 	private String clusterName;
 	private String applicationName;
 	private String host;
+	private String category;
 	private String path;
 	private Long highestValue;
 	private Long lowestValue;

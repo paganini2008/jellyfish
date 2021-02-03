@@ -13,7 +13,7 @@ import org.springtribe.framework.jellyfish.ui.JellyfishUIAutoConfiguration;
 
 /**
  * 
- * EnableJellyfishClient
+ * EnableJellyfishServer
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -24,5 +24,5 @@ import org.springtribe.framework.jellyfish.ui.JellyfishUIAutoConfiguration;
 @EnableGearless
 @EnableApplicationCluster(enableLeaderElection = true, enableMonitor = true)
 @Import({ JellyfishAutoConfiguration.class, JellyfishUIAutoConfiguration.class })
-public @interface EnableJellyfishClient {
+public @interface EnableJellyfishServer {
 }

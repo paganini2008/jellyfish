@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springtribe.framework.jellyfish.log.CleanQuery;
 import org.springtribe.framework.jellyfish.log.LogEntrySearchService;
+import org.springtribe.framework.jellyfish.log.LogEntryService;
 
 import com.github.paganini2008.devtools.jdbc.PageResponse;
 
@@ -25,6 +27,15 @@ public class LogEntryController {
 
 	@Autowired
 	private LogEntrySearchService logEntrySearchService;
+
+	@Autowired
+	private LogEntryService logEntryService;
+
+	@PostMapping("/clean")
+	public Response clean(@RequestBody CleanQuery query) {
+		logEntryService.retainLatest(query.getStartDate(), query.getEndDate());
+		return Response.success();
+	}
 
 	@GetMapping("/")
 	public Response search(@RequestParam(value = "page", defaultValue = "1", required = false) int page,

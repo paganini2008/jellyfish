@@ -15,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springtribe.framework.jellyfish.JellyFish;
 
 import com.github.paganini2008.devtools.net.UrlUtils;
 
@@ -72,6 +73,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	 */
 	public static class BasicHandlerInterceptor implements HandlerInterceptor {
 
+		private static final String WEB_ATTRIBUTE_VERSION = "version";
 		private static final String WEB_ATTRIBUTE_CONTEXT_PATH = "contextPath";
 
 		@Override
@@ -79,6 +81,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			HttpSession session = request.getSession();
 			if (session.getAttribute(WEB_ATTRIBUTE_CONTEXT_PATH) == null) {
 				session.setAttribute(WEB_ATTRIBUTE_CONTEXT_PATH, getContextPath(request));
+			}
+			if (session.getAttribute(WEB_ATTRIBUTE_VERSION) == null) {
+				session.setAttribute(WEB_ATTRIBUTE_VERSION, JellyFish.VERSION);
 			}
 			return true;
 		}

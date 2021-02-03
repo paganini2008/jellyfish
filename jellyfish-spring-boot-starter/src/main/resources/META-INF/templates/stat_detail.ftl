@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish History</title>
+<title>Jellyfish Statistics</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -23,8 +23,8 @@
 	$(function(){
 		loadTotalChart();
 		loadRtChart();
-		loadRealtimeChart('cons', 'consChart','Realtime Concurrency Summary', 'Concurrency', '');
-		loadRealtimeChart('qps', 'qpsChart','Realtime QPS Summary', 'qps', '');
+		loadRealtimeChart('cons', 'cons','Realtime Concurrency Summary', 'Concurrency', '');
+		loadRealtimeChart('qps', 'qps','Realtime QPS Summary', 'QPS', '');
 	});
 	
 	function loadTotalChart(){
@@ -315,18 +315,35 @@
 </script>
 <body>
 	<div id="top">
-		<label id="title">Jellyfish (v2.0)</label>
+		<label id="title">Jellyfish ${version!}</label>
 	</div>
 	<div id="container">
 		<div id="chartBox">
 			<div id="totalBox">
-				<div id="catalog" style="width: 30%; float: left;"></div>
-				<div id="total" style="width: 60%; height:360px; float: right;"></div>
+				<div id="catalog" style="width: 30%; float: left;">
+					<p>
+						<label>Cluster Name: </label>
+						<span>${(catalog.clusterName)!}</span>
+					</p>
+					<p>
+						<label>Application Name: </label>
+						<span>${(catalog.applicationName)!}</span>
+					</p>
+					<p>
+						<label>Host</label>
+						<span>${(catalog.host)!}</span>
+					</p>
+					<p>
+						<label>Path</label>
+						<span>${(catalog.path)!}</span>
+					</p>
+				</div>
+				<div id="total" style="width: 60%; height:320px; float: right;"></div>
 			</div>
-			<div id="rt" style="width: 100%; height:360px;"></div>
-			<div id="count" style="width: 100%; height:360px;"></div>
-			<div id="consChart" style="width: 100%; height:360px;"></div>
-			<div id="qpsChart" style="width: 100%; height:360px;"></div>
+			<div class="chartObj" id="rt"></div>
+			<div class="chartObj" id="count"></div>
+			<div class="chartObj" id="cons"></div>
+			<div class="chartObj" id="qps"></div>
 		</div>
 	</div>
 	<div id="foot">

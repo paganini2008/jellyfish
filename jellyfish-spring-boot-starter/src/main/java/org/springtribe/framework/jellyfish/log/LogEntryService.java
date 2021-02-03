@@ -1,13 +1,17 @@
 package org.springtribe.framework.jellyfish.log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.DeleteQuery;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
 import org.springtribe.framework.cluster.utils.BeanLifeCycle;
 import org.springtribe.framework.gearless.JacksonUtils;
@@ -46,10 +50,29 @@ public class LogEntryService implements Executable, BeanLifeCycle {
 		}
 	}
 
-	public void bulkSaveLogEntry(LogEntry logEntry) {
+	public void bulkSaveLogEntries(LogEntry logEntry) {
 		if (logEntry != null) {
 			logEntries.add(logEntry);
 		}
+	}
+
+	public void retainLatest(Date startDate, Date endDate) {
+		RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("createTime");
+		long startTime = startDate != null ? startDate.getTime() : 0;
+		long endTime = endDate != null ? endDate.getTime() : 0;
+		if (startTime == 0 && endTime == 0) {
+			endTime = System.currentTimeMillis();
+		}
+		if (startTime > 0) {
+			rangeQuery.gte(startTime);
+		}
+		if (endTime > 0) {
+			rangeQuery.lte(endTime);
+		}
+		DeleteQuery deleteQuery = new DeleteQuery();
+		deleteQuery.setQuery(rangeQuery);
+		elasticsearchTemplate.delete(deleteQuery, LogEntry.class);
+		log.info("Delete log entries from elasticsearch from '{}' to '{}' successfully.", startDate, endDate);
 	}
 
 	@Override

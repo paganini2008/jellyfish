@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springtribe.framework.gearless.common.HashPartitioner;
 import org.springtribe.framework.gearless.common.TransportClient;
 import org.springtribe.framework.gearless.common.Tuple;
@@ -48,9 +47,6 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 
 	@Autowired
 	private TransportClient transportClient;
-
-	@Autowired
-	private ThreadPoolTaskExecutor taskExecutor;
 
 	@Autowired(required = false)
 	private StatisticalTracer statisticalTracer;
@@ -93,14 +89,12 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 		transportClient.write(TOPIC_NAME, contextMap);
 
 		if (statisticalTracer != null) {
-			taskExecutor.execute(() -> {
-				if (failed) {
-					statisticalTracer.onError(requestId, path, elapsed, request, response, status, e);
-				}
-				if (timeout) {
-					statisticalTracer.onTimeout(requestId, path, elapsed, request, response);
-				}
-			});
+			if (failed) {
+				statisticalTracer.onError(requestId, path, elapsed, request, response, status, e);
+			}
+			if (timeout) {
+				statisticalTracer.onTimeout(requestId, path, elapsed, request, response);
+			}
 		}
 	}
 

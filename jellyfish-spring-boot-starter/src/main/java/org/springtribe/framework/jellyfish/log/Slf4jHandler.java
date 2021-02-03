@@ -46,7 +46,7 @@ public class Slf4jHandler implements Handler {
 			logEntry.setMessage(logEntry.getMessage().replaceAll(interferedCharacterRegex, ""));
 			logEntry.setReason(logEntry.getReason().replaceAll(interferedCharacterRegex, ""));
 		}
-		logEntryService.bulkSaveLogEntry(logEntry);
+		logEntryService.bulkSaveLogEntries(logEntry);
 	}
 
 	@Override

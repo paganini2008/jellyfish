@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish History</title>
+<title>Jellyfish Statistics</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -11,6 +11,7 @@
 <link href="${contextPath}/static/css/base.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="${contextPath}/static/js/lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
+<script src="https://code.highcharts.com/themes/dark-unica.js"></script>
 </head>
 <script>
 
@@ -48,7 +49,7 @@
 </script>
 <body>
 	<div id="top">
-		<label id="title">Jellyfish (v2.0)</label>
+		<label id="title">Jellyfish ${version!}</label>
 	</div>
 	<div id="container">
 		<table id="pathList" width="100%" border="0" cellspacing="0" cellpadding="0" class="tblCom">

@@ -1,11 +1,13 @@
 package org.springtribe.framework.jellyfish.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,15 +43,19 @@ public class StatisticController {
 	@Autowired
 	private TransientStatisticSynchronizer transientStatisticSynchronizer;
 
+	@Value("${spring.application.cluster.name}")
+	private String clusterName;
+
 	@GetMapping("/list")
 	public Response pathList() {
-		Set<String> allKeys = redisTemplate.keys("jellyfish:index:*");
+		Set<String> allKeys = redisTemplate.keys(String.format("jellyfish:%s:catalog:*", clusterName));
 		List<Catalog> catalogs = new ArrayList<Catalog>();
 		if (CollectionUtils.isNotEmpty(allKeys)) {
 			allKeys.forEach(key -> {
 				catalogs.add(Catalog.decode(key.substring(key.lastIndexOf(':') + 1)));
 			});
 		}
+		Collections.sort(catalogs);
 		return Response.success(catalogs);
 	}
 

@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -60,16 +59,6 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 	@Bean
 	public TransportClient transportClient(@Value("${spring.application.cluster.jellyfish.brokerUrl}") String brokerUrl) {
 		return new HttpTransportClient(brokerUrl);
-	}
-
-	@ConditionalOnMissingBean
-	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskExecutor jellyfishMonitorTaskExecutor(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
-		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		taskExecutor.setCorePoolSize(maxSize);
-		taskExecutor.setMaxPoolSize(maxSize);
-		taskExecutor.setThreadFactory(new PooledThreadFactory("jellyfish-monitor-task-executor-"));
-		return taskExecutor;
 	}
 
 	@ConditionalOnMissingBean

@@ -33,6 +33,7 @@
 					"clusterName": '${(catalog.clusterName)!}',
 					"applicationName": '${(catalog.applicationName)!}',
 					"host": '${(catalog.host ? html)!}',
+					"category": '${(catalog.category ? html)!}',
 					"path": '${(catalog.path ? html)!}'
 				};
 			$.ajax({
@@ -67,6 +68,7 @@
 					"clusterName": '${(catalog.clusterName)!}',
 					"applicationName": '${(catalog.applicationName)!}',
 					"host": '${(catalog.host ? html)!}',
+					"category": '${(catalog.category ? html)!}',
 					"path": '${(catalog.path ? html)!}'
 				};
 			$.ajax({
@@ -104,6 +106,7 @@
 					"clusterName": '${(catalog.clusterName)!}',
 					"applicationName": '${(catalog.applicationName)!}',
 					"host": '${(catalog.host ? html)!}',
+					"category": '${(catalog.category ? html)!}',
 					"path": '${(catalog.path ? html)!}'
 				};
 			$.ajax({
@@ -311,7 +314,6 @@
 		}
 	}
 	
-	
 </script>
 <body>
 	<div id="top">
@@ -330,11 +332,15 @@
 						<span>${(catalog.applicationName)!}</span>
 					</p>
 					<p>
-						<label>Host</label>
+						<label>Host: </label>
 						<span>${(catalog.host)!}</span>
 					</p>
 					<p>
-						<label>Path</label>
+						<label>Category: </label>
+						<span>${(catalog.category)!}</span>
+					</p>
+					<p>
+						<label>Path: </label>
 						<span>${(catalog.path)!}</span>
 					</p>
 				</div>

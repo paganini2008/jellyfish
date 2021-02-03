@@ -31,11 +31,13 @@
 					if(data.data != null) {
 						$.each(data.data,function(i, item){
 							html += '<tr>';
-							html += '<td>' + item.clusterName + '</td>';
-							html += '<td>' + item.applicationName + '</td>';
-							html += '<td>' + item.host + '</td>';
-							html += '<td>' + item.path + '</td>';
-							html += '<td><a href="${contextPath}/application/cluster/statistic/detail?identifier=' + item.identifier + '" target="_blank" >View</a></td>';
+							html += '<td class="tdRight10" width="5%">' + i + '</td>';
+							html += '<td class="tdLeft10" width="10%">' + item.clusterName + '</td>';
+							html += '<td class="tdLeft10" width="10%">' + item.applicationName + '</td>';
+							html += '<td class="tdLeft10" width="10%">' + item.host + '</td>';
+							html += '<td class="tdLeft10" width="10%">' + item.category + '</td>';
+							html += '<td class="tdLeft10">' + item.path + '</td>';
+							html += '<td class="tdRight10" width="10%"><a href="${contextPath}/application/cluster/statistic/detail?identifier=' + item.identifier + '" target="_blank" >View</a></td>';
 							html += '</tr>';
 						});
 					}
@@ -52,19 +54,23 @@
 		<label id="title">Jellyfish ${version!}</label>
 	</div>
 	<div id="container">
-		<table id="pathList" width="100%" border="0" cellspacing="0" cellpadding="0" class="tblCom">
-			<thead>
-				<tr>
-					<td>Cluster Name</td>
-					<td>Application Name</td>
-					<td>Host</td>
-					<td>Path</td>
-					<td>&nbsp;</td>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
+		<div id="tableBox">
+			<table id="pathList" width="100%" border="0" cellspacing="0" cellpadding="0" class="tblCom">
+				<thead>
+					<tr>
+						<td class="tdRight10" width="5%">No.</td>
+						<td class="tdLeft10" width="10%">Cluster Name</td>
+						<td class="tdLeft10" width="10%">Application Name</td>
+						<td class="tdLeft10" width="10%">Host</td>
+						<td class="tdLeft10" width="10%">Category</td>
+						<td class="tdLeft10">Path</td>
+						<td class="tdRight10" width="10%">&nbsp;</td>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
 	</div>
 	<div id="foot">
 		Spring Dessert Series

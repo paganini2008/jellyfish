@@ -81,6 +81,13 @@ body {
 	margin-bottom: 10px;
 }
 
+#tableBox{
+	width: calc(100% - 20px);
+	text-align: left;
+	margin: 10px auto;
+	clear: both;
+}
+
 .logEntry{
 	clear: both;
 	padding-top: 5px;
@@ -178,9 +185,6 @@ body {
 	height:320px;
 	clear: both;
 	margin: 5px auto;
-}
-
-#catalog {
 }
 
 #catalog p label{

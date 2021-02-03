@@ -62,9 +62,9 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 		return new HttpTransportClient(brokerUrl);
 	}
 
-	@ConditionalOnMissingBean(name = "jellyfishMonitorTaskExecutor")
+	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskExecutor taskExecutor(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
+	public ThreadPoolTaskExecutor jellyfishMonitorTaskExecutor(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 		taskExecutor.setCorePoolSize(maxSize);
 		taskExecutor.setMaxPoolSize(maxSize);
@@ -72,9 +72,9 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 		return taskExecutor;
 	}
 
-	@ConditionalOnMissingBean(name = "jellyfishMonitorTaskScheduler")
+	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskScheduler taskScheduler(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
+	public ThreadPoolTaskScheduler jellyfishMonitorTaskScheduler(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
 		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-monitor-task-scheduler-"));

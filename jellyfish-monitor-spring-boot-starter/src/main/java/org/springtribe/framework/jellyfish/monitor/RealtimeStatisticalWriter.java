@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -50,7 +49,6 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 	@Autowired
 	private TransportClient transportClient;
 
-	@Qualifier("jellyfishMonitorTaskExecutor")
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
 

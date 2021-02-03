@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -52,7 +51,6 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	@Autowired
 	private TransportClient transportClient;
 
-	@Qualifier("jellyfishMonitorTaskScheduler")
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
 

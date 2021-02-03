@@ -12,9 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import com.github.paganini2008.devtools.cache.Cache;
 import com.github.paganini2008.devtools.collection.MapUtils;
-import com.github.paganini2008.devtools.collection.MetricUnit;
 import com.github.paganini2008.devtools.collection.MultiMappedMap;
-import com.github.paganini2008.devtools.collection.SequentialMetricsCollector;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,7 +54,8 @@ public class TransientStatisticSynchronizer implements Runnable, InitializingBea
 
 	public PathSummary getPathSummary(Catalog catalog) {
 		return MapUtils.get(totalSummary, catalog, () -> {
-			return new PathSummary(catalog.getClusterName(), catalog.getApplicationName(), catalog.getHost(), catalog.getPath());
+			return new PathSummary(catalog.getClusterName(), catalog.getApplicationName(), catalog.getHost(), catalog.getCategory(),
+					catalog.getPath());
 		});
 	}
 

@@ -5,8 +5,6 @@ import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
 
 import com.github.paganini2008.devtools.StringUtils;
-import com.github.paganini2008.devtools.collection.MetricUnits;
-import com.github.paganini2008.devtools.collection.SequentialMetricsCollector;
 
 /**
  * 

@@ -2,9 +2,6 @@ package org.springtribe.framework.jellyfish.stat;
 
 import java.util.Map;
 
-import com.github.paganini2008.devtools.collection.SequentialMetricsCollector;
-import com.github.paganini2008.devtools.date.SpanUnit;
-
 /**
  * 
  * MetricsCollectorCustomizer

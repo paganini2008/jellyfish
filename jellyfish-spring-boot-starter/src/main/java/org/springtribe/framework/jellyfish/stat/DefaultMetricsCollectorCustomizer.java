@@ -5,10 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
-import com.github.paganini2008.devtools.collection.SequentialMetricsCollector;
-import com.github.paganini2008.devtools.collection.SimpleSequentialMetricsCollector;
 import com.github.paganini2008.devtools.date.DateUtils;
-import com.github.paganini2008.devtools.date.SpanUnit;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -17,11 +16,13 @@ import com.github.paganini2008.devtools.date.SpanUnit;
  * @author Jimmy Hoff
  * @version 1.0
  */
+@Slf4j
 public class DefaultMetricsCollectorCustomizer implements MetricsCollectorCustomizer {
 
 	private int span = 1;
 	private SpanUnit spanUnit = SpanUnit.MINUTE;
 	private int bufferSize = 60;
+	private HistoricalSequentialMetricsHandler historicalSequentialMetricsHandler;
 
 	public void setSpan(int span) {
 		this.span = span;
@@ -33,6 +34,10 @@ public class DefaultMetricsCollectorCustomizer implements MetricsCollectorCustom
 
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
+	}
+
+	public void setHistoricalSequentialMetricsHandler(HistoricalSequentialMetricsHandler historicalSequentialMetricsHandler) {
+		this.historicalSequentialMetricsHandler = historicalSequentialMetricsHandler;
 	}
 
 	@Override
@@ -51,8 +56,15 @@ public class DefaultMetricsCollectorCustomizer implements MetricsCollectorCustom
 	}
 
 	@Override
-	public SequentialMetricsCollector createSequentialMetricsCollector(Catalog catalog) {
-		return new SimpleSequentialMetricsCollector(bufferSize, span, spanUnit, null);
+	public SequentialMetricsCollector createSequentialMetricsCollector(final Catalog catalog) {
+		return new SimpleSequentialMetricsCollector(bufferSize, span, spanUnit, (metric, metricUnit) -> {
+			if (historicalSequentialMetricsHandler != null) {
+				historicalSequentialMetricsHandler.handleHistoricalMetrics(catalog, metric, metricUnit);
+			}
+			if (log.isTraceEnabled()) {
+				log.trace("Discard history metric '{}' for catalog: {}", metric, catalog);
+			}
+		});
 	}
 
 	@Override

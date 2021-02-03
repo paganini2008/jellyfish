@@ -5,8 +5,6 @@ import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
 
 import com.github.paganini2008.devtools.StringUtils;
-import com.github.paganini2008.devtools.collection.MetricUnits;
-import com.github.paganini2008.devtools.collection.SequentialMetricsCollector;
 
 /**
  * 
@@ -18,7 +16,7 @@ import com.github.paganini2008.devtools.collection.SequentialMetricsCollector;
 public class BulkStatisticHandler implements Handler {
 
 	@Autowired
-	private TransientStatisticSynchronizer statisticSynchronizer;
+	private TransientStatisticSynchronizer transientStatisticSynchronizer;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -27,14 +25,6 @@ public class BulkStatisticHandler implements Handler {
 		String host = tuple.getField("host", String.class);
 		String category = tuple.getField("category", String.class);
 		String path = tuple.getField("path", String.class);
-
-		long totalExecutionCount = tuple.getField("totalExecutionCount", Long.class);
-		long timeoutExecutionCount = tuple.getField("timeoutExecutionCount", Long.class);
-		long failedExecutionCount = tuple.getField("failedExecutionCount", Long.class);
-		PathSummary pathStatistic = statisticSynchronizer.getPathSummary(Catalog.of(tuple));
-		pathStatistic.setTotalExecutionCount(totalExecutionCount);
-		pathStatistic.setTimeoutExecutionCount(timeoutExecutionCount);
-		pathStatistic.setFailedExecutionCount(failedExecutionCount);
 
 		doCollect(new Catalog(clusterName, applicationName, host, category, path), tuple);
 		if (StringUtils.isNotBlank(category)) {
@@ -47,9 +37,17 @@ public class BulkStatisticHandler implements Handler {
 	}
 
 	private void doCollect(Catalog catalog, Tuple tuple) {
+		long totalExecutionCount = tuple.getField("totalExecutionCount", Long.class);
+		long timeoutExecutionCount = tuple.getField("timeoutExecutionCount", Long.class);
+		long failedExecutionCount = tuple.getField("failedExecutionCount", Long.class);
+		PathSummary pathStatistic = transientStatisticSynchronizer.getPathSummary(catalog);
+		pathStatistic.setTotalExecutionCount(totalExecutionCount);
+		pathStatistic.setTimeoutExecutionCount(timeoutExecutionCount);
+		pathStatistic.setFailedExecutionCount(failedExecutionCount);
+
 		int qps = tuple.getField("qps", Integer.class);
 		long timestamp = tuple.getTimestamp();
-		SequentialMetricsCollector sequentialMetricsCollector = statisticSynchronizer.getMetricsCollector(catalog);
+		SequentialMetricsCollector sequentialMetricsCollector = transientStatisticSynchronizer.getMetricsCollector(catalog);
 		sequentialMetricsCollector.set("qps", timestamp, MetricUnits.valueOf(qps));
 	}
 

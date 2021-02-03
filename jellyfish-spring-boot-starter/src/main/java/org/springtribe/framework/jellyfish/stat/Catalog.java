@@ -3,7 +3,6 @@ package org.springtribe.framework.jellyfish.stat;
 import java.nio.charset.Charset;
 
 import org.springframework.util.Base64Utils;
-import org.springtribe.framework.gearless.common.Tuple;
 
 import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.CharsetUtils;
@@ -61,15 +60,6 @@ public final class Catalog implements Comparable<Catalog> {
 			throw new IllegalArgumentException("Invalid identifier: " + repr);
 		}
 		return new Catalog(args[0], args[1], args[2], args[3], args[4]);
-	}
-
-	public static Catalog of(Tuple tuple) {
-		String clusterName = tuple.getField("clusterName", String.class);
-		String applicationName = tuple.getField("applicationName", String.class);
-		String host = tuple.getField("host", String.class);
-		String category = tuple.getField("category", String.class);
-		String path = tuple.getField("path", String.class);
-		return new Catalog(clusterName, applicationName, host, category, path);
 	}
 
 	@Override

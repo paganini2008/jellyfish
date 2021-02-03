@@ -1,7 +1,6 @@
 package org.springtribe.framework.jellyfish.stat;
 
-import com.github.paganini2008.devtools.collection.MetricUnit;
-import com.github.paganini2008.devtools.collection.MetricUnits.LongMetricUnit;
+import org.springtribe.framework.jellyfish.stat.MetricUnits.LongMetricUnit;
 
 /**
  * 

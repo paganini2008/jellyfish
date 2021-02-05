@@ -23,7 +23,7 @@ import org.springtribe.framework.jellyfish.stat.BulkStatisticHandler;
 import org.springtribe.framework.jellyfish.stat.DefaultMetricsCollectorCustomizer;
 import org.springtribe.framework.jellyfish.stat.MetricsCollectorCustomizer;
 import org.springtribe.framework.jellyfish.stat.RealtimeStatisticHandler;
-import org.springtribe.framework.jellyfish.stat.TransientStatisticSynchronizer;
+import org.springtribe.framework.jellyfish.stat.TransientStatisticSynchronizer2;
 import org.springtribe.framework.reditools.common.IdGenerator;
 import org.springtribe.framework.reditools.common.TimestampIdGenerator;
 
@@ -69,8 +69,8 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public TransientStatisticSynchronizer transientStatisticSynchronizer() {
-		return new TransientStatisticSynchronizer();
+	public TransientStatisticSynchronizer2 transientStatisticSynchronizer() {
+		return new TransientStatisticSynchronizer2();
 	}
 
 	@ConditionalOnMissingBean

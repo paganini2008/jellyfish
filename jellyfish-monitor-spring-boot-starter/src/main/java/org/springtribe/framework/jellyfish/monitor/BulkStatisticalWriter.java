@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BulkStatisticalWriter extends StatisticalWriter implements InitializingBean {
 
 	private static final String TOPIC_NAME = BulkStatisticalWriter.class.getName();
-	private final Map<String, Stat> stats = new ConcurrentHashMap<String, Stat>();
+	private final Map<String, Context> contexts = new ConcurrentHashMap<String, Context>();
 
 	@Value("${spring.application.cluster.name:default}")
 	private String clusterName;
@@ -46,7 +46,7 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	private int port;
 
 	@Autowired
-	private PathMatchedMap timeouts;
+	private PathMatcher pathMatcher;
 
 	@Autowired
 	private TransportClient transportClient;
@@ -54,45 +54,46 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
 
-	public void setTimeout(Map<String, Long> m) {
-		if (m != null) {
-			timeouts.putAll(m);
-		}
-	}
-
-	public void setTimeout(String urlPattern, long timeout) {
-		timeouts.put(urlPattern, timeout);
-	}
-
 	@Override
 	protected void onRequestBegin(String requestId, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		getStat(request.getServletPath());
+		getContext(request.getServletPath());
 	}
 
 	@Override
 	protected void onRequestEnd(String requestId, HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
 		final String path = request.getServletPath();
-		Stat stat = getStat(path);
-		stat.totalExecution.incrementAndGet();
+		Context context = getContext(path);
+		context.totalExecution.incrementAndGet();
 
-		boolean timeout = false;
-		if (timeouts.containsKey(path)) {
-			long requestTime = (Long) request.getAttribute(REQUEST_TIMESTAMP);
-			long elapsed = System.currentTimeMillis() - requestTime;
-			timeout = elapsed > timeouts.get(path);
-		}
+		long requestTime = (Long) request.getAttribute(REQUEST_TIMESTAMP);
+		long elapsed = System.currentTimeMillis() - requestTime;
+		boolean timeout = pathMatcher.matchTimeout(path, elapsed);
 		if (timeout) {
-			stat.timeoutExecution.incrementAndGet();
+			context.timeoutExecution.incrementAndGet();
 		}
 		HttpStatus status = HttpStatus.valueOf(response.getStatus());
 		boolean failed = (e != null) || (!status.is2xxSuccessful());
 		if (failed) {
-			stat.failedExecution.incrementAndGet();
+			context.failedExecution.incrementAndGet();
 		}
+
+		HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
+		if (httpStatus.is1xxInformational()) {
+			context.countOf1xx.incrementAndGet();
+		} else if (httpStatus.is2xxSuccessful()) {
+			context.countOf2xx.incrementAndGet();
+		} else if (httpStatus.is3xxRedirection()) {
+			context.countOf3xx.incrementAndGet();
+		} else if (httpStatus.is4xxClientError()) {
+			context.countOf4xx.incrementAndGet();
+		} else if (httpStatus.is5xxServerError()) {
+			context.countOf5xx.incrementAndGet();
+		}
+
 	}
 
-	private Stat getStat(String path) {
-		return MapUtils.get(stats, path, () -> new Stat(path));
+	private Context getContext(String path) {
+		return MapUtils.get(contexts, path, () -> new Context(path));
 	}
 
 	@Override
@@ -114,9 +115,9 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 
 		@Override
 		public void run() {
-			Map<String, String> contextMap;
-			for (Stat stat : stats.values()) {
-				contextMap = getContextMap(stat);
+			Map<String, Object> contextMap;
+			for (Context context : contexts.values()) {
+				contextMap = getContextMap(context);
 				try {
 					transportClient.write(TOPIC_NAME, contextMap);
 				} catch (RuntimeException e) {
@@ -125,14 +126,15 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 			}
 		}
 
-		private Map<String, String> getContextMap(Stat stat) {
-			Map<String, String> contextMap = new HashMap<String, String>();
+		private Map<String, Object> getContextMap(Context context) {
+			Map<String, Object> contextMap = new HashMap<String, Object>();
 			contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
 			contextMap.put("clusterName", clusterName);
 			contextMap.put("applicationName", applicationName);
 			contextMap.put("host", host + ":" + port);
-			contextMap.put("path", stat.getPath());
-			contextMap.putAll(stat.checkpoint());
+			contextMap.put("category", pathMatcher.matchCategory(context.getPath()));
+			contextMap.put("path", context.getPath());
+			contextMap.putAll(context.checkpoint());
 			return contextMap;
 		}
 
@@ -145,16 +147,22 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	 * @author Jimmy Hoff
 	 * @version 1.0
 	 */
-	static class Stat {
+	static class Context {
 
 		final String path;
 		final AtomicLongSequence totalExecution = new AtomicLongSequence();
 		final AtomicLongSequence timeoutExecution = new AtomicLongSequence();
 		final AtomicLongSequence failedExecution = new AtomicLongSequence();
 
+		final AtomicLongSequence countOf1xx = new AtomicLongSequence();
+		final AtomicLongSequence countOf2xx = new AtomicLongSequence();
+		final AtomicLongSequence countOf3xx = new AtomicLongSequence();
+		final AtomicLongSequence countOf4xx = new AtomicLongSequence();
+		final AtomicLongSequence countOf5xx = new AtomicLongSequence();
+
 		volatile long lastTotalExecutionCount = 0;
 
-		Stat(String path) {
+		Context(String path) {
 			this.path = path;
 		}
 
@@ -162,32 +170,24 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 			return path;
 		}
 
-		public long getTotalExecutionCount() {
-			return totalExecution.get();
-		}
-
-		public long getTimeoutExecutionCount() {
-			return timeoutExecution.get();
-		}
-
-		public long getFailedExecutionCount() {
-			return failedExecution.get();
-		}
-
-		public Map<String, String> checkpoint() {
+		public Map<String, Object> checkpoint() {
 			long totalExecutionCount = totalExecution.get();
 			int qps = 0;
 			if (totalExecutionCount > 0) {
 				qps = (int) (totalExecutionCount - lastTotalExecutionCount);
 				lastTotalExecutionCount = totalExecutionCount;
 			}
-			long timeoutExecutionCount = timeoutExecution.get();
-			long failedExecutionCount = failedExecution.get();
-			Map<String, String> data = new HashMap<String, String>();
-			data.put("totalExecutionCount", String.valueOf(totalExecutionCount));
-			data.put("qps", String.valueOf(qps));
-			data.put("timeoutExecutionCount", String.valueOf(timeoutExecutionCount));
-			data.put("failedExecutionCount", String.valueOf(failedExecutionCount));
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("totalExecutionCount", totalExecutionCount);
+			data.put("qps", qps);
+			data.put("timeoutExecutionCount", timeoutExecution.get());
+			data.put("failedExecutionCount", failedExecution.get());
+
+			data.put("countOf1xx", countOf1xx.get());
+			data.put("countOf2xx", countOf2xx.get());
+			data.put("countOf3xx", countOf3xx.get());
+			data.put("countOf4xx", countOf4xx.get());
+			data.put("countOf5xx", countOf5xx.get());
 			return data;
 		}
 

@@ -37,10 +37,8 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 
 	@ConditionalOnMissingBean
 	@Bean
-	public PathMatchedMap pathMatchedMap() {
-		PathMatchedMap map = new PathMatchedMap();
-		map.put("/**", 3000L);
-		return map;
+	public PathMatcher pathMatcher() {
+		return new PathMatcher();
 	}
 
 	@Bean("realtimeStatisticalWriter")
@@ -63,7 +61,8 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 
 	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskScheduler jellyfishMonitorTaskScheduler(@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
+	public ThreadPoolTaskScheduler jellyfishMonitorTaskScheduler(
+			@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
 		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-monitor-task-scheduler-"));

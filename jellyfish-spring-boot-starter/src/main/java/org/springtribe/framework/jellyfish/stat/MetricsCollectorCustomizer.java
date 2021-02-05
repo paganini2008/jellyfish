@@ -2,6 +2,11 @@ package org.springtribe.framework.jellyfish.stat;
 
 import java.util.Map;
 
+import org.springtribe.framework.gearless.utils.CustomizedMetric;
+import org.springtribe.framework.gearless.utils.SequentialMetricsCollector;
+import org.springtribe.framework.gearless.utils.SpanUnit;
+import org.springtribe.framework.gearless.utils.StatisticalMetric;
+
 /**
  * 
  * MetricsCollectorCustomizer
@@ -11,9 +16,13 @@ import java.util.Map;
  */
 public interface MetricsCollectorCustomizer {
 
-	SequentialMetricsCollector createSequentialMetricsCollector(Catalog catalog);
+	SequentialMetricsCollector<StatisticalMetric> createNewForStatistic(Catalog catalog);
 
-	Map<String, Metric> render(Map<Object, Object> entries);
+	SequentialMetricsCollector<CustomizedMetric<HttpRequestCounter>> createNewForCounter(Catalog catalog);
+
+	SequentialMetricsCollector<CustomizedMetric<HttpStatusCounter>> createNewForHttpStatusCategory(Catalog catalog);
+
+	Map<String, MetricBean> render(Map<Object, Object> entries);
 
 	default int getBufferSize() {
 		return 60;

@@ -19,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Metric implements Serializable {
+public class MetricBean implements Serializable {
 
 	private static final long serialVersionUID = -3894234853704794221L;
 

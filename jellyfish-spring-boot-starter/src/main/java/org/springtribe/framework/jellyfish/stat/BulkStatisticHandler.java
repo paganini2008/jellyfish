@@ -3,6 +3,8 @@ package org.springtribe.framework.jellyfish.stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
+import org.springtribe.framework.gearless.utils.StatisticalMetric;
+import org.springtribe.framework.gearless.utils.StatisticalMetrics;
 
 import com.github.paganini2008.devtools.StringUtils;
 
@@ -16,7 +18,7 @@ import com.github.paganini2008.devtools.StringUtils;
 public class BulkStatisticHandler implements Handler {
 
 	@Autowired
-	private TransientStatisticSynchronizer transientStatisticSynchronizer;
+	private CatalogContext catalogContext;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -40,15 +42,25 @@ public class BulkStatisticHandler implements Handler {
 		long totalExecutionCount = tuple.getField("totalExecutionCount", Long.class);
 		long timeoutExecutionCount = tuple.getField("timeoutExecutionCount", Long.class);
 		long failedExecutionCount = tuple.getField("failedExecutionCount", Long.class);
-		PathSummary pathStatistic = transientStatisticSynchronizer.getPathSummary(catalog);
-		pathStatistic.setTotalExecutionCount(totalExecutionCount);
-		pathStatistic.setTimeoutExecutionCount(timeoutExecutionCount);
-		pathStatistic.setFailedExecutionCount(failedExecutionCount);
+		long countOf1xx = tuple.getField("countOf1xx", Long.class);
+		long countOf2xx = tuple.getField("countOf2xx", Long.class);
+		long countOf3xx = tuple.getField("countOf3xx", Long.class);
+		long countOf4xx = tuple.getField("countOf4xx", Long.class);
+		long countOf5xx = tuple.getField("countOf5xx", Long.class);
+
+		CatalogSummary catalogSummary = catalogContext.getSummary(catalog);
+		catalogSummary.totalExecution.addAndGet(totalExecutionCount);
+		catalogSummary.failedExecution.addAndGet(failedExecutionCount);
+		catalogSummary.timeoutExecution.addAndGet(timeoutExecutionCount);
+		catalogSummary.countOf1xx.addAndGet(countOf1xx);
+		catalogSummary.countOf2xx.addAndGet(countOf2xx);
+		catalogSummary.countOf3xx.addAndGet(countOf3xx);
+		catalogSummary.countOf4xx.addAndGet(countOf4xx);
+		catalogSummary.countOf5xx.addAndGet(countOf5xx);
 
 		int qps = tuple.getField("qps", Integer.class);
-		long timestamp = tuple.getTimestamp();
-		SequentialMetricsCollector sequentialMetricsCollector = transientStatisticSynchronizer.getMetricsCollector(catalog);
-		sequentialMetricsCollector.set("qps", timestamp, MetricUnits.valueOf(qps));
+		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.getStatisticCollector();
+		collector.update(catalog, "qps", tuple.getTimestamp(), StatisticalMetrics.valueOf(qps));
 	}
 
 	@Override

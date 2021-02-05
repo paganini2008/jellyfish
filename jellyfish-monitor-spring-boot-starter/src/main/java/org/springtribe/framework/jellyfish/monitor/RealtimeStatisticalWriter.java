@@ -43,7 +43,7 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 	private int port;
 
 	@Autowired
-	private PathMatchedMap timeouts;
+	private PathMatcher pathMatcher;
 
 	@Autowired
 	private TransportClient transportClient;
@@ -70,22 +70,24 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 		final String path = request.getServletPath();
 		long elapsed = System.currentTimeMillis() - begin.longValue();
 		int concurrency = getConcurrency(path).decrementAndGet();
-		final boolean timeout = isTimeout(path, (Long) request.getAttribute(REQUEST_TIMESTAMP));
+		final boolean timeout = pathMatcher.matchTimeout(path, elapsed);
 		HttpStatus status = HttpStatus.valueOf(response.getStatus());
 		final boolean failed = (e != null) || (!status.is2xxSuccessful());
+
 		Map<String, Object> contextMap = new HashMap<String, Object>();
 		contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
 		contextMap.put("requestId", requestId);
 		contextMap.put("clusterName", clusterName);
 		contextMap.put("applicationName", applicationName);
 		contextMap.put("host", host + ":" + port);
-		contextMap.put("path", path);
+		contextMap.put("category", pathMatcher.matchCategory(path));
+		contextMap.put("path", pathMatcher.matchDecoration(path));
 		contextMap.put("requestTime", begin.longValue());
 		contextMap.put("elapsed", elapsed);
 		contextMap.put("timeout", timeout);
 		contextMap.put("failed", failed);
 		contextMap.put("concurrency", concurrency);
-		contextMap.put("httpStatus", status);
+		contextMap.put("httpStatusCode", status.value());
 		transportClient.write(TOPIC_NAME, contextMap);
 
 		if (statisticalTracer != null) {
@@ -96,15 +98,6 @@ public class RealtimeStatisticalWriter extends StatisticalWriter {
 				statisticalTracer.onTimeout(requestId, path, elapsed, request, response);
 			}
 		}
-	}
-
-	private boolean isTimeout(String path, long requestTime) {
-		boolean timeout = false;
-		if (timeouts.containsKey(path)) {
-			long elapsed = System.currentTimeMillis() - requestTime;
-			timeout = elapsed > timeouts.get(path);
-		}
-		return timeout;
 	}
 
 	private AtomicInteger getConcurrency(String path) {

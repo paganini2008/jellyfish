@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springtribe.framework.jellyfish.stat.Catalog;
-import org.springtribe.framework.jellyfish.stat.Metric;
+import org.springtribe.framework.jellyfish.stat.MetricBean;
 import org.springtribe.framework.jellyfish.stat.MetricsCollectorCustomizer;
-import org.springtribe.framework.jellyfish.stat.TransientStatisticSynchronizer;
+import org.springtribe.framework.jellyfish.stat.TransientStatisticSynchronizer2;
 
 import com.github.paganini2008.devtools.cache.Cache;
 import com.github.paganini2008.devtools.collection.CollectionUtils;
@@ -41,7 +41,7 @@ public class StatisticController {
 	private MetricsCollectorCustomizer metricsCollectorCustomizer;
 
 	@Autowired
-	private TransientStatisticSynchronizer transientStatisticSynchronizer;
+	private TransientStatisticSynchronizer2 transientStatisticSynchronizer;
 
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;
@@ -69,7 +69,7 @@ public class StatisticController {
 	public Response realtimeSummary(@PathVariable("metric") String metric, @RequestBody Catalog catalog) {
 		Cache cache = transientStatisticSynchronizer.getRealtimeSummaryCache(catalog, metric);
 		if (cache != null) {
-			Map<String, Metric> data = metricsCollectorCustomizer.render(cache.toEntries());
+			Map<String, MetricBean> data = metricsCollectorCustomizer.render(cache.toEntries());
 			return Response.success(data);
 		}
 		return Response.success();

@@ -5,23 +5,23 @@ import lombok.Setter;
 
 /**
  * 
- * HttpRequestCounter
+ * Counter
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Getter
 @Setter
-public class HttpRequestCounter {
+public class Counter {
 
 	private long count;
 	private long failedCount;
 	private long timeoutCount;
 
-	HttpRequestCounter() {
+	public Counter() {
 	}
 
-	HttpRequestCounter(long count, long failedCount, long timeoutCount) {
+	public Counter(long count, long failedCount, long timeoutCount) {
 		super();
 		this.count = count;
 		this.failedCount = failedCount;

@@ -16,19 +16,16 @@ import lombok.Setter;
 @Setter
 public class HttpStatusCounter {
 
-	private long count;
 	private long countOf1xx;
 	private long countOf2xx;
 	private long countOf3xx;
 	private long countOf4xx;
 	private long countOf5xx;
-	private long countOfUnknown;
 
-	HttpStatusCounter() {
+	public HttpStatusCounter() {
 	}
 
 	HttpStatusCounter(HttpStatus httpStatus) {
-		count = 1;
 
 		if (httpStatus.is1xxInformational()) {
 			countOf1xx = 1L;
@@ -40,9 +37,15 @@ public class HttpStatusCounter {
 			countOf4xx = 1L;
 		} else if (httpStatus.is5xxServerError()) {
 			countOf5xx = 1L;
-		} else {
-			countOfUnknown = 1;
 		}
 	}
-	
+
+	public HttpStatusCounter(long countOf1xx, long countOf2xx, long countOf3xx, long countOf4xx, long countOf5xx) {
+		this.countOf1xx = countOf1xx;
+		this.countOf2xx = countOf2xx;
+		this.countOf3xx = countOf3xx;
+		this.countOf4xx = countOf4xx;
+		this.countOf5xx = countOf5xx;
+	}
+
 }

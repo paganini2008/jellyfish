@@ -23,7 +23,7 @@ public class CatalogMetricsCollector<T extends Metric<T>> {
 	private int span = 1;
 	private SpanUnit spanUnit = SpanUnit.MINUTE;
 	private int bufferSize = 60;
-	private SequentialMetricsHandler<T> historicalSequentialMetricsHandler;
+	private MetricEvictionHandler<T> evictionHandler;
 
 	public void setSpan(int span) {
 		this.span = span;
@@ -37,15 +37,15 @@ public class CatalogMetricsCollector<T extends Metric<T>> {
 		this.bufferSize = bufferSize;
 	}
 
-	public void setHistoricalSequentialMetricsHandler(SequentialMetricsHandler<T> historicalSequentialMetricsHandler) {
-		this.historicalSequentialMetricsHandler = historicalSequentialMetricsHandler;
+	public void setMetricEvictionHandler(MetricEvictionHandler<T> evictionHandler) {
+		this.evictionHandler = evictionHandler;
 	}
 
 	public void update(Catalog catalog, String metric, long timestamp, T metricUnit) {
 		SequentialMetricsCollector<T> collector = MapUtils.get(collectors, catalog, () -> {
 			return new SimpleSequentialMetricsCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
-				if (historicalSequentialMetricsHandler != null) {
-					historicalSequentialMetricsHandler.handleSequentialMetrics(catalog, eldestMetric, eldestMetricUnit);
+				if (evictionHandler != null) {
+					evictionHandler.onEldestMetricRemoval(catalog, eldestMetric, eldestMetricUnit);
 				}
 			});
 		});

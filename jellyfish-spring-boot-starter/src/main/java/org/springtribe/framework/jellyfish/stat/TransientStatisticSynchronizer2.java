@@ -34,7 +34,7 @@ public class TransientStatisticSynchronizer2 implements Runnable, InitializingBe
 	public static final String KEY_PATTERN_REALTIME_SUMMARY = "jellyfish:%s:%s:catalog:%s";
 	private final Map<Catalog, CatalogSummary> totalSummary = new ConcurrentHashMap<Catalog, CatalogSummary>();
 	private final Map<Catalog, SequentialMetricsCollector<StatisticalMetric>> statisticMetricsCollectors = new ConcurrentHashMap<Catalog, SequentialMetricsCollector<StatisticalMetric>>();
-	private final Map<Catalog, SequentialMetricsCollector<CustomizedMetric<HttpRequestCounter>>> counterCollectors = new ConcurrentHashMap<Catalog, SequentialMetricsCollector<CustomizedMetric<HttpRequestCounter>>>();
+	private final Map<Catalog, SequentialMetricsCollector<CustomizedMetric<Counter>>> counterCollectors = new ConcurrentHashMap<Catalog, SequentialMetricsCollector<CustomizedMetric<Counter>>>();
 	private final Map<Catalog, SequentialMetricsCollector<CustomizedMetric<HttpStatusCounter>>> httpStatusCounterCollectors = new ConcurrentHashMap<Catalog, SequentialMetricsCollector<CustomizedMetric<HttpStatusCounter>>>();
 
 	@Autowired
@@ -128,8 +128,8 @@ public class TransientStatisticSynchronizer2 implements Runnable, InitializingBe
 			vo.setMiddleValue(metricUnit.getMiddleValue(0).longValue());
 			vo.setCount(metricUnit.getCount());
 			vo.setTimestamp(metricUnit.getTimestamp());
-			if (metricUnit instanceof HttpRequestCountingMetric) {
-				HttpRequestCountingMetric realtimeMetricUnit = (HttpRequestCountingMetric) metricUnit;
+			if (metricUnit instanceof CountingMetric) {
+				CountingMetric realtimeMetricUnit = (CountingMetric) metricUnit;
 				vo.setFailedCount(realtimeMetricUnit.getFailedCount());
 				vo.setTimeoutCount(realtimeMetricUnit.getTimeoutCount());
 				vo.setSuccessCount(vo.getCount() - vo.getFailedCount() - vo.getTimeoutCount());

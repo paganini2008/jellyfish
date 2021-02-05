@@ -53,12 +53,19 @@ public class RealtimeStatisticHandler implements Handler {
 		statisticCollector.update(catalog, "rt", timestamp, StatisticalMetrics.valueOf(elapsed, timestamp));
 		statisticCollector.update(catalog, "cons", timestamp, StatisticalMetrics.valueOf(concurrency, timestamp));
 
-		CatalogMetricsCollector<CustomizedMetric<HttpRequestCounter>> countingCollector = catalogContext.getCountingCollector();
-		countingCollector.update(catalog, "count", timestamp, new HttpRequestCountingMetric(failed, timeout));
+		CountingMetric countingMetric = new CountingMetric(failed, timeout);
+		CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = catalogContext.getCountingCollector();
+		countingCollector.update(catalog, "count", timestamp, countingMetric);
 
+		HttpStatusCountingMetric httpStatusCountingMetric = new HttpStatusCountingMetric(httpStatusCode);
 		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogContext
 				.getHttpStatusCountingCollector();
-		httpStatusCountingCollector.update(catalog, "httpStatus", timestamp, new HttpStatusCountingMetric(httpStatusCode));
+		httpStatusCountingCollector.update(catalog, "httpStatus", timestamp, httpStatusCountingMetric);
+
+		CatalogSummary summary = catalogContext.getSummary(catalog);
+		summary.update(countingMetric.get());
+		summary.update(httpStatusCountingMetric.get());
+
 	}
 
 	@Override

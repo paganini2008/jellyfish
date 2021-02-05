@@ -19,7 +19,7 @@ import org.springtribe.framework.gearless.common.NamedSelectionPartitioner;
 import org.springtribe.framework.jellyfish.log.LogEntrySearchService;
 import org.springtribe.framework.jellyfish.log.LogEntryService;
 import org.springtribe.framework.jellyfish.log.Slf4jHandler;
-import org.springtribe.framework.jellyfish.stat.BulkStatisticHandler;
+import org.springtribe.framework.jellyfish.stat.QpsHandler;
 import org.springtribe.framework.jellyfish.stat.DefaultMetricsCollectorCustomizer;
 import org.springtribe.framework.jellyfish.stat.MetricsCollectorCustomizer;
 import org.springtribe.framework.jellyfish.stat.RealtimeStatisticHandler;
@@ -57,8 +57,8 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public BulkStatisticHandler bulkStatisticalHandler() {
-		return new BulkStatisticHandler();
+	public QpsHandler bulkStatisticalHandler() {
+		return new QpsHandler();
 	}
 
 	@Autowired

@@ -26,9 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultMetricsCollectorCustomizer implements MetricsCollectorCustomizer {
 
 	
-	private SequentialMetricsHandler<StatisticalMetric> historicalStatisticMetricsHandler;
-	private SequentialMetricsHandler<CustomizedMetric<HttpRequestCounter>> historicalCounterMetricsHandler;
-	private SequentialMetricsHandler<CustomizedMetric<HttpStatusCounter>> historicalHttpStatusCounterMetricsHandler;
+	private MetricEvictionHandler<StatisticalMetric> historicalStatisticMetricsHandler;
+	private MetricEvictionHandler<CustomizedMetric<Counter>> historicalCounterMetricsHandler;
+	private MetricEvictionHandler<CustomizedMetric<HttpStatusCounter>> historicalHttpStatusCounterMetricsHandler;
 
 	private int span = 1;
 	private SpanUnit spanUnit = SpanUnit.MINUTE;
@@ -47,17 +47,17 @@ public class DefaultMetricsCollectorCustomizer implements MetricsCollectorCustom
 	}
 
 	public void setHistoricalStatisticMetricsHandler(
-			SequentialMetricsHandler<StatisticalMetric> historicalStatisticMetricsHandler) {
+			MetricEvictionHandler<StatisticalMetric> historicalStatisticMetricsHandler) {
 		this.historicalStatisticMetricsHandler = historicalStatisticMetricsHandler;
 	}
 
 	public void setHistoricalCounterMetricsHandler(
-			SequentialMetricsHandler<CustomizedMetric<HttpRequestCounter>> historicalCounterMetricsHandler) {
+			MetricEvictionHandler<CustomizedMetric<Counter>> historicalCounterMetricsHandler) {
 		this.historicalCounterMetricsHandler = historicalCounterMetricsHandler;
 	}
 
 	public void setHistoricalHttpStatusCounterMetricsHandler(
-			SequentialMetricsHandler<CustomizedMetric<HttpStatusCounter>> historicalHttpStatusCounterMetricsHandler) {
+			MetricEvictionHandler<CustomizedMetric<HttpStatusCounter>> historicalHttpStatusCounterMetricsHandler) {
 		this.historicalHttpStatusCounterMetricsHandler = historicalHttpStatusCounterMetricsHandler;
 	}
 
@@ -89,8 +89,8 @@ public class DefaultMetricsCollectorCustomizer implements MetricsCollectorCustom
 	}
 
 	@Override
-	public SequentialMetricsCollector<CustomizedMetric<HttpRequestCounter>> createNewForCounter(Catalog catalog) {
-		return new SimpleSequentialMetricsCollector<CustomizedMetric<HttpRequestCounter>>(bufferSize, span, spanUnit, (metric, metricUnit) -> {
+	public SequentialMetricsCollector<CustomizedMetric<Counter>> createNewForCounter(Catalog catalog) {
+		return new SimpleSequentialMetricsCollector<CustomizedMetric<Counter>>(bufferSize, span, spanUnit, (metric, metricUnit) -> {
 			if (historicalCounterMetricsHandler != null) {
 				historicalCounterMetricsHandler.handleHistoricalMetrics(catalog, metric, metricUnit);
 			}

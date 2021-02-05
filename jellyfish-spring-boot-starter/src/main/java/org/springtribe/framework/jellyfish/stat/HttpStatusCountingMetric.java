@@ -12,8 +12,8 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
  */
 public class HttpStatusCountingMetric implements CustomizedMetric<HttpStatusCounter> {
 
-	HttpStatusCountingMetric(HttpStatusCounter httpStatusCategory) {
-		this.httpStatusCategory = httpStatusCategory;
+	HttpStatusCountingMetric(HttpStatusCounter httpStatusCounter) {
+		this.httpStatusCounter = httpStatusCounter;
 		this.timestamp = System.currentTimeMillis();
 	}
 
@@ -21,8 +21,19 @@ public class HttpStatusCountingMetric implements CustomizedMetric<HttpStatusCoun
 		this(new HttpStatusCounter(HttpStatus.valueOf(statusCode)));
 	}
 
-	private HttpStatusCounter httpStatusCategory;
+	private HttpStatusCounter httpStatusCounter;
 	private long timestamp;
+	private boolean reset = false;
+
+	@Override
+	public boolean reset() {
+		return this.reset;
+	}
+
+	@Override
+	public void reset(boolean reset) {
+		this.reset = reset;
+	}
 
 	@Override
 	public long getTimestamp() {
@@ -31,21 +42,32 @@ public class HttpStatusCountingMetric implements CustomizedMetric<HttpStatusCoun
 
 	@Override
 	public HttpStatusCounter get() {
-		return httpStatusCategory;
+		return httpStatusCounter;
 	}
 
 	@Override
-	public CustomizedMetric<HttpStatusCounter> merge(CustomizedMetric<HttpStatusCounter> anotherUnit) {
+	public CustomizedMetric<HttpStatusCounter> reset(CustomizedMetric<HttpStatusCounter> currentMetric) {
 		HttpStatusCounter current = get();
-		HttpStatusCounter update = anotherUnit.get();
+		HttpStatusCounter update = currentMetric.get();
 		HttpStatusCounter httpStatusCategory = new HttpStatusCounter();
-		httpStatusCategory.setCount(current.getCount() + update.getCount());
+		httpStatusCategory.setCountOf1xx(current.getCountOf1xx() - update.getCountOf1xx());
+		httpStatusCategory.setCountOf2xx(current.getCountOf2xx() - update.getCountOf2xx());
+		httpStatusCategory.setCountOf3xx(current.getCountOf3xx() - update.getCountOf3xx());
+		httpStatusCategory.setCountOf4xx(current.getCountOf4xx() - update.getCountOf4xx());
+		httpStatusCategory.setCountOf5xx(current.getCountOf5xx() - update.getCountOf5xx());
+		return new HttpStatusCountingMetric(httpStatusCategory);
+	}
+
+	@Override
+	public CustomizedMetric<HttpStatusCounter> merge(CustomizedMetric<HttpStatusCounter> anotherMetric) {
+		HttpStatusCounter current = get();
+		HttpStatusCounter update = anotherMetric.get();
+		HttpStatusCounter httpStatusCategory = new HttpStatusCounter();
 		httpStatusCategory.setCountOf1xx(current.getCountOf1xx() + update.getCountOf1xx());
 		httpStatusCategory.setCountOf2xx(current.getCountOf2xx() + update.getCountOf2xx());
 		httpStatusCategory.setCountOf3xx(current.getCountOf3xx() + update.getCountOf3xx());
 		httpStatusCategory.setCountOf4xx(current.getCountOf4xx() + update.getCountOf4xx());
 		httpStatusCategory.setCountOf5xx(current.getCountOf5xx() + update.getCountOf5xx());
-		httpStatusCategory.setCountOfUnknown(current.getCountOfUnknown() + update.getCountOfUnknown());
 		return new HttpStatusCountingMetric(httpStatusCategory);
 	}
 

@@ -18,7 +18,7 @@ public interface MetricsCollectorCustomizer {
 
 	SequentialMetricsCollector<StatisticalMetric> createNewForStatistic(Catalog catalog);
 
-	SequentialMetricsCollector<CustomizedMetric<HttpRequestCounter>> createNewForCounter(Catalog catalog);
+	SequentialMetricsCollector<CustomizedMetric<Counter>> createNewForCounter(Catalog catalog);
 
 	SequentialMetricsCollector<CustomizedMetric<HttpStatusCounter>> createNewForHttpStatusCategory(Catalog catalog);
 

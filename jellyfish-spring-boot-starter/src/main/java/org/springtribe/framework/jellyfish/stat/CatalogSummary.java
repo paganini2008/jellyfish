@@ -23,15 +23,15 @@ public class CatalogSummary {
 
 	private Catalog catalog;
 
-	final AtomicLong totalExecution = new AtomicLong();
-	final AtomicLong failedExecution = new AtomicLong();
-	final AtomicLong timeoutExecution = new AtomicLong();
+	private final AtomicLong totalExecution = new AtomicLong();
+	private final AtomicLong failedExecution = new AtomicLong();
+	private final AtomicLong timeoutExecution = new AtomicLong();
 
-	final AtomicLong countOf1xx = new AtomicLong();
-	final AtomicLong countOf2xx = new AtomicLong();
-	final AtomicLong countOf3xx = new AtomicLong();
-	final AtomicLong countOf4xx = new AtomicLong();
-	final AtomicLong countOf5xx = new AtomicLong();
+	private final AtomicLong countOf1xx = new AtomicLong();
+	private final AtomicLong countOf2xx = new AtomicLong();
+	private final AtomicLong countOf3xx = new AtomicLong();
+	private final AtomicLong countOf4xx = new AtomicLong();
+	private final AtomicLong countOf5xx = new AtomicLong();
 
 	public long getTotalExecutionCount() {
 		return totalExecution.get();
@@ -67,6 +67,20 @@ public class CatalogSummary {
 
 	public long getSuccessExecutionCount() {
 		return getTotalExecutionCount() - getFailedExecutionCount() - getTimeoutExecutionCount();
+	}
+
+	public void update(Counter counter) {
+		totalExecution.addAndGet(counter.getCount());
+		failedExecution.addAndGet(counter.getFailedCount());
+		timeoutExecution.addAndGet(counter.getTimeoutCount());
+	}
+
+	public void update(HttpStatusCounter counter) {
+		countOf1xx.addAndGet(counter.getCountOf1xx());
+		countOf2xx.addAndGet(counter.getCountOf2xx());
+		countOf3xx.addAndGet(counter.getCountOf3xx());
+		countOf4xx.addAndGet(counter.getCountOf4xx());
+		countOf5xx.addAndGet(counter.getCountOf5xx());
 	}
 
 }

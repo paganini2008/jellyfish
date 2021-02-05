@@ -60,7 +60,7 @@ public class BulkStatisticHandler implements Handler {
 
 		int qps = tuple.getField("qps", Integer.class);
 		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.getStatisticCollector();
-		collector.update(catalog, "qps", tuple.getTimestamp(), StatisticalMetrics.valueOf(qps));
+		collector.update(catalog, "qps", tuple.getTimestamp(), StatisticalMetrics.valueOf(qps, tuple.getTimestamp()));
 	}
 
 	@Override

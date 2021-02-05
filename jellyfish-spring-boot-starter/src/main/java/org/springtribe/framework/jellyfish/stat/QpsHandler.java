@@ -7,8 +7,6 @@ import org.springtribe.framework.gearless.common.Tuple;
 import org.springtribe.framework.gearless.utils.StatisticalMetric;
 import org.springtribe.framework.gearless.utils.StatisticalMetrics;
 
-import com.github.paganini2008.devtools.StringUtils;
-
 /**
  * 
  * QpsHandler
@@ -31,9 +29,7 @@ public class QpsHandler implements Handler {
 		String path = tuple.getField("path", String.class);
 
 		doCollect(new Catalog(clusterName, applicationName, host, category, path), tuple);
-		if (StringUtils.isNotBlank(category)) {
-			doCollect(new Catalog(clusterName, applicationName, host, category, null), tuple);
-		}
+		doCollect(new Catalog(clusterName, applicationName, host, category, null), tuple);
 		doCollect(new Catalog(clusterName, applicationName, host, null, null), tuple);
 		doCollect(new Catalog(clusterName, applicationName, null, null, null), tuple);
 		doCollect(new Catalog(clusterName, null, null, null, null), tuple);
@@ -41,14 +37,15 @@ public class QpsHandler implements Handler {
 	}
 
 	private void doCollect(Catalog catalog, Tuple tuple) {
+		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField("qps", Integer.class);
 		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.getStatisticCollector();
-		collector.update(catalog, "qps", tuple.getTimestamp(), StatisticalMetrics.valueOf(qps, tuple.getTimestamp()));
+		collector.update(catalog, "qps", timestamp, StatisticalMetrics.valueOf(qps, timestamp));
 	}
 
 	@Override
 	public String getTopic() {
-		return "org.springtribe.framework.jellyfish.monitor.BulkStatisticalWriter";
+		return "org.springtribe.framework.jellyfish.monitor.QpsWriter";
 	}
 
 }

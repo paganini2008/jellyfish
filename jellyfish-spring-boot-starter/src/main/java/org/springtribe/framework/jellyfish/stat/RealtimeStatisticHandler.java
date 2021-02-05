@@ -8,8 +8,6 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
 import org.springtribe.framework.gearless.utils.StatisticalMetric;
 import org.springtribe.framework.gearless.utils.StatisticalMetrics;
 
-import com.github.paganini2008.devtools.StringUtils;
-
 /**
  * 
  * RealtimeStatisticHandler
@@ -33,10 +31,7 @@ public class RealtimeStatisticHandler implements Handler {
 		String path = tuple.getField("path", String.class);
 
 		doCollect(new Catalog(clusterName, applicationName, host, category, path), tuple);
-
-		if (StringUtils.isNotBlank(category)) {
-			doCollect(new Catalog(clusterName, applicationName, host, category, null), tuple);
-		}
+		doCollect(new Catalog(clusterName, applicationName, host, category, null), tuple);
 		doCollect(new Catalog(clusterName, applicationName, host, null, null), tuple);
 		doCollect(new Catalog(clusterName, applicationName, null, null, null), tuple);
 		doCollect(new Catalog(clusterName, null, null, null, null), tuple);
@@ -44,7 +39,7 @@ public class RealtimeStatisticHandler implements Handler {
 	}
 
 	private void doCollect(Catalog catalog, Tuple tuple) {
-		long timestamp = tuple.getField("requestTime", Long.class);
+		final long timestamp = tuple.getField("requestTime", Long.class);
 		boolean failed = tuple.getField("failed", Boolean.class);
 		boolean timeout = tuple.getField("timeout", Boolean.class);
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);

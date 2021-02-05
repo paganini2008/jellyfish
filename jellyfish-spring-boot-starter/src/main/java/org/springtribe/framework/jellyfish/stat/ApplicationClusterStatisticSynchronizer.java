@@ -4,6 +4,7 @@ import java.time.Duration;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springtribe.framework.gearless.common.NioClient;
 
@@ -22,6 +23,7 @@ public class ApplicationClusterStatisticSynchronizer implements Runnable, Initia
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
 
+	@Qualifier("primaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 

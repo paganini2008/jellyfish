@@ -50,7 +50,7 @@ public class MonitorAutoConfiguration implements WebMvcConfigurer {
 	@Bean("bulkStatisticalWriter")
 	public StatisticalWriter bulkStatisticalWriter() {
 		log.info("Load BulkStatisticalWriter");
-		return new BulkStatisticalWriter();
+		return new QpsWriter();
 	}
 
 	@ConditionalOnMissingBean

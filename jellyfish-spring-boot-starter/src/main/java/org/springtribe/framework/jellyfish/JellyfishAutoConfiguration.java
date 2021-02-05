@@ -20,8 +20,13 @@ import org.springtribe.framework.jellyfish.log.LogEntrySearchService;
 import org.springtribe.framework.jellyfish.log.LogEntryService;
 import org.springtribe.framework.jellyfish.log.Slf4jHandler;
 import org.springtribe.framework.jellyfish.stat.ApplicationClusterStatisticSynchronizer;
+import org.springtribe.framework.jellyfish.stat.CatalogContext;
+import org.springtribe.framework.jellyfish.stat.CatalogSummarySynchronization;
+import org.springtribe.framework.jellyfish.stat.CountingSynchronization;
+import org.springtribe.framework.jellyfish.stat.HttpStatusCountingSynchronization;
 import org.springtribe.framework.jellyfish.stat.QpsHandler;
 import org.springtribe.framework.jellyfish.stat.RealtimeStatisticHandler;
+import org.springtribe.framework.jellyfish.stat.StatisticSynchronization;
 import org.springtribe.framework.reditools.common.IdGenerator;
 import org.springtribe.framework.reditools.common.TimestampIdGenerator;
 
@@ -41,8 +46,15 @@ public class JellyfishAutoConfiguration {
 
 	private static final String keyPattern = "spring:application:cluster:jellyfish:%s:id";
 
-	@Value("${spring.application.cluster.name}")
+	@Value("${spring.application.cluster.name:default}")
 	private String clusterName;
+
+	@Autowired
+	public void addHashPartitioner(NamedSelectionPartitioner partitioner) {
+		final String[] fieldNames = { "clusterName", "applicationName", "host", "category", "path" };
+		HashPartitioner hashPartitioner = new HashPartitioner(fieldNames);
+		partitioner.addPartitioner(hashPartitioner);
+	}
 
 	@Bean
 	public Slf4jHandler slf4jHandler() {
@@ -55,15 +67,38 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public QpsHandler bulkStatisticalHandler() {
+	public QpsHandler qpsHandler() {
 		return new QpsHandler();
 	}
 
-	@Autowired
-	public void addHashPartitioner(NamedSelectionPartitioner partitioner) {
-		final String[] fieldNames = { "clusterName", "applicationName", "host", "path" };
-		HashPartitioner hashPartitioner = new HashPartitioner(fieldNames);
-		partitioner.addPartitioner(hashPartitioner);
+	@Bean
+	public CatalogSummarySynchronization catalogSummarySynchronization() {
+		return new CatalogSummarySynchronization();
+	}
+
+	@Bean
+	public CountingSynchronization countingSynchronization() {
+		return new CountingSynchronization();
+	}
+
+	@Bean
+	public HttpStatusCountingSynchronization httpStatusCountingSynchronization() {
+		return new HttpStatusCountingSynchronization();
+	}
+
+	@Bean
+	public StatisticSynchronization statisticSynchronization() {
+		return new StatisticSynchronization();
+	}
+
+	@Bean
+	public CatalogContext primaryCatalogContext() {
+		return new CatalogContext();
+	}
+
+	@Bean
+	public CatalogContext secondaryCatalogContext() {
+		return new CatalogContext();
 	}
 
 	@Bean

@@ -9,6 +9,7 @@ package org.springtribe.framework.jellyfish.monitor;
  */
 public class PathMatcher {
 
+	private static final String DEFAULT_CATEGORY_NAME = "default";
 	private final PathMatcherMap<Long> timeouts = new PathMatcherMap<Long>();
 	private final PathMatcherMap<String> decorations = new PathMatcherMap<String>();
 	private final PathMatcherMap<String> categories = new PathMatcherMap<String>();
@@ -45,6 +46,6 @@ public class PathMatcher {
 	}
 
 	public String matchCategory(String path) {
-		return categories.get(path);
+		return categories.getOrDefault(path, DEFAULT_CATEGORY_NAME);
 	}
 }

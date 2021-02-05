@@ -25,7 +25,7 @@ public class HttpStatusCounter {
 	public HttpStatusCounter() {
 	}
 
-	HttpStatusCounter(HttpStatus httpStatus) {
+	public HttpStatusCounter(HttpStatus httpStatus) {
 
 		if (httpStatus.is1xxInformational()) {
 			countOf1xx = 1L;

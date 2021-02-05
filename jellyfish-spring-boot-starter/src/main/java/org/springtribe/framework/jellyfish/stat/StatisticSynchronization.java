@@ -37,8 +37,9 @@ public class StatisticSynchronization implements Handler {
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
+		Catalog catalog = new Catalog(clusterName, applicationName, host, category, path);
 		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.getStatisticCollector();
-		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), metric, timestamp,
+		statisticCollector.update(catalog, metric, timestamp,
 				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false));
 	}
 

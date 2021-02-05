@@ -52,7 +52,7 @@ public class CatalogContext {
 			CustomizedMetric<HttpStatusCounter> customizedMetric;
 			for (Map.Entry<String, CustomizedMetric<HttpStatusCounter>> entry : data.entrySet()) {
 				customizedMetric = entry.getValue();
-				Tuple tuple = getHttpStatusCountingTuple(catalog, "count", customizedMetric);
+				Tuple tuple = getHttpStatusCountingTuple(catalog, "httpStatus", customizedMetric);
 				nioClient.send(tuple);
 			}
 		}

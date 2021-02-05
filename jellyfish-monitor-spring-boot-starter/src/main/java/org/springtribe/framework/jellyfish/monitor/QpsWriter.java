@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springtribe.framework.gearless.common.HashPartitioner;
 import org.springtribe.framework.gearless.common.TransportClient;
@@ -31,10 +30,10 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class BulkStatisticalWriter extends StatisticalWriter implements InitializingBean {
+public class QpsWriter extends StatisticalWriter implements InitializingBean {
 
-	private static final String TOPIC_NAME = BulkStatisticalWriter.class.getName();
-	private final Map<String, Context> contexts = new ConcurrentHashMap<String, Context>();
+	private static final String TOPIC_NAME = QpsWriter.class.getName();
+	private final Map<String, QPS> contexts = new ConcurrentHashMap<String, QPS>();
 
 	@Value("${spring.application.cluster.name:default}")
 	private String clusterName;
@@ -62,38 +61,12 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 	@Override
 	protected void onRequestEnd(String requestId, HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
 		final String path = request.getServletPath();
-		Context context = getContext(path);
-		context.totalExecution.incrementAndGet();
-
-		long requestTime = (Long) request.getAttribute(REQUEST_TIMESTAMP);
-		long elapsed = System.currentTimeMillis() - requestTime;
-		boolean timeout = pathMatcher.matchTimeout(path, elapsed);
-		if (timeout) {
-			context.timeoutExecution.incrementAndGet();
-		}
-		HttpStatus status = HttpStatus.valueOf(response.getStatus());
-		boolean failed = (e != null) || (!status.is2xxSuccessful());
-		if (failed) {
-			context.failedExecution.incrementAndGet();
-		}
-
-		HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
-		if (httpStatus.is1xxInformational()) {
-			context.countOf1xx.incrementAndGet();
-		} else if (httpStatus.is2xxSuccessful()) {
-			context.countOf2xx.incrementAndGet();
-		} else if (httpStatus.is3xxRedirection()) {
-			context.countOf3xx.incrementAndGet();
-		} else if (httpStatus.is4xxClientError()) {
-			context.countOf4xx.incrementAndGet();
-		} else if (httpStatus.is5xxServerError()) {
-			context.countOf5xx.incrementAndGet();
-		}
-
+		QPS qps = getContext(path);
+		qps.totalExecution.incrementAndGet();
 	}
 
-	private Context getContext(String path) {
-		return MapUtils.get(contexts, path, () -> new Context(path));
+	private QPS getContext(String path) {
+		return MapUtils.get(contexts, path, () -> new QPS());
 	}
 
 	@Override
@@ -116,8 +89,8 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 		@Override
 		public void run() {
 			Map<String, Object> contextMap;
-			for (Context context : contexts.values()) {
-				contextMap = getContextMap(context);
+			for (Map.Entry<String, QPS> entry : contexts.entrySet()) {
+				contextMap = getContextMap(entry.getKey(), entry.getValue());
 				try {
 					transportClient.write(TOPIC_NAME, contextMap);
 				} catch (RuntimeException e) {
@@ -126,15 +99,15 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 			}
 		}
 
-		private Map<String, Object> getContextMap(Context context) {
+		private Map<String, Object> getContextMap(String path, QPS qps) {
 			Map<String, Object> contextMap = new HashMap<String, Object>();
 			contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
 			contextMap.put("clusterName", clusterName);
 			contextMap.put("applicationName", applicationName);
 			contextMap.put("host", host + ":" + port);
-			contextMap.put("category", pathMatcher.matchCategory(context.getPath()));
-			contextMap.put("path", context.getPath());
-			contextMap.putAll(context.checkpoint());
+			contextMap.put("category", pathMatcher.matchCategory(path));
+			contextMap.put("path", path);
+			contextMap.put("qps", qps.checkpoint());
 			return contextMap;
 		}
 
@@ -142,59 +115,24 @@ public class BulkStatisticalWriter extends StatisticalWriter implements Initiali
 
 	/**
 	 * 
-	 * Stat
+	 * QPS
 	 *
 	 * @author Jimmy Hoff
 	 * @version 1.0
 	 */
-	static class Context {
+	static class QPS {
 
-		final String path;
 		final AtomicLongSequence totalExecution = new AtomicLongSequence();
-		final AtomicLongSequence timeoutExecution = new AtomicLongSequence();
-		final AtomicLongSequence failedExecution = new AtomicLongSequence();
-
-		final AtomicLongSequence countOf1xx = new AtomicLongSequence();
-		final AtomicLongSequence countOf2xx = new AtomicLongSequence();
-		final AtomicLongSequence countOf3xx = new AtomicLongSequence();
-		final AtomicLongSequence countOf4xx = new AtomicLongSequence();
-		final AtomicLongSequence countOf5xx = new AtomicLongSequence();
-
 		volatile long lastTotalExecutionCount = 0;
 
-		Context(String path) {
-			this.path = path;
-		}
-
-		public String getPath() {
-			return path;
-		}
-
-		public Map<String, Object> checkpoint() {
+		public int checkpoint() {
 			long totalExecutionCount = totalExecution.get();
 			int qps = 0;
 			if (totalExecutionCount > 0) {
 				qps = (int) (totalExecutionCount - lastTotalExecutionCount);
 				lastTotalExecutionCount = totalExecutionCount;
 			}
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("totalExecutionCount", totalExecutionCount);
-			data.put("qps", qps);
-			data.put("timeoutExecutionCount", timeoutExecution.get());
-			data.put("failedExecutionCount", failedExecution.get());
-
-			data.put("countOf1xx", countOf1xx.get());
-			data.put("countOf2xx", countOf2xx.get());
-			data.put("countOf3xx", countOf3xx.get());
-			data.put("countOf4xx", countOf4xx.get());
-			data.put("countOf5xx", countOf5xx.get());
-			return data;
-		}
-
-		public void reset() {
-			totalExecution.getAndSet(0);
-			timeoutExecution.getAndSet(0);
-			failedExecution.getAndSet(0);
+			return qps;
 		}
 
 	}

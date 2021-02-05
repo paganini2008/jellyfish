@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springtribe.framework.gearless.utils.StatisticalMetric;
 import org.springtribe.framework.jellyfish.stat.Catalog;
@@ -28,7 +30,7 @@ import org.springtribe.framework.jellyfish.stat.CatalogSummary;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/application/cluster/statistic")
+@RequestMapping("/application/cluster/catalog")
 @RestController
 public class StatisticController {
 
@@ -40,8 +42,9 @@ public class StatisticController {
 	private CatalogContext catalogContext;
 
 	@GetMapping("/list")
-	public Response pathList() {
+	public Response pathList(@RequestParam(name = "level", required = false, defaultValue = "0") int level) {
 		List<Catalog> catalogs = catalogContext.getCatalogs();
+		catalogs = catalogs.stream().filter(c -> c.getLevel() == level).collect(Collectors.toList());
 		Collections.sort(catalogs);
 		return Response.success(catalogs);
 	}

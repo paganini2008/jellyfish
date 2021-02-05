@@ -48,6 +48,20 @@ public final class Catalog implements Comparable<Catalog> {
 	public Catalog() {
 	}
 
+	public int getLevel() {
+		if (!NULL.equals(applicationName) && !NULL.equals(host) && !NULL.equals(category) && !NULL.equals(path)) {
+			return 4;
+		} else if (!NULL.equals(applicationName) && !NULL.equals(host) && !NULL.equals(category)) {
+			return 3;
+		} else if (!NULL.equals(applicationName) && !NULL.equals(host)) {
+			return 2;
+		} else if (!NULL.equals(applicationName)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
 	public String getIdentifier() {
 		final String repr = String.format(IDENTIFIER_PATTERN, clusterName, applicationName, host, category, path);
 		return Base64Utils.encodeToString(repr.getBytes(DEFAULT_CHARSET));

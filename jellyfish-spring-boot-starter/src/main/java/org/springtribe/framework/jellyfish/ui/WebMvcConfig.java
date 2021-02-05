@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springtribe.framework.jellyfish.JellyFish;
+import org.springtribe.framework.jellyfish.JellyFishConstants;
 
 import com.github.paganini2008.devtools.net.UrlUtils;
 
@@ -83,7 +83,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				session.setAttribute(WEB_ATTRIBUTE_CONTEXT_PATH, getContextPath(request));
 			}
 			if (session.getAttribute(WEB_ATTRIBUTE_VERSION) == null) {
-				session.setAttribute(WEB_ATTRIBUTE_VERSION, JellyFish.VERSION);
+				session.setAttribute(WEB_ATTRIBUTE_VERSION, JellyFishConstants.VERSION);
 			}
 			return true;
 		}

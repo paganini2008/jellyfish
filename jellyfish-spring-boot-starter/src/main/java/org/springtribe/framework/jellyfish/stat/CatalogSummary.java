@@ -1,5 +1,7 @@
 package org.springtribe.framework.jellyfish.stat;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import lombok.ToString;
@@ -13,15 +15,6 @@ import lombok.ToString;
  */
 @ToString
 public class CatalogSummary {
-
-	public CatalogSummary(Catalog catalog) {
-		this.catalog = catalog;
-	}
-
-	public CatalogSummary() {
-	}
-
-	private Catalog catalog;
 
 	private final AtomicLong totalExecution = new AtomicLong();
 	private final AtomicLong failedExecution = new AtomicLong();
@@ -45,6 +38,10 @@ public class CatalogSummary {
 		return timeoutExecution.get();
 	}
 
+	public long getSuccessExecutionCount() {
+		return getTotalExecutionCount() - getFailedExecutionCount() - getTimeoutExecutionCount();
+	}
+
 	public long getCountOf1xx() {
 		return countOf1xx.get();
 	}
@@ -65,17 +62,36 @@ public class CatalogSummary {
 		return countOf5xx.get();
 	}
 
-	public long getSuccessExecutionCount() {
-		return getTotalExecutionCount() - getFailedExecutionCount() - getTimeoutExecutionCount();
+	public Map<String, Object> toEntries() {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("totalExecutionCount", getTotalExecutionCount());
+		data.put("successExecutionCount", getSuccessExecutionCount());
+		data.put("failedExecutionCount", getFailedExecutionCount());
+		data.put("timeoutExecutionCount", getTimeoutExecutionCount());
+		return data;
 	}
 
-	public void update(Counter counter) {
+	public void reset(Counter counter) {
+		totalExecution.addAndGet(-1 * counter.getCount());
+		failedExecution.addAndGet(-1 * counter.getFailedCount());
+		timeoutExecution.addAndGet(-1 * counter.getTimeoutCount());
+	}
+
+	public void reset(HttpStatusCounter counter) {
+		countOf1xx.addAndGet(-1 * counter.getCountOf1xx());
+		countOf2xx.addAndGet(-1 * counter.getCountOf2xx());
+		countOf3xx.addAndGet(-1 * counter.getCountOf3xx());
+		countOf4xx.addAndGet(-1 * counter.getCountOf4xx());
+		countOf5xx.addAndGet(-1 * counter.getCountOf5xx());
+	}
+
+	public void merge(Counter counter) {
 		totalExecution.addAndGet(counter.getCount());
 		failedExecution.addAndGet(counter.getFailedCount());
 		timeoutExecution.addAndGet(counter.getTimeoutCount());
 	}
 
-	public void update(HttpStatusCounter counter) {
+	public void merge(HttpStatusCounter counter) {
 		countOf1xx.addAndGet(counter.getCountOf1xx());
 		countOf2xx.addAndGet(counter.getCountOf2xx());
 		countOf3xx.addAndGet(counter.getCountOf3xx());

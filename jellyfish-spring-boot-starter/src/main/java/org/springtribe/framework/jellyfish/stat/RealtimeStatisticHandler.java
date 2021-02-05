@@ -1,6 +1,7 @@
 package org.springtribe.framework.jellyfish.stat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
 import org.springtribe.framework.gearless.utils.CustomizedMetric;
@@ -18,6 +19,7 @@ import com.github.paganini2008.devtools.StringUtils;
  */
 public class RealtimeStatisticHandler implements Handler {
 
+	@Qualifier("primaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 
@@ -42,29 +44,29 @@ public class RealtimeStatisticHandler implements Handler {
 	}
 
 	private void doCollect(Catalog catalog, Tuple tuple) {
-		long elapsed = tuple.getField("elapsed", Long.class);
-		long concurrency = tuple.getField("concurrency", Long.class);
 		long timestamp = tuple.getField("requestTime", Long.class);
 		boolean failed = tuple.getField("failed", Boolean.class);
 		boolean timeout = tuple.getField("timeout", Boolean.class);
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
-		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.getStatisticCollector();
-		statisticCollector.update(catalog, "rt", timestamp, StatisticalMetrics.valueOf(elapsed, timestamp));
-		statisticCollector.update(catalog, "cons", timestamp, StatisticalMetrics.valueOf(concurrency, timestamp));
-
-		CountingMetric countingMetric = new CountingMetric(failed, timeout);
+		CountingMetric countingMetric = new CountingMetric(failed, timeout, timestamp);
 		CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = catalogContext.getCountingCollector();
 		countingCollector.update(catalog, "count", timestamp, countingMetric);
 
-		HttpStatusCountingMetric httpStatusCountingMetric = new HttpStatusCountingMetric(httpStatusCode);
+		HttpStatusCountingMetric httpStatusCountingMetric = new HttpStatusCountingMetric(httpStatusCode, timestamp);
 		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogContext
 				.getHttpStatusCountingCollector();
 		httpStatusCountingCollector.update(catalog, "httpStatus", timestamp, httpStatusCountingMetric);
 
 		CatalogSummary summary = catalogContext.getSummary(catalog);
-		summary.update(countingMetric.get());
-		summary.update(httpStatusCountingMetric.get());
+		summary.merge(countingMetric.get());
+		summary.merge(httpStatusCountingMetric.get());
+
+		long elapsed = tuple.getField("elapsed", Long.class);
+		long concurrency = tuple.getField("concurrency", Long.class);
+		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.getStatisticCollector();
+		statisticCollector.update(catalog, "rt", timestamp, StatisticalMetrics.valueOf(elapsed, timestamp));
+		statisticCollector.update(catalog, "cons", timestamp, StatisticalMetrics.valueOf(concurrency, timestamp));
 
 	}
 

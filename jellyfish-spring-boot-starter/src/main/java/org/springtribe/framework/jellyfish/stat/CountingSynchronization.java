@@ -1,6 +1,7 @@
 package org.springtribe.framework.jellyfish.stat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
 import org.springtribe.framework.gearless.utils.CustomizedMetric;
@@ -14,11 +15,15 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
  */
 public class CountingSynchronization implements Handler {
 
+	public static final String TOPIC_NAME = CountingSynchronization.class.getName();
+
+	@Qualifier("secondaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 
 	@Override
 	public void onData(Tuple tuple) {
+
 		String clusterName = tuple.getField("clusterName", String.class);
 		String applicationName = tuple.getField("applicationName", String.class);
 		String host = tuple.getField("host", String.class);
@@ -31,11 +36,12 @@ public class CountingSynchronization implements Handler {
 		long timestamp = tuple.getTimestamp();
 		CatalogMetricsCollector<CustomizedMetric<Counter>> statisticCollector = catalogContext.getCountingCollector();
 		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), "count", timestamp,
-				new CountingMetric(new Counter(count, failedCount, timeoutCount)));
+				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false));
 	}
 
 	@Override
 	public String getTopic() {
+		return TOPIC_NAME;
 	}
 
 }

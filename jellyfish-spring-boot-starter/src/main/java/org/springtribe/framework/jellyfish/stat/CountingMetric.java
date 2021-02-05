@@ -11,27 +11,23 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
  */
 public class CountingMetric implements CustomizedMetric<Counter> {
 
-	public CountingMetric(boolean failed, boolean timeout) {
-		this(new Counter(1, failed ? 1 : 0, timeout ? 1 : 0));
+	public CountingMetric(boolean failed, boolean timeout, long timestamp) {
+		this(new Counter(1, failed ? 1 : 0, timeout ? 1 : 0), timestamp, false);
 	}
 
-	CountingMetric(Counter counter) {
+	public CountingMetric(Counter counter, long timestamp, boolean reset) {
 		this.counter = counter;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = timestamp;
+		this.reset = reset;
 	}
 
 	private Counter counter;
 	private long timestamp;
-	private boolean reset = false;
+	private final boolean reset;
 
 	@Override
 	public boolean reset() {
 		return this.reset;
-	}
-
-	@Override
-	public void reset(boolean reset) {
-		this.reset = reset;
 	}
 
 	@Override
@@ -42,7 +38,7 @@ public class CountingMetric implements CustomizedMetric<Counter> {
 		counter.setCount(current.getCount() - update.getCount());
 		counter.setFailedCount(current.getFailedCount() - update.getFailedCount());
 		counter.setTimeoutCount(current.getTimeoutCount() - update.getTimeoutCount());
-		return new CountingMetric(counter);
+		return new CountingMetric(counter, currentMetric.getTimestamp(), false);
 	}
 
 	@Override
@@ -53,7 +49,7 @@ public class CountingMetric implements CustomizedMetric<Counter> {
 		counter.setCount(current.getCount() + update.getCount());
 		counter.setFailedCount(current.getFailedCount() + update.getFailedCount());
 		counter.setTimeoutCount(current.getTimeoutCount() + update.getTimeoutCount());
-		return new CountingMetric(counter);
+		return new CountingMetric(counter, anotherMetric.getTimestamp(), false);
 	}
 
 	@Override

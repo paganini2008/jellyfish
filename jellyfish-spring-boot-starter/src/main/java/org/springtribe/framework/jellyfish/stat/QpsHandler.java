@@ -1,6 +1,7 @@
 package org.springtribe.framework.jellyfish.stat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
 import org.springtribe.framework.gearless.utils.StatisticalMetric;
@@ -17,6 +18,7 @@ import com.github.paganini2008.devtools.StringUtils;
  */
 public class QpsHandler implements Handler {
 
+	@Qualifier("primaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 

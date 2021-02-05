@@ -1,6 +1,7 @@
 package org.springtribe.framework.jellyfish.stat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springtribe.framework.gearless.Handler;
 import org.springtribe.framework.gearless.common.Tuple;
 
@@ -13,6 +14,9 @@ import org.springtribe.framework.gearless.common.Tuple;
  */
 public class CatalogSummarySynchronization implements Handler {
 
+	public static final String TOPIC_NAME = CatalogSummarySynchronization.class.getName();
+
+	@Qualifier("secondaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 
@@ -30,7 +34,7 @@ public class CatalogSummarySynchronization implements Handler {
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		long failedCount = tuple.getField("failedCount", Long.class);
 		Counter counter = new Counter(count, failedCount, timeoutCount);
-		catalogSummary.update(counter);
+		catalogSummary.merge(counter);
 
 		long countOf1xx = tuple.getField("countOf1xx", Long.class);
 		long countOf2xx = tuple.getField("countOf2xx", Long.class);
@@ -38,8 +42,13 @@ public class CatalogSummarySynchronization implements Handler {
 		long countOf4xx = tuple.getField("countOf4xx", Long.class);
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		HttpStatusCounter httpStatusCounter = new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
-		catalogSummary.update(httpStatusCounter);
+		catalogSummary.merge(httpStatusCounter);
 
+	}
+
+	@Override
+	public String getTopic() {
+		return TOPIC_NAME;
 	}
 
 }

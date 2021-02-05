@@ -12,27 +12,23 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
  */
 public class HttpStatusCountingMetric implements CustomizedMetric<HttpStatusCounter> {
 
-	HttpStatusCountingMetric(HttpStatusCounter httpStatusCounter) {
+	public HttpStatusCountingMetric(HttpStatusCounter httpStatusCounter, long timestamp, boolean reset) {
 		this.httpStatusCounter = httpStatusCounter;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = timestamp;
+		this.reset = reset;
 	}
 
-	public HttpStatusCountingMetric(int statusCode) {
-		this(new HttpStatusCounter(HttpStatus.valueOf(statusCode)));
+	public HttpStatusCountingMetric(int statusCode, long timestamp) {
+		this(new HttpStatusCounter(HttpStatus.valueOf(statusCode)), timestamp, false);
 	}
 
 	private HttpStatusCounter httpStatusCounter;
 	private long timestamp;
-	private boolean reset = false;
+	private final boolean reset;
 
 	@Override
 	public boolean reset() {
 		return this.reset;
-	}
-
-	@Override
-	public void reset(boolean reset) {
-		this.reset = reset;
 	}
 
 	@Override
@@ -55,7 +51,7 @@ public class HttpStatusCountingMetric implements CustomizedMetric<HttpStatusCoun
 		httpStatusCategory.setCountOf3xx(current.getCountOf3xx() - update.getCountOf3xx());
 		httpStatusCategory.setCountOf4xx(current.getCountOf4xx() - update.getCountOf4xx());
 		httpStatusCategory.setCountOf5xx(current.getCountOf5xx() - update.getCountOf5xx());
-		return new HttpStatusCountingMetric(httpStatusCategory);
+		return new HttpStatusCountingMetric(httpStatusCategory, currentMetric.getTimestamp(), false);
 	}
 
 	@Override
@@ -68,7 +64,7 @@ public class HttpStatusCountingMetric implements CustomizedMetric<HttpStatusCoun
 		httpStatusCategory.setCountOf3xx(current.getCountOf3xx() + update.getCountOf3xx());
 		httpStatusCategory.setCountOf4xx(current.getCountOf4xx() + update.getCountOf4xx());
 		httpStatusCategory.setCountOf5xx(current.getCountOf5xx() + update.getCountOf5xx());
-		return new HttpStatusCountingMetric(httpStatusCategory);
+		return new HttpStatusCountingMetric(httpStatusCategory, anotherMetric.getTimestamp(), false);
 	}
 
 }

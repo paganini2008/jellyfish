@@ -19,11 +19,9 @@ import org.springtribe.framework.gearless.common.NamedSelectionPartitioner;
 import org.springtribe.framework.jellyfish.log.LogEntrySearchService;
 import org.springtribe.framework.jellyfish.log.LogEntryService;
 import org.springtribe.framework.jellyfish.log.Slf4jHandler;
+import org.springtribe.framework.jellyfish.stat.ApplicationClusterStatisticSynchronizer;
 import org.springtribe.framework.jellyfish.stat.QpsHandler;
-import org.springtribe.framework.jellyfish.stat.DefaultMetricsCollectorCustomizer;
-import org.springtribe.framework.jellyfish.stat.MetricsCollectorCustomizer;
 import org.springtribe.framework.jellyfish.stat.RealtimeStatisticHandler;
-import org.springtribe.framework.jellyfish.stat.TransientStatisticSynchronizer2;
 import org.springtribe.framework.reditools.common.IdGenerator;
 import org.springtribe.framework.reditools.common.TimestampIdGenerator;
 
@@ -69,14 +67,8 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public TransientStatisticSynchronizer2 transientStatisticSynchronizer() {
-		return new TransientStatisticSynchronizer2();
-	}
-
-	@ConditionalOnMissingBean
-	@Bean
-	public MetricsCollectorCustomizer metricsCollectorCustomizer() {
-		return new DefaultMetricsCollectorCustomizer();
+	public ApplicationClusterStatisticSynchronizer applicationClusterStatisticSynchronizer() {
+		return new ApplicationClusterStatisticSynchronizer();
 	}
 
 	@Bean

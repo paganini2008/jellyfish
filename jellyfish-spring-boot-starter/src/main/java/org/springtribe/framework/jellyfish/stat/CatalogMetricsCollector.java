@@ -41,6 +41,18 @@ public class CatalogMetricsCollector<T extends Metric<T>> {
 		this.evictionHandler = evictionHandler;
 	}
 
+	public int getSpan() {
+		return span;
+	}
+
+	public SpanUnit getSpanUnit() {
+		return spanUnit;
+	}
+
+	public int getBufferSize() {
+		return bufferSize;
+	}
+
 	public void update(Catalog catalog, String metric, long timestamp, T metricUnit) {
 		SequentialMetricsCollector<T> collector = MapUtils.get(collectors, catalog, () -> {
 			return new SimpleSequentialMetricsCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {

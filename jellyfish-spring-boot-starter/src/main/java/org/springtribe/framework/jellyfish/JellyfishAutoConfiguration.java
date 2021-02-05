@@ -19,7 +19,7 @@ import org.springtribe.framework.gearless.common.NamedSelectionPartitioner;
 import org.springtribe.framework.jellyfish.log.LogEntrySearchService;
 import org.springtribe.framework.jellyfish.log.LogEntryService;
 import org.springtribe.framework.jellyfish.log.Slf4jHandler;
-import org.springtribe.framework.jellyfish.stat.ApplicationClusterStatisticSynchronizer;
+import org.springtribe.framework.jellyfish.stat.CatalogMetricSynchronizer;
 import org.springtribe.framework.jellyfish.stat.CatalogContext;
 import org.springtribe.framework.jellyfish.stat.CatalogSummarySynchronization;
 import org.springtribe.framework.jellyfish.stat.CountingSynchronization;
@@ -102,8 +102,8 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public ApplicationClusterStatisticSynchronizer applicationClusterStatisticSynchronizer() {
-		return new ApplicationClusterStatisticSynchronizer();
+	public CatalogMetricSynchronizer applicationClusterStatisticSynchronizer() {
+		return new CatalogMetricSynchronizer();
 	}
 
 	@Bean

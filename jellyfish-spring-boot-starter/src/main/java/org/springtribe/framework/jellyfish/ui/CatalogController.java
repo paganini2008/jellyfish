@@ -25,14 +25,14 @@ import org.springtribe.framework.jellyfish.stat.CatalogSummary;
 
 /**
  * 
- * StatisticController
+ * CatalogController
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @RequestMapping("/application/cluster/catalog")
 @RestController
-public class StatisticController {
+public class CatalogController {
 
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;

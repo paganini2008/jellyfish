@@ -11,6 +11,10 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
 import org.springtribe.framework.gearless.utils.StatisticalMetric;
 import org.springtribe.framework.gearless.utils.StatisticalMetrics;
 
+import com.github.paganini2008.devtools.collection.MapUtils;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * CatalogContext
@@ -18,7 +22,8 @@ import org.springtribe.framework.gearless.utils.StatisticalMetrics;
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CatalogContext {
+@Slf4j
+public final class CatalogContext {
 
 	private final Map<Catalog, CatalogSummary> summary = new ConcurrentHashMap<Catalog, CatalogSummary>();
 	private final CatalogMetricsCollector<StatisticalMetric> statisticCollector = new CatalogMetricsCollector<StatisticalMetric>();
@@ -30,23 +35,24 @@ public class CatalogContext {
 	}
 
 	public CatalogSummary getSummary(Catalog catalog) {
-		return summary.get(catalog);
+		return MapUtils.get(summary, catalog, () -> new CatalogSummary());
 	}
 
-	public CatalogMetricsCollector<StatisticalMetric> getStatisticCollector() {
+	public CatalogMetricsCollector<StatisticalMetric> statisticCollector() {
 		return statisticCollector;
 	}
 
-	public CatalogMetricsCollector<CustomizedMetric<Counter>> getCountingCollector() {
+	public CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector() {
 		return countingCollector;
 	}
 
-	public CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> getHttpStatusCountingCollector() {
+	public CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector() {
 		return httpStatusCountingCollector;
 	}
 
-	public void synchronizeHttpStatusCountinData(NioClient nioClient) {
+	public void synchronizeHttpStatusCountingData(NioClient nioClient) {
 		Map<String, CustomizedMetric<HttpStatusCounter>> data;
+		int n = 0;
 		for (Catalog catalog : summary.keySet()) {
 			data = httpStatusCountingCollector.sequence(catalog, "httpStatus");
 			CustomizedMetric<HttpStatusCounter> customizedMetric;
@@ -54,12 +60,16 @@ public class CatalogContext {
 				customizedMetric = entry.getValue();
 				Tuple tuple = getHttpStatusCountingTuple(catalog, "httpStatus", customizedMetric);
 				nioClient.send(tuple);
+				n++;
 			}
+		}
+		if (log.isTraceEnabled()) {
+			log.trace("Synchronize HttpStatusCountingData completed. Effected numbers: {}", n);
 		}
 	}
 
 	private Tuple getHttpStatusCountingTuple(Catalog catalog, String metric, CustomizedMetric<HttpStatusCounter> customizedMetric) {
-		Tuple tuple = Tuple.newOne(HttpStatusCountingSynchronization.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(HttpStatusCountingSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
@@ -87,6 +97,7 @@ public class CatalogContext {
 	}
 
 	public void synchronizeCountingData(NioClient nioClient) {
+		int n = 0;
 		Map<String, CustomizedMetric<Counter>> data;
 		for (Catalog catalog : summary.keySet()) {
 			data = countingCollector.sequence(catalog, "count");
@@ -95,12 +106,16 @@ public class CatalogContext {
 				customizedMetric = entry.getValue();
 				Tuple tuple = getCountingTuple(catalog, "count", customizedMetric);
 				nioClient.send(tuple);
+				n++;
 			}
+		}
+		if (log.isTraceEnabled()) {
+			log.trace("Synchronize CountingData completed. Effected numbers: {}", n);
 		}
 	}
 
 	private Tuple getCountingTuple(Catalog catalog, String metric, CustomizedMetric<Counter> customizedMetric) {
-		Tuple tuple = Tuple.newOne(CountingSynchronization.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(CountingSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
@@ -123,24 +138,31 @@ public class CatalogContext {
 	}
 
 	public void synchronizeStatisticData(NioClient nioClient) {
+		int n = 0;
 		Map<String, StatisticalMetric> data;
 		for (Catalog catalog : summary.keySet()) {
 			data = statisticCollector.sequence(catalog, "rt");
-			doSyncStatisticData(catalog, "rt", data, nioClient);
+			n += doSyncStatisticData(catalog, "rt", data, nioClient);
 			data = statisticCollector.sequence(catalog, "cons");
-			doSyncStatisticData(catalog, "cons", data, nioClient);
+			n += doSyncStatisticData(catalog, "cons", data, nioClient);
 			data = statisticCollector.sequence(catalog, "qps");
-			doSyncStatisticData(catalog, "qps", data, nioClient);
+			n += doSyncStatisticData(catalog, "qps", data, nioClient);
+		}
+		if (log.isTraceEnabled()) {
+			log.trace("Synchronize StatisticData completed. Effected numbers: {}", n);
 		}
 	}
 
-	private void doSyncStatisticData(Catalog catalog, String metric, Map<String, StatisticalMetric> data, NioClient nioClient) {
+	private int doSyncStatisticData(Catalog catalog, String metric, Map<String, StatisticalMetric> data, NioClient nioClient) {
+		int n = 0;
 		StatisticalMetric statisticalMetric;
 		for (Map.Entry<String, StatisticalMetric> entry : data.entrySet()) {
 			statisticalMetric = entry.getValue();
 			Tuple tuple = getStatisticTuple(catalog, metric, statisticalMetric);
 			nioClient.send(tuple);
+			n++;
 		}
+		return n;
 	}
 
 	private Tuple getStatisticTuple(Catalog catalog, String metric, StatisticalMetric statisticalMetric) {
@@ -149,7 +171,7 @@ public class CatalogContext {
 		long totalValue = statisticalMetric.getTotalValue().longValue();
 		long count = statisticalMetric.getCount();
 		long timestamp = statisticalMetric.getTimestamp();
-		Tuple tuple = Tuple.newOne(StatisticSynchronization.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(StatisticSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
@@ -167,6 +189,7 @@ public class CatalogContext {
 	}
 
 	public void synchronizeSummaryData(NioClient nioClient) {
+		int n = 0;
 		Catalog catalog;
 		CatalogSummary catalogSummary;
 		for (Map.Entry<Catalog, CatalogSummary> entry : summary.entrySet()) {
@@ -174,11 +197,15 @@ public class CatalogContext {
 			catalogSummary = entry.getValue();
 			Tuple tuple = getSummaryTuple(catalog, catalogSummary);
 			nioClient.send(tuple);
+			n++;
+		}
+		if (log.isTraceEnabled()) {
+			log.trace("Synchronize SummaryData completed. Effected numbers: {}", n);
 		}
 	}
 
 	private Tuple getSummaryTuple(Catalog catalog, CatalogSummary catalogSummary) {
-		Tuple tuple = Tuple.newOne(CatalogSummarySynchronization.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(CatalogSummarySynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());

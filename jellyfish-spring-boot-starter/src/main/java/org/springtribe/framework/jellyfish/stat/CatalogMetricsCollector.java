@@ -53,7 +53,7 @@ public class CatalogMetricsCollector<T extends Metric<T>> {
 		return bufferSize;
 	}
 
-	public void update(Catalog catalog, String metric, long timestamp, T metricUnit) {
+	public int update(Catalog catalog, String metric, long timestamp, T metricUnit) {
 		SequentialMetricsCollector<T> collector = MapUtils.get(collectors, catalog, () -> {
 			return new SimpleSequentialMetricsCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
 				if (evictionHandler != null) {
@@ -62,11 +62,17 @@ public class CatalogMetricsCollector<T extends Metric<T>> {
 			});
 		});
 		collector.set(metric, timestamp, metricUnit);
+		return collector.size();
 	}
 
 	public Map<String, T> sequence(Catalog catalog, String metric) {
 		SequentialMetricsCollector<T> collector = collectors.get(catalog);
 		return collector != null ? collector.sequence(metric) : MapUtils.emptyMap();
+	}
+
+	public int size(Catalog catalog) {
+		SequentialMetricsCollector<T> collector = collectors.get(catalog);
+		return collector != null ? collector.size() : 0;
 	}
 
 }

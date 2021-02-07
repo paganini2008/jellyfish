@@ -9,14 +9,14 @@ import org.springtribe.framework.gearless.utils.StatisticalMetrics;
 
 /**
  * 
- * StatisticSynchronization
+ * StatisticSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class StatisticSynchronization implements Handler {
+public class StatisticSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = StatisticSynchronization.class.getName();
+	public static final String TOPIC_NAME = StatisticSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
@@ -38,7 +38,7 @@ public class StatisticSynchronization implements Handler {
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
 		Catalog catalog = new Catalog(clusterName, applicationName, host, category, path);
-		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.getStatisticCollector();
+		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.statisticCollector();
 		statisticCollector.update(catalog, metric, timestamp,
 				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false));
 	}

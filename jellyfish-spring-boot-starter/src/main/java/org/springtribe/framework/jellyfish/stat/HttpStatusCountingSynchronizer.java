@@ -8,14 +8,14 @@ import org.springtribe.framework.gearless.utils.CustomizedMetric;
 
 /**
  * 
- * CountingSynchronization
+ * HttpStatusCountingSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CountingSynchronization implements Handler {
+public class HttpStatusCountingSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = CountingSynchronization.class.getName();
+	public static final String TOPIC_NAME = HttpStatusCountingSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
@@ -30,13 +30,18 @@ public class CountingSynchronization implements Handler {
 		String category = tuple.getField("category", String.class);
 		String path = tuple.getField("path", String.class);
 
-		long count = tuple.getField("count", Long.class);
-		long failedCount = tuple.getField("failedCount", Long.class);
-		long timeoutCount = tuple.getField("timeoutCount", Long.class);
+		long countOf1xx = tuple.getField("countOf1xx", Long.class);
+		long countOf2xx = tuple.getField("countOf2xx", Long.class);
+		long countOf3xx = tuple.getField("countOf3xx", Long.class);
+		long countOf4xx = tuple.getField("countOf4xx", Long.class);
+		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
-		CatalogMetricsCollector<CustomizedMetric<Counter>> statisticCollector = catalogContext.getCountingCollector();
-		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), "count", timestamp,
-				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false));
+
+		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> statisticCollector = catalogContext.httpStatusCountingCollector();
+		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), "httpStatus", timestamp,
+				new HttpStatusCountingMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp,
+						false));
+
 	}
 
 	@Override

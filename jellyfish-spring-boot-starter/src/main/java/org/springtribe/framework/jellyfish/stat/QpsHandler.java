@@ -39,7 +39,7 @@ public class QpsHandler implements Handler {
 	private void doCollect(Catalog catalog, Tuple tuple) {
 		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField("qps", Integer.class);
-		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.getStatisticCollector();
+		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
 		collector.update(catalog, "qps", timestamp, StatisticalMetrics.valueOf(qps, timestamp));
 	}
 

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * BulkStatisticalWriter
+ * QpsWriter
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -72,7 +72,7 @@ public class QpsWriter extends StatisticalWriter implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		taskScheduler.scheduleWithFixedDelay(new CheckpointTask(), Duration.ofSeconds(1));
-		log.info("BulkStatisticalWriter checkpoint automatically");
+		log.info("QpsWriter checkpoint automatically");
 	}
 
 	/**

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,9 +33,6 @@ import org.springtribe.framework.jellyfish.stat.CatalogSummary;
 @RestController
 public class CatalogController {
 
-	@Value("${spring.application.cluster.name}")
-	private String clusterName;
-
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
@@ -57,7 +53,7 @@ public class CatalogController {
 
 	@PostMapping("/{metric}/summary")
 	public Response metricSummary(@PathVariable("metric") String metric, @RequestBody Catalog catalog) {
-		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.getStatisticCollector();
+		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
 		Map<String, StatisticalMetric> sequence = collector.sequence(catalog, metric);
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, StatisticalMetric> entry : sequence.entrySet()) {

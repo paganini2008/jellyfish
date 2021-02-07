@@ -45,12 +45,12 @@ public class RealtimeStatisticHandler implements Handler {
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
 		CountingMetric countingMetric = new CountingMetric(failed, timeout, timestamp);
-		CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = catalogContext.getCountingCollector();
+		CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = catalogContext.countingCollector();
 		countingCollector.update(catalog, "count", timestamp, countingMetric);
 
 		HttpStatusCountingMetric httpStatusCountingMetric = new HttpStatusCountingMetric(httpStatusCode, timestamp);
 		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogContext
-				.getHttpStatusCountingCollector();
+				.httpStatusCountingCollector();
 		httpStatusCountingCollector.update(catalog, "httpStatus", timestamp, httpStatusCountingMetric);
 
 		CatalogSummary summary = catalogContext.getSummary(catalog);
@@ -59,7 +59,7 @@ public class RealtimeStatisticHandler implements Handler {
 
 		long elapsed = tuple.getField("elapsed", Long.class);
 		long concurrency = tuple.getField("concurrency", Long.class);
-		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.getStatisticCollector();
+		CatalogMetricsCollector<StatisticalMetric> statisticCollector = catalogContext.statisticCollector();
 		statisticCollector.update(catalog, "rt", timestamp, StatisticalMetrics.valueOf(elapsed, timestamp));
 		statisticCollector.update(catalog, "cons", timestamp, StatisticalMetrics.valueOf(concurrency, timestamp));
 

@@ -68,6 +68,11 @@ public class CatalogSummary {
 		data.put("successExecutionCount", getSuccessExecutionCount());
 		data.put("failedExecutionCount", getFailedExecutionCount());
 		data.put("timeoutExecutionCount", getTimeoutExecutionCount());
+		data.put("countOf1xx", getCountOf1xx());
+		data.put("countOf2xx", getCountOf2xx());
+		data.put("countOf3xx", getCountOf3xx());
+		data.put("countOf4xx", getCountOf4xx());
+		data.put("countOf5xx", getCountOf5xx());
 		return data;
 	}
 

@@ -7,14 +7,14 @@ import org.springtribe.framework.gearless.common.Tuple;
 
 /**
  * 
- * CatalogSummarySynchronization
+ * CatalogSummarySynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CatalogSummarySynchronization implements Handler {
+public class CatalogSummarySynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = CatalogSummarySynchronization.class.getName();
+	public static final String TOPIC_NAME = CatalogSummarySynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired

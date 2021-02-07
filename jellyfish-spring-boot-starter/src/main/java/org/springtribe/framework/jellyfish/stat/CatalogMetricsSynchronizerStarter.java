@@ -12,13 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * CatalogMetricSynchronizer
+ * CatalogMetricSynchronizerStarter
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public class CatalogMetricSynchronizer implements Runnable, InitializingBean {
+public class CatalogMetricsSynchronizerStarter implements Runnable, InitializingBean {
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
@@ -40,7 +40,7 @@ public class CatalogMetricSynchronizer implements Runnable, InitializingBean {
 	public void run() {
 		catalogContext.synchronizeSummaryData(nioClient);
 		catalogContext.synchronizeCountingData(nioClient);
-		catalogContext.synchronizeHttpStatusCountinData(nioClient);
+		catalogContext.synchronizeHttpStatusCountingData(nioClient);
 		catalogContext.synchronizeStatisticData(nioClient);
 	}
 

@@ -14,22 +14,22 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springtribe.framework.gearless.common.HashPartitioner;
-import org.springtribe.framework.gearless.common.NamedSelectionPartitioner;
 import org.springtribe.framework.reditools.common.IdGenerator;
 import org.springtribe.framework.reditools.common.TimestampIdGenerator;
 
+import indi.atlantis.framework.gearless.common.HashPartitioner;
+import indi.atlantis.framework.gearless.common.NamedSelectionPartitioner;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
-import indi.atlantis.framework.jellyfish.stat.CatalogContext;
-import indi.atlantis.framework.jellyfish.stat.CatalogMetricsSynchronizerStarter;
-import indi.atlantis.framework.jellyfish.stat.CatalogSummarySynchronizer;
-import indi.atlantis.framework.jellyfish.stat.CountingSynchronizer;
-import indi.atlantis.framework.jellyfish.stat.HttpStatusCountingSynchronizer;
-import indi.atlantis.framework.jellyfish.stat.QpsHandler;
-import indi.atlantis.framework.jellyfish.stat.RealtimeStatisticHandler;
-import indi.atlantis.framework.jellyfish.stat.StatisticSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
+import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsSynchronizerStarter;
+import indi.atlantis.framework.jellyfish.metrics.CatalogSummarySynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.CountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.HttpStatusCountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.QpsHandler;
+import indi.atlantis.framework.jellyfish.metrics.RealtimeStatisticHandler;
+import indi.atlantis.framework.jellyfish.metrics.StatisticSynchronizer;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -40,7 +40,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@EnableElasticsearchRepositories("org.springtribe.framework.jellyfish.log")
+@EnableElasticsearchRepositories("indi.atlantis.framework.jellyfish.log")
 @Configuration(proxyBeanMethods = false)
 public class JellyfishAutoConfiguration {
 

@@ -2,11 +2,12 @@ package indi.atlantis.framework.jellyfish.log;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springtribe.framework.gearless.Handler;
-import org.springtribe.framework.gearless.common.Tuple;
 import org.springtribe.framework.reditools.common.IdGenerator;
 
 import com.github.paganini2008.devtools.StringUtils;
+
+import indi.atlantis.framework.gearless.Handler;
+import indi.atlantis.framework.gearless.common.Tuple;
 
 /**
  * 

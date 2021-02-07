@@ -22,7 +22,7 @@ import indi.atlantis.framework.jellyfish.log.LogEntryService;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/application/cluster/log")
+@RequestMapping("/atlantis/jellyfish/log")
 @RestController
 public class LogEntryController {
 

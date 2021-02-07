@@ -40,7 +40,7 @@
 	</div>
 	<div id="container">
 		<div id="searchBox">
-			<form id="searchFrm" action="${contextPath}/application/cluster/log/entry/search" method="post">
+			<form id="searchFrm" action="${contextPath}/atlantis/jellyfish/log/entry/search" method="post">
 				<div class="searchCondition">
 					<span>
 						<label>Cluster Name: </label>

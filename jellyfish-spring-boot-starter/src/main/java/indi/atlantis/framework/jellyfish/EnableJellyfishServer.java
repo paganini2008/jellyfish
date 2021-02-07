@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 import org.springtribe.framework.cluster.EnableApplicationCluster;
-import org.springtribe.framework.gearless.EnableGearless;
 
+import indi.atlantis.framework.gearless.EnableGearless;
 import indi.atlantis.framework.jellyfish.ui.JellyfishUIAutoConfiguration;
 
 /**

@@ -16,7 +16,7 @@ import com.github.paganini2008.devtools.date.DateUtils;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/application/cluster/log")
+@RequestMapping("/atlantis/jellyfish/log")
 @Controller
 public class LogPage {
 

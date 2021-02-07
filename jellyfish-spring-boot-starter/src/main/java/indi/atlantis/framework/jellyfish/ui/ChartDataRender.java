@@ -3,7 +3,7 @@ package indi.atlantis.framework.jellyfish.ui;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.springtribe.framework.gearless.utils.SpanUnit;
+import indi.atlantis.framework.gearless.utils.SpanUnit;
 
 /**
  * 

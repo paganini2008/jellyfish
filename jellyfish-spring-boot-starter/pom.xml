@@ -5,7 +5,7 @@
 
 	<parent>
 		<artifactId>jellyfish</artifactId>
-		<groupId>org.springtribe.framework</groupId>
+		<groupId>indi.atlantis.framework</groupId>
 		<version>1.0-RC1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>

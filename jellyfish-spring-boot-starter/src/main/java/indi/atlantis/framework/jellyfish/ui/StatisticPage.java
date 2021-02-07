@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import indi.atlantis.framework.jellyfish.stat.Catalog;
+import indi.atlantis.framework.jellyfish.metrics.Catalog;
 
 /**
  * 
@@ -15,7 +15,7 @@ import indi.atlantis.framework.jellyfish.stat.Catalog;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/application/cluster/statistic")
+@RequestMapping("/atlantis/jellyfish/metrics")
 @Controller
 public class StatisticPage {
 

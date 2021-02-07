@@ -1,1 +1,1 @@
-org.springframework.boot.env.EnvironmentPostProcessor=org.springtribe.framework.jellyfish.ui.FreemarkConfigurator
+org.springframework.boot.env.EnvironmentPostProcessor=indi.atlantis.framework.jellyfish.ui.FreemarkConfigurator

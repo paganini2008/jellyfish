@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springtribe.framework.gearless.utils.StatisticalMetric;
 
-import indi.atlantis.framework.jellyfish.stat.Catalog;
-import indi.atlantis.framework.jellyfish.stat.CatalogContext;
-import indi.atlantis.framework.jellyfish.stat.CatalogMetricsCollector;
-import indi.atlantis.framework.jellyfish.stat.CatalogSummary;
+import indi.atlantis.framework.gearless.utils.StatisticalMetric;
+import indi.atlantis.framework.jellyfish.metrics.Catalog;
+import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
+import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsCollector;
+import indi.atlantis.framework.jellyfish.metrics.CatalogSummary;
 
 /**
  * 
@@ -30,11 +30,11 @@ import indi.atlantis.framework.jellyfish.stat.CatalogSummary;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/application/cluster/catalog")
+@RequestMapping("/atlantis/jellyfish/catalog")
 @RestController
 public class CatalogController {
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("primaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 

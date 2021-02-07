@@ -24,7 +24,7 @@ public class HttpStatusCountingSynchronizer implements Handler {
 
 	@Override
 	public void onData(Tuple tuple) {
-		
+
 		String clusterName = tuple.getField("clusterName", String.class);
 		String applicationName = tuple.getField("applicationName", String.class);
 		String host = tuple.getField("host", String.class);
@@ -39,7 +39,7 @@ public class HttpStatusCountingSynchronizer implements Handler {
 		long timestamp = tuple.getTimestamp();
 
 		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> statisticCollector = catalogContext.httpStatusCountingCollector();
-		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), "httpStatus", timestamp,
+		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), MetricNames.HTTP_STATUS, timestamp,
 				new HttpStatusCountingMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp,
 						false));
 

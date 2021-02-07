@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.DeleteQuery;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
-import org.springtribe.framework.cluster.utils.BeanLifeCycle;
 
 import com.github.paganini2008.devtools.multithreads.Executable;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
 import indi.atlantis.framework.gearless.JacksonUtils;
+import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
 import lombok.extern.slf4j.Slf4j;
 
 /**

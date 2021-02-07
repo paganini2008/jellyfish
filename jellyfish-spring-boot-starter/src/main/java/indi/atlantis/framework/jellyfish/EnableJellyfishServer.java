@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
-import org.springtribe.framework.cluster.EnableApplicationCluster;
 
 import indi.atlantis.framework.gearless.EnableGearless;
 import indi.atlantis.framework.jellyfish.ui.JellyfishUIAutoConfiguration;
+import indi.atlantis.framework.seafloor.EnableApplicationCluster;
 
 /**
  * 

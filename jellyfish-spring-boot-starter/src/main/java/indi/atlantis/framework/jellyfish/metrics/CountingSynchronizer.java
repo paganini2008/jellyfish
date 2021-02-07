@@ -36,7 +36,7 @@ public class CountingSynchronizer implements Handler {
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		long timestamp = tuple.getTimestamp();
 		CatalogMetricsCollector<CustomizedMetric<Counter>> statisticCollector = catalogContext.countingCollector();
-		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), "count", timestamp,
+		statisticCollector.update(new Catalog(clusterName, applicationName, host, category, path), MetricNames.COUNT, timestamp,
 				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false));
 	}
 

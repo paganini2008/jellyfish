@@ -1,5 +1,11 @@
 package indi.atlantis.framework.jellyfish.metrics;
 
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.CC;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.COUNT;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.HTTP_STATUS;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.QPS;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.RT;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +59,11 @@ public final class CatalogContext {
 		Map<String, CustomizedMetric<HttpStatusCounter>> data;
 		int n = 0;
 		for (Catalog catalog : summary.keySet()) {
-			data = httpStatusCountingCollector.sequence(catalog, "httpStatus");
+			data = httpStatusCountingCollector.sequence(catalog, HTTP_STATUS);
 			CustomizedMetric<HttpStatusCounter> customizedMetric;
 			for (Map.Entry<String, CustomizedMetric<HttpStatusCounter>> entry : data.entrySet()) {
 				customizedMetric = entry.getValue();
-				Tuple tuple = getHttpStatusCountingTuple(catalog, "httpStatus", customizedMetric);
+				Tuple tuple = getHttpStatusCountingTuple(catalog, HTTP_STATUS, customizedMetric);
 				nioClient.send(tuple);
 				n++;
 			}
@@ -99,11 +105,11 @@ public final class CatalogContext {
 		int n = 0;
 		Map<String, CustomizedMetric<Counter>> data;
 		for (Catalog catalog : summary.keySet()) {
-			data = countingCollector.sequence(catalog, "count");
+			data = countingCollector.sequence(catalog, COUNT);
 			CustomizedMetric<Counter> customizedMetric;
 			for (Map.Entry<String, CustomizedMetric<Counter>> entry : data.entrySet()) {
 				customizedMetric = entry.getValue();
-				Tuple tuple = getCountingTuple(catalog, "count", customizedMetric);
+				Tuple tuple = getCountingTuple(catalog, COUNT, customizedMetric);
 				nioClient.send(tuple);
 				n++;
 			}
@@ -140,12 +146,12 @@ public final class CatalogContext {
 		int n = 0;
 		Map<String, StatisticalMetric> data;
 		for (Catalog catalog : summary.keySet()) {
-			data = statisticCollector.sequence(catalog, "rt");
-			n += doSyncStatisticData(catalog, "rt", data, nioClient);
-			data = statisticCollector.sequence(catalog, "cons");
-			n += doSyncStatisticData(catalog, "cons", data, nioClient);
-			data = statisticCollector.sequence(catalog, "qps");
-			n += doSyncStatisticData(catalog, "qps", data, nioClient);
+			data = statisticCollector.sequence(catalog, RT);
+			n += doSyncStatisticData(catalog, RT, data, nioClient);
+			data = statisticCollector.sequence(catalog, CC);
+			n += doSyncStatisticData(catalog, CC, data, nioClient);
+			data = statisticCollector.sequence(catalog, QPS);
+			n += doSyncStatisticData(catalog, QPS, data, nioClient);
 		}
 		if (log.isTraceEnabled()) {
 			log.trace("Synchronize StatisticData completed. Effected numbers: {}", n);

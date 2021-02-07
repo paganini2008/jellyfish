@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=indi.atlantis.framework.jellyfish.agent.MonitorAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=indi.atlantis.framework.jellyfish.agent.AgentAutoConfiguration

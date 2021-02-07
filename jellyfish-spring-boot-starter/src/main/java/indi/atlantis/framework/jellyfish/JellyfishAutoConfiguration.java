@@ -14,8 +14,6 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springtribe.framework.reditools.common.IdGenerator;
-import org.springtribe.framework.reditools.common.TimestampIdGenerator;
 
 import indi.atlantis.framework.gearless.common.HashPartitioner;
 import indi.atlantis.framework.gearless.common.NamedSelectionPartitioner;
@@ -30,6 +28,8 @@ import indi.atlantis.framework.jellyfish.metrics.HttpStatusCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.QpsHandler;
 import indi.atlantis.framework.jellyfish.metrics.RealtimeStatisticHandler;
 import indi.atlantis.framework.jellyfish.metrics.StatisticSynchronizer;
+import indi.atlantis.framework.reditools.common.IdGenerator;
+import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
 

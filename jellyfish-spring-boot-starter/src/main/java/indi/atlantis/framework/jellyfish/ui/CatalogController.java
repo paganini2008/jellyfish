@@ -1,5 +1,11 @@
 package indi.atlantis.framework.jellyfish.ui;
 
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.CC;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.COUNT;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.HTTP_STATUS;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.QPS;
+import static indi.atlantis.framework.jellyfish.metrics.MetricNames.RT;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,11 +23,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.paganini2008.devtools.collection.MapUtils;
+
+import indi.atlantis.framework.gearless.utils.CustomizedMetric;
 import indi.atlantis.framework.gearless.utils.StatisticalMetric;
 import indi.atlantis.framework.jellyfish.metrics.Catalog;
 import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
 import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsCollector;
 import indi.atlantis.framework.jellyfish.metrics.CatalogSummary;
+import indi.atlantis.framework.jellyfish.metrics.Counter;
+import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 
 /**
  * 
@@ -34,7 +45,7 @@ import indi.atlantis.framework.jellyfish.metrics.CatalogSummary;
 @RestController
 public class CatalogController {
 
-	@Qualifier("primaryCatalogContext")
+	@Qualifier("secondaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 
@@ -54,23 +65,58 @@ public class CatalogController {
 
 	@PostMapping("/{metric}/summary")
 	public Response metricSummary(@PathVariable("metric") String metric, @RequestBody Catalog catalog) {
-		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
-		Map<String, StatisticalMetric> sequence = collector.sequence(catalog, metric);
-		Map<String, Object> data = new LinkedHashMap<String, Object>();
-		for (Map.Entry<String, StatisticalMetric> entry : sequence.entrySet()) {
-			data.put(entry.getKey(), entry.getValue().toEntries());
-		}
-		if (data.size() > 0) {
-			data = ChartDataRender.render(data, collector.getSpanUnit(), collector.getSpan(), collector.getBufferSize(), () -> {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("highestValue", 0L);
-				map.put("middleValue", 0L);
-				map.put("lowestValue", 0L);
-				map.put("count", 0);
-				return map;
-			});
-		}
+		Map<String, Object> data = fetchMerticData(catalog, metric);
 		return Response.success(data);
+	}
+
+	private Map<String, Object> fetchMerticData(Catalog catalog, String metric) {
+		Map<String, Object> data = new LinkedHashMap<String, Object>();
+		switch (metric) {
+		case RT:
+		case CC:
+		case QPS:
+			CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
+			Map<String, StatisticalMetric> sequence = collector.sequence(catalog, metric);
+			for (Map.Entry<String, StatisticalMetric> entry : sequence.entrySet()) {
+				data.put(entry.getKey(), entry.getValue().toEntries());
+			}
+			if (data.size() > 0) {
+				data = ChartDataRender.render(data, collector.getSpanUnit(), collector.getSpan(), collector.getBufferSize(), () -> {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("highestValue", 0L);
+					map.put("middleValue", 0L);
+					map.put("lowestValue", 0L);
+					map.put("count", 0);
+					return map;
+				});
+			}
+			return data;
+		case COUNT:
+			CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = catalogContext.countingCollector();
+			Map<String, CustomizedMetric<Counter>> countingSequence = countingCollector.sequence(catalog, metric);
+			for (Map.Entry<String, CustomizedMetric<Counter>> entry : countingSequence.entrySet()) {
+				data.put(entry.getKey(), entry.getValue().get());
+			}
+			if (data.size() > 0) {
+				data = ChartDataRender.render(data, countingCollector.getSpanUnit(), countingCollector.getSpan(),
+						countingCollector.getBufferSize(), () -> new Counter());
+			}
+			return data;
+		case HTTP_STATUS:
+			CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogContext
+					.httpStatusCountingCollector();
+			Map<String, CustomizedMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingCollector.sequence(catalog,
+					metric);
+			for (Map.Entry<String, CustomizedMetric<HttpStatusCounter>> entry : httpStatusCountingSequence.entrySet()) {
+				data.put(entry.getKey(), entry.getValue().get());
+			}
+			if (data.size() > 0) {
+				data = ChartDataRender.render(data, httpStatusCountingCollector.getSpanUnit(), httpStatusCountingCollector.getSpan(),
+						httpStatusCountingCollector.getBufferSize(), () -> new HttpStatusCounter());
+			}
+			return data;
+		}
+		return MapUtils.emptyMap();
 	}
 
 }

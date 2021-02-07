@@ -21,7 +21,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.springtribe.framework</groupId>
+			<groupId>indi.atlantis.framework</groupId>
 			<artifactId>gearless-common</artifactId>
 			<version>1.0-RC1</version>
 		</dependency>

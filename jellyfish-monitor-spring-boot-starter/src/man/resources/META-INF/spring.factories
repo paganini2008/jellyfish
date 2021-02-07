@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.springtribe.framework.jellyfish.monitor.MonitorAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=indi.atlantis.framework.jellyfish.monitor.MonitorAutoConfiguration

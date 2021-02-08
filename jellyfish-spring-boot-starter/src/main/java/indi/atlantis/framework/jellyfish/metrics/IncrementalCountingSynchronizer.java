@@ -9,14 +9,14 @@ import indi.atlantis.framework.gearless.utils.CustomizedMetric;
 
 /**
  * 
- * CountingSynchronizer
+ * IncrementalCountingSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CountingSynchronizer implements Handler {
+public class IncrementalCountingSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = CountingSynchronizer.class.getName();
+	public static final String TOPIC_NAME = IncrementalCountingSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
@@ -30,7 +30,6 @@ public class CountingSynchronizer implements Handler {
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		long timestamp = tuple.getTimestamp();
 		CatalogMetricsCollector<CustomizedMetric<Counter>> collector = catalogContext.countingCollector();
-		collector.clear();
 		collector.update(category, MetricNames.COUNT, timestamp,
 				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false));
 	}
@@ -39,4 +38,5 @@ public class CountingSynchronizer implements Handler {
 	public String getTopic() {
 		return TOPIC_NAME;
 	}
+
 }

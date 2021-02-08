@@ -2,6 +2,7 @@ package indi.atlantis.framework.jellyfish.metrics;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -12,6 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@ToString
 public class Counter {
 
 	private long count;
@@ -22,7 +24,6 @@ public class Counter {
 	}
 
 	public Counter(long count, long failedCount, long timeoutCount) {
-		super();
 		this.count = count;
 		this.failedCount = failedCount;
 		this.timeoutCount = timeoutCount;

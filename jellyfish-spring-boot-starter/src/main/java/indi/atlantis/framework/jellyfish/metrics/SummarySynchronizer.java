@@ -5,18 +5,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import indi.atlantis.framework.gearless.Handler;
 import indi.atlantis.framework.gearless.common.Tuple;
-import indi.atlantis.framework.gearless.utils.CustomizedMetric;
 
 /**
  * 
- * HttpStatusCountingSynchronizer
+ * SummarySynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class HttpStatusCountingSynchronizer implements Handler {
+public class SummarySynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = HttpStatusCountingSynchronizer.class.getName();
+	public static final String TOPIC_NAME = SummarySynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
@@ -24,20 +23,25 @@ public class HttpStatusCountingSynchronizer implements Handler {
 
 	@Override
 	public void onData(Tuple tuple) {
+
 		Catalog catalog = Catalog.of(tuple);
+		Summary summary = catalogContext.getSummary(catalog);
+		summary.clear();
+
+		long count = tuple.getField("count", Long.class);
+		long timeoutCount = tuple.getField("timeoutCount", Long.class);
+		long failedCount = tuple.getField("failedCount", Long.class);
+		Counter counter = new Counter(count, failedCount, timeoutCount);
+		summary.merge(counter);
 
 		long countOf1xx = tuple.getField("countOf1xx", Long.class);
 		long countOf2xx = tuple.getField("countOf2xx", Long.class);
 		long countOf3xx = tuple.getField("countOf3xx", Long.class);
 		long countOf4xx = tuple.getField("countOf4xx", Long.class);
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
-		long timestamp = tuple.getTimestamp();
 
-		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> collector = catalogContext.httpStatusCountingCollector();
-		collector.clear();
-		collector.update(catalog, MetricNames.HTTP_STATUS, timestamp, new HttpStatusCountingMetric(
-				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false));
-
+		HttpStatusCounter httpStatusCounter = new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
+		summary.merge(httpStatusCounter);
 	}
 
 	@Override

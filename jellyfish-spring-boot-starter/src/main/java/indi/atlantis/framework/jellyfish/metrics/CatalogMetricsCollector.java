@@ -75,4 +75,8 @@ public class CatalogMetricsCollector<T extends Metric<T>> {
 		return collector != null ? collector.size() : 0;
 	}
 
+	public void clear() {
+		collectors.values().forEach(c -> c.clear());
+	}
+
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -14,6 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@ToString
 public class HttpStatusCounter {
 
 	private long countOf1xx;

@@ -12,7 +12,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.Base64Utils;
 
+import com.github.paganini2008.devtools.CharsetUtils;
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.multithreads.AtomicLongSequence;
 import com.github.paganini2008.devtools.net.NetUtils;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class QpsWriter extends StatisticalWriter implements InitializingBean {
 
 	private static final String TOPIC_NAME = QpsWriter.class.getName();
+	private static final String IDENTIFIER_PATTERN = "%s+%s+%s+%s+%s";
 	private final Map<String, QPS> contexts = new ConcurrentHashMap<String, QPS>();
 
 	@Value("${spring.application.cluster.name:default}")
@@ -44,6 +47,8 @@ public class QpsWriter extends StatisticalWriter implements InitializingBean {
 	@Value("${server.port}")
 	private int port;
 
+	private String hostName = NetUtils.getLocalHost();
+
 	@Autowired
 	private PathMatcher pathMatcher;
 
@@ -52,6 +57,10 @@ public class QpsWriter extends StatisticalWriter implements InitializingBean {
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
 
 	@Override
 	protected void onRequestBegin(String requestId, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -84,8 +93,6 @@ public class QpsWriter extends StatisticalWriter implements InitializingBean {
 	 */
 	class CheckpointTask implements Runnable {
 
-		final String host = NetUtils.getLocalHost();
-
 		@Override
 		public void run() {
 			Map<String, Object> contextMap;
@@ -99,14 +106,21 @@ public class QpsWriter extends StatisticalWriter implements InitializingBean {
 			}
 		}
 
-		private Map<String, Object> getContextMap(String path, QPS qps) {
+		private Map<String, Object> getContextMap(final String path, QPS qps) {
+			String host = hostName + port;
+			String category = pathMatcher.matchCategory(path);
+			String decorator = pathMatcher.matchDecoration(path);
+			String repr = String.format(IDENTIFIER_PATTERN, clusterName, applicationName, host, category, decorator);
+			String identifier = Base64Utils.encodeToString(repr.getBytes(CharsetUtils.UTF_8));
+
 			Map<String, Object> contextMap = new HashMap<String, Object>();
 			contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
 			contextMap.put("clusterName", clusterName);
 			contextMap.put("applicationName", applicationName);
-			contextMap.put("host", host + ":" + port);
-			contextMap.put("category", pathMatcher.matchCategory(path));
-			contextMap.put("path", path);
+			contextMap.put("host", host);
+			contextMap.put("category", category);
+			contextMap.put("path", decorator);
+			contextMap.put("identifier", identifier);
 			contextMap.put("qps", qps.checkpoint());
 			return contextMap;
 		}

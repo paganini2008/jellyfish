@@ -44,7 +44,7 @@ public class AgentAutoConfiguration implements WebMvcConfigurer {
 	@Bean("realtimeStatisticalWriter")
 	public StatisticalWriter realtimeStatisticalWriter() {
 		log.info("Load RealtimeStatisticalWriter");
-		return new RealtimeStatisticalWriter();
+		return new RealtimeMetricsWriter();
 	}
 
 	@Bean("qpsWriter")
@@ -55,7 +55,7 @@ public class AgentAutoConfiguration implements WebMvcConfigurer {
 
 	@ConditionalOnMissingBean
 	@Bean
-	public TransportClient transportClient(@Value("${spring.application.cluster.jellyfish.brokerUrl}") String brokerUrl) {
+	public TransportClient transportClient(@Value("${atlantis.jellyfish.brokerUrl}") String brokerUrl) {
 		return new HttpTransportClient(brokerUrl);
 	}
 
@@ -65,7 +65,7 @@ public class AgentAutoConfiguration implements WebMvcConfigurer {
 			@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
-		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-monitor-task-scheduler-"));
+		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-agent-task-scheduler-"));
 		threadPoolTaskScheduler.setWaitForTasksToCompleteOnShutdown(true);
 		threadPoolTaskScheduler.setAwaitTerminationSeconds(60);
 		return threadPoolTaskScheduler;

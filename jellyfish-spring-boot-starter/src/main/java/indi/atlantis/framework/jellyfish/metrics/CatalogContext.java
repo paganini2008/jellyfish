@@ -6,6 +6,7 @@ import static indi.atlantis.framework.jellyfish.metrics.MetricNames.HTTP_STATUS;
 import static indi.atlantis.framework.jellyfish.metrics.MetricNames.QPS;
 import static indi.atlantis.framework.jellyfish.metrics.MetricNames.RT;
 
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class CatalogContext {
 
-	private final Map<Catalog, CatalogSummary> summary = new ConcurrentHashMap<Catalog, CatalogSummary>();
+	private final Map<Catalog, Summary> summary = new ConcurrentHashMap<Catalog, Summary>();
 	private final CatalogMetricsCollector<StatisticalMetric> statisticCollector = new CatalogMetricsCollector<StatisticalMetric>();
 	private final CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = new CatalogMetricsCollector<CustomizedMetric<Counter>>();
 	private final CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = new CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>>();
@@ -39,8 +40,8 @@ public final class CatalogContext {
 		return new ArrayList<Catalog>(summary.keySet());
 	}
 
-	public CatalogSummary getSummary(Catalog catalog) {
-		return MapUtils.get(summary, catalog, () -> new CatalogSummary());
+	public Summary getSummary(Catalog catalog) {
+		return MapUtils.get(summary, catalog, () -> new Summary());
 	}
 
 	public CatalogMetricsCollector<StatisticalMetric> statisticCollector() {
@@ -55,7 +56,7 @@ public final class CatalogContext {
 		return httpStatusCountingCollector;
 	}
 
-	public void synchronizeHttpStatusCountingData(NioClient nioClient) {
+	public void synchronizeHttpStatusCountingData(NioClient nioClient, SocketAddress remoteAddress, boolean incremental) {
 		Map<String, CustomizedMetric<HttpStatusCounter>> data;
 		int n = 0;
 		for (Catalog catalog : summary.keySet()) {
@@ -63,24 +64,28 @@ public final class CatalogContext {
 			CustomizedMetric<HttpStatusCounter> customizedMetric;
 			for (Map.Entry<String, CustomizedMetric<HttpStatusCounter>> entry : data.entrySet()) {
 				customizedMetric = entry.getValue();
-				Tuple tuple = getHttpStatusCountingTuple(catalog, HTTP_STATUS, customizedMetric);
-				nioClient.send(tuple);
+				Tuple tuple = getHttpStatusCountingTuple(catalog, HTTP_STATUS, customizedMetric, incremental);
+				nioClient.send(remoteAddress, tuple);
 				n++;
 			}
 		}
 		if (log.isTraceEnabled()) {
 			log.trace("Synchronize HttpStatusCountingData completed. Effected numbers: {}", n);
 		}
+
 	}
 
-	private Tuple getHttpStatusCountingTuple(Catalog catalog, String metric, CustomizedMetric<HttpStatusCounter> customizedMetric) {
-		Tuple tuple = Tuple.newOne(HttpStatusCountingSynchronizer.TOPIC_NAME);
+	private Tuple getHttpStatusCountingTuple(Catalog catalog, String metric, CustomizedMetric<HttpStatusCounter> customizedMetric,
+			boolean incremental) {
+		Tuple tuple = Tuple
+				.newOne(incremental ? IncrementalHttpStatusCountingSynchronizer.TOPIC_NAME : HttpStatusCountingSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
 		tuple.setField("category", catalog.getCategory());
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
+		tuple.setField("incremental", incremental);
 
 		HttpStatusCounter counter = customizedMetric.get();
 		long countOf1xx = counter.getCountOf1xx();
@@ -96,12 +101,14 @@ public final class CatalogContext {
 		tuple.setField("countOf5xx", countOf5xx);
 		tuple.setField("timestamp", timestamp);
 
-		httpStatusCountingCollector.update(catalog, metric, timestamp, new HttpStatusCountingMetric(
-				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, true));
+		if (incremental) {
+			httpStatusCountingCollector.update(catalog, metric, timestamp, new HttpStatusCountingMetric(
+					new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, true));
+		}
 		return tuple;
 	}
 
-	public void synchronizeCountingData(NioClient nioClient) {
+	public void synchronizeCountingData(NioClient nioClient, SocketAddress remoteAddress, boolean incremental) {
 		int n = 0;
 		Map<String, CustomizedMetric<Counter>> data;
 		for (Catalog catalog : summary.keySet()) {
@@ -109,8 +116,8 @@ public final class CatalogContext {
 			CustomizedMetric<Counter> customizedMetric;
 			for (Map.Entry<String, CustomizedMetric<Counter>> entry : data.entrySet()) {
 				customizedMetric = entry.getValue();
-				Tuple tuple = getCountingTuple(catalog, COUNT, customizedMetric);
-				nioClient.send(tuple);
+				Tuple tuple = getCountingTuple(catalog, COUNT, customizedMetric, incremental);
+				nioClient.send(remoteAddress, tuple);
 				n++;
 			}
 		}
@@ -119,14 +126,16 @@ public final class CatalogContext {
 		}
 	}
 
-	private Tuple getCountingTuple(Catalog catalog, String metric, CustomizedMetric<Counter> customizedMetric) {
-		Tuple tuple = Tuple.newOne(CountingSynchronizer.TOPIC_NAME);
+	private Tuple getCountingTuple(Catalog catalog, String metric, CustomizedMetric<Counter> customizedMetric, boolean incremental) {
+		Tuple tuple = Tuple.newOne(incremental ? IncrementalCountingSynchronizer.TOPIC_NAME : CountingSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
 		tuple.setField("category", catalog.getCategory());
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
+		tuple.setField("incremental", incremental);
+
 		Counter counter = customizedMetric.get();
 		long count = counter.getCount();
 		long failedCount = counter.getFailedCount();
@@ -137,71 +146,81 @@ public final class CatalogContext {
 		tuple.setField("timeoutCount", timeoutCount);
 		tuple.setField("timestamp", timestamp);
 
-		countingCollector.update(catalog, metric, customizedMetric.getTimestamp(),
-				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, true));
+		if (incremental) {
+			countingCollector.update(catalog, metric, customizedMetric.getTimestamp(),
+					new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, true));
+		}
 		return tuple;
 	}
 
-	public void synchronizeStatisticData(NioClient nioClient) {
+	public void synchronizeStatisticData(NioClient nioClient, SocketAddress remoteAddress, boolean incremental) {
 		int n = 0;
 		Map<String, StatisticalMetric> data;
 		for (Catalog catalog : summary.keySet()) {
 			data = statisticCollector.sequence(catalog, RT);
-			n += doSyncStatisticData(catalog, RT, data, nioClient);
+			n += doSyncStatisticData(catalog, RT, data, nioClient, remoteAddress, incremental);
 			data = statisticCollector.sequence(catalog, CC);
-			n += doSyncStatisticData(catalog, CC, data, nioClient);
+			n += doSyncStatisticData(catalog, CC, data, nioClient, remoteAddress, incremental);
 			data = statisticCollector.sequence(catalog, QPS);
-			n += doSyncStatisticData(catalog, QPS, data, nioClient);
+			n += doSyncStatisticData(catalog, QPS, data, nioClient, remoteAddress, incremental);
 		}
 		if (log.isTraceEnabled()) {
 			log.trace("Synchronize StatisticData completed. Effected numbers: {}", n);
 		}
+
 	}
 
-	private int doSyncStatisticData(Catalog catalog, String metric, Map<String, StatisticalMetric> data, NioClient nioClient) {
+	private int doSyncStatisticData(Catalog catalog, String metric, Map<String, StatisticalMetric> data, NioClient nioClient,
+			SocketAddress remoteAddress, boolean incremental) {
 		int n = 0;
 		StatisticalMetric statisticalMetric;
 		for (Map.Entry<String, StatisticalMetric> entry : data.entrySet()) {
 			statisticalMetric = entry.getValue();
-			Tuple tuple = getStatisticTuple(catalog, metric, statisticalMetric);
-			nioClient.send(tuple);
+			Tuple tuple = getStatisticTuple(catalog, metric, statisticalMetric, incremental);
+			nioClient.send(remoteAddress, tuple);
 			n++;
 		}
 		return n;
 	}
 
-	private Tuple getStatisticTuple(Catalog catalog, String metric, StatisticalMetric statisticalMetric) {
+	private Tuple getStatisticTuple(Catalog catalog, String metric, StatisticalMetric statisticalMetric, boolean incremental) {
 		long highestValue = statisticalMetric.getHighestValue().longValue();
 		long lowestValue = statisticalMetric.getLowestValue().longValue();
 		long totalValue = statisticalMetric.getTotalValue().longValue();
 		long count = statisticalMetric.getCount();
 		long timestamp = statisticalMetric.getTimestamp();
-		Tuple tuple = Tuple.newOne(StatisticSynchronizer.TOPIC_NAME);
+
+		Tuple tuple = Tuple.newOne(incremental ? IncrementalStatisticSynchronizer.TOPIC_NAME : StatisticSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
 		tuple.setField("category", catalog.getCategory());
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
+		tuple.setField("incremental", incremental);
+
 		tuple.setField("highestValue", highestValue);
 		tuple.setField("lowestValue", lowestValue);
 		tuple.setField("totalValue", totalValue);
 		tuple.setField("count", count);
 		tuple.setField("timestamp", timestamp);
-		statisticCollector.update(catalog, metric, timestamp,
-				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, true));
+
+		if (incremental) {
+			statisticCollector.update(catalog, metric, timestamp,
+					new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, true));
+		}
 		return tuple;
 	}
 
-	public void synchronizeSummaryData(NioClient nioClient) {
+	public void synchronizeSummaryData(NioClient nioClient, SocketAddress remoteAddress, boolean incremental) {
 		int n = 0;
 		Catalog catalog;
-		CatalogSummary catalogSummary;
-		for (Map.Entry<Catalog, CatalogSummary> entry : summary.entrySet()) {
+		Summary catalogSummary;
+		for (Map.Entry<Catalog, Summary> entry : summary.entrySet()) {
 			catalog = entry.getKey();
 			catalogSummary = entry.getValue();
-			Tuple tuple = getSummaryTuple(catalog, catalogSummary);
-			nioClient.send(tuple);
+			Tuple tuple = getSummaryTuple(catalog, catalogSummary, incremental);
+			nioClient.send(remoteAddress, tuple);
 			n++;
 		}
 		if (log.isTraceEnabled()) {
@@ -209,13 +228,14 @@ public final class CatalogContext {
 		}
 	}
 
-	private Tuple getSummaryTuple(Catalog catalog, CatalogSummary catalogSummary) {
-		Tuple tuple = Tuple.newOne(CatalogSummarySynchronizer.TOPIC_NAME);
+	private Tuple getSummaryTuple(Catalog catalog, Summary catalogSummary, boolean incremental) {
+		Tuple tuple = Tuple.newOne(incremental ? IncrementalSummarySynchronizer.TOPIC_NAME : SummarySynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
 		tuple.setField("category", catalog.getCategory());
 		tuple.setField("path", catalog.getPath());
+		tuple.setField("incremental", incremental);
 
 		long count = catalogSummary.getTotalExecutionCount();
 		long failedCount = catalogSummary.getFailedExecutionCount();
@@ -236,7 +256,9 @@ public final class CatalogContext {
 		tuple.setField("countOf4xx", countOf4xx);
 		tuple.setField("countOf5xx", countOf5xx);
 
-		catalogSummary.reset(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx));
+		if (incremental) {
+			catalogSummary.reset(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx));
+		}
 		return tuple;
 	}
 

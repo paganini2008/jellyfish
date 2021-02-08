@@ -30,7 +30,7 @@ import indi.atlantis.framework.gearless.utils.StatisticalMetric;
 import indi.atlantis.framework.jellyfish.metrics.Catalog;
 import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
 import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsCollector;
-import indi.atlantis.framework.jellyfish.metrics.CatalogSummary;
+import indi.atlantis.framework.jellyfish.metrics.Summary;
 import indi.atlantis.framework.jellyfish.metrics.Counter;
 import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 
@@ -59,7 +59,7 @@ public class CatalogController {
 
 	@PostMapping("/summary")
 	public Response summary(@RequestBody Catalog catalog) {
-		CatalogSummary catalogSummary = catalogContext.getSummary(catalog);
+		Summary catalogSummary = catalogContext.getSummary(catalog);
 		return catalogSummary != null ? Response.success(catalogSummary.toEntries()) : Response.success();
 	}
 

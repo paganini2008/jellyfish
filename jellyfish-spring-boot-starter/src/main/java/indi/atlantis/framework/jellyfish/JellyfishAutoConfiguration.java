@@ -21,13 +21,13 @@ import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
 import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
-import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsSynchronizerStarter;
-import indi.atlantis.framework.jellyfish.metrics.CatalogSummarySynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.CountingSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.HttpStatusCountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalSynchronizationListener;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalSummarySynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalCountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalHttpStatusCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.QpsHandler;
 import indi.atlantis.framework.jellyfish.metrics.RealtimeStatisticHandler;
-import indi.atlantis.framework.jellyfish.metrics.StatisticSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalStatisticSynchronizer;
 import indi.atlantis.framework.reditools.common.IdGenerator;
 import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
 import lombok.Setter;
@@ -72,23 +72,23 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public CatalogSummarySynchronizer catalogSummarySynchronizer() {
-		return new CatalogSummarySynchronizer();
+	public IncrementalSummarySynchronizer catalogSummarySynchronizer() {
+		return new IncrementalSummarySynchronizer();
 	}
 
 	@Bean
-	public CountingSynchronizer countingSynchronizer() {
-		return new CountingSynchronizer();
+	public IncrementalCountingSynchronizer countingSynchronizer() {
+		return new IncrementalCountingSynchronizer();
 	}
 
 	@Bean
-	public HttpStatusCountingSynchronizer httpStatusCountingSynchronizer() {
-		return new HttpStatusCountingSynchronizer();
+	public IncrementalHttpStatusCountingSynchronizer httpStatusCountingSynchronizer() {
+		return new IncrementalHttpStatusCountingSynchronizer();
 	}
 
 	@Bean
-	public StatisticSynchronizer statisticSynchronizer() {
-		return new StatisticSynchronizer();
+	public IncrementalStatisticSynchronizer statisticSynchronizer() {
+		return new IncrementalStatisticSynchronizer();
 	}
 
 	@Bean
@@ -102,8 +102,8 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public CatalogMetricsSynchronizerStarter catalogMetricsSynchronizerStarter() {
-		return new CatalogMetricsSynchronizerStarter();
+	public IncrementalSynchronizationListener catalogMetricsSynchronizerStarter() {
+		return new IncrementalSynchronizationListener();
 	}
 
 	@Bean

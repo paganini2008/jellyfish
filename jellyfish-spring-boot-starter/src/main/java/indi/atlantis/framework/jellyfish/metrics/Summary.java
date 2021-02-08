@@ -8,13 +8,13 @@ import lombok.ToString;
 
 /**
  * 
- * CatalogSummary
+ * Summary
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @ToString
-public class CatalogSummary {
+public class Summary {
 
 	private final AtomicLong totalExecution = new AtomicLong();
 	private final AtomicLong failedExecution = new AtomicLong();
@@ -102,6 +102,18 @@ public class CatalogSummary {
 		countOf3xx.addAndGet(counter.getCountOf3xx());
 		countOf4xx.addAndGet(counter.getCountOf4xx());
 		countOf5xx.addAndGet(counter.getCountOf5xx());
+	}
+
+	public void clear() {
+		totalExecution.set(0);
+		failedExecution.set(0);
+		timeoutExecution.set(0);
+		
+		countOf1xx.set(0);
+		countOf2xx.set(0);
+		countOf3xx.set(0);
+		countOf4xx.set(0);
+		countOf5xx.set(0);
 	}
 
 }

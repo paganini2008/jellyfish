@@ -9,14 +9,14 @@ import indi.atlantis.framework.gearless.utils.CustomizedMetric;
 
 /**
  * 
- * HttpStatusCountingSynchronizer
+ * IncrementalHttpStatusCountingSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class HttpStatusCountingSynchronizer implements Handler {
+public class IncrementalHttpStatusCountingSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = HttpStatusCountingSynchronizer.class.getName();
+	public static final String TOPIC_NAME = IncrementalHttpStatusCountingSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
@@ -33,9 +33,8 @@ public class HttpStatusCountingSynchronizer implements Handler {
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
 
-		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> collector = catalogContext.httpStatusCountingCollector();
-		collector.clear();
-		collector.update(catalog, MetricNames.HTTP_STATUS, timestamp, new HttpStatusCountingMetric(
+		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> statisticCollector = catalogContext.httpStatusCountingCollector();
+		statisticCollector.update(catalog, MetricNames.HTTP_STATUS, timestamp, new HttpStatusCountingMetric(
 				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false));
 
 	}
@@ -44,4 +43,5 @@ public class HttpStatusCountingSynchronizer implements Handler {
 	public String getTopic() {
 		return TOPIC_NAME;
 	}
+
 }

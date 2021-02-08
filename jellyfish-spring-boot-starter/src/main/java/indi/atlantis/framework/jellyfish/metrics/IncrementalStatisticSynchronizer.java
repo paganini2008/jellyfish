@@ -10,14 +10,14 @@ import indi.atlantis.framework.gearless.utils.StatisticalMetrics;
 
 /**
  * 
- * StatisticSynchronizer
+ * IncrementalStatisticSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class StatisticSynchronizer implements Handler {
+public class IncrementalStatisticSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = StatisticSynchronizer.class.getName();
+	public static final String TOPIC_NAME = IncrementalStatisticSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
@@ -32,9 +32,7 @@ public class StatisticSynchronizer implements Handler {
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		
 		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
-		collector.clear();
 		collector.update(catalog, metric, timestamp,
 				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false));
 	}
@@ -43,4 +41,5 @@ public class StatisticSynchronizer implements Handler {
 	public String getTopic() {
 		return TOPIC_NAME;
 	}
+
 }

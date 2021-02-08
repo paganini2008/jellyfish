@@ -56,7 +56,7 @@ public class RealtimeStatisticHandler implements Handler {
 				.httpStatusCountingCollector();
 		httpStatusCountingCollector.update(catalog, HTTP_STATUS, timestamp, httpStatusCountingMetric);
 
-		CatalogSummary summary = catalogContext.getSummary(catalog);
+		Summary summary = catalogContext.getSummary(catalog);
 		summary.merge(countingMetric.get());
 		summary.merge(httpStatusCountingMetric.get());
 
@@ -70,7 +70,7 @@ public class RealtimeStatisticHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.agent.RealtimeStatisticalWriter";
+		return "indi.atlantis.framework.jellyfish.agent.RealtimeMetricsWriter";
 	}
 
 }

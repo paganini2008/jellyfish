@@ -55,14 +55,14 @@ public class AgentAutoConfiguration implements WebMvcConfigurer {
 
 	@ConditionalOnMissingBean
 	@Bean
-	public TransportClient transportClient(@Value("${atlantis.jellyfish.brokerUrl}") String brokerUrl) {
+	public TransportClient transportClient(@Value("${atlantis.framework.jellyfish.brokerUrl}") String brokerUrl) {
 		return new HttpTransportClient(brokerUrl);
 	}
 
 	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
 	public ThreadPoolTaskScheduler jellyfishMonitorTaskScheduler(
-			@Value("${spring.application.cluster.jellyfish.threadPool.maxSize:8}") int maxSize) {
+			@Value("${atlantis.framework.jellyfish.jellyfish.scheduler.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
 		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-agent-task-scheduler-"));

@@ -16,13 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * CatalogMetricSynchronization
+ * Synchronization
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public class CatalogMetricSynchronization {
+public class Synchronization {
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
@@ -46,9 +46,9 @@ public class CatalogMetricSynchronization {
 
 	private volatile ScheduledFuture<?> future;
 
-	public synchronized void startSynchronization(ServerInfo[] serverInfos) {
+	public synchronized void startFullSynchronization(ServerInfo[] serverInfos) {
 		if (future != null) {
-			future.cancel(true);
+			future.cancel(false);
 		}
 		future = taskScheduler.scheduleWithFixedDelay(() -> {
 			for (ServerInfo serverInfo : serverInfos) {
@@ -64,7 +64,7 @@ public class CatalogMetricSynchronization {
 
 	public synchronized void startIncrementalSynchronization(ServerInfo serverInfo) {
 		if (future != null) {
-			future.cancel(true);
+			future.cancel(false);
 		}
 		taskScheduler.scheduleWithFixedDelay(() -> {
 			InetSocketAddress remoteAddress = new InetSocketAddress(serverInfo.getHostName(), serverInfo.getPort());

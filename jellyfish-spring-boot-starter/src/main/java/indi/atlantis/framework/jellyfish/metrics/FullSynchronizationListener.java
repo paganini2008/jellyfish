@@ -12,12 +12,12 @@ import indi.atlantis.framework.vortex.ServerInfo;
 
 /**
  * 
- * CatalogMetricSynchronizationListener
+ * FullSynchronizationListener
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CatalogMetricSynchronizationListener implements ApplicationListener<ApplicationClusterLeaderEvent> {
+public class FullSynchronizationListener implements ApplicationListener<ApplicationClusterLeaderEvent> {
 
 	@Autowired
 	private InstanceId instanceId;
@@ -26,7 +26,7 @@ public class CatalogMetricSynchronizationListener implements ApplicationListener
 	private ApplicationTransportContext applicationTransportContext;
 
 	@Autowired
-	private CatalogMetricSynchronization catalogMetricsSynchronization;
+	private Synchronization synchronization;
 
 	@Override
 	public void onApplicationEvent(ApplicationClusterLeaderEvent event) {
@@ -37,7 +37,7 @@ public class CatalogMetricSynchronizationListener implements ApplicationListener
 		ServerInfo[] serverInfos = applicationTransportContext.getServerInfos(info -> {
 			return !info.equals(leaderInfo);
 		});
-		catalogMetricsSynchronization.startSynchronization(serverInfos);
+		synchronization.startFullSynchronization(serverInfos);
 	}
 
 }

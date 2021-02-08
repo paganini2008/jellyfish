@@ -1,8 +1,8 @@
 package indi.atlantis.framework.jellyfish.slf4j.logback;
 
-import indi.atlantis.framework.gearless.common.NamedSelectionPartitioner;
-import indi.atlantis.framework.gearless.common.TcpTransportClient;
-import indi.atlantis.framework.gearless.common.TransportClient;
+import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
+import indi.atlantis.framework.vortex.common.TcpTransportClient;
+import indi.atlantis.framework.vortex.common.TransportClient;
 
 /**
  * 

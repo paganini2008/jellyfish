@@ -1,7 +1,7 @@
 package indi.atlantis.framework.jellyfish.slf4j.logback;
 
-import indi.atlantis.framework.gearless.common.HttpTransportClient;
-import indi.atlantis.framework.gearless.common.TransportClient;
+import indi.atlantis.framework.vortex.common.HttpTransportClient;
+import indi.atlantis.framework.vortex.common.TransportClient;
 
 /**
  * 

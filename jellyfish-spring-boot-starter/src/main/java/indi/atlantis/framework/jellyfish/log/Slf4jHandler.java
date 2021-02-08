@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.github.paganini2008.devtools.StringUtils;
 
-import indi.atlantis.framework.gearless.Handler;
-import indi.atlantis.framework.gearless.common.Tuple;
 import indi.atlantis.framework.reditools.common.IdGenerator;
+import indi.atlantis.framework.vortex.Handler;
+import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 

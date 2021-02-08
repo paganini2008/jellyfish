@@ -16,8 +16,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.github.paganini2008.devtools.collection.CollectionUtils;
 import com.github.paganini2008.devtools.multithreads.PooledThreadFactory;
 
-import indi.atlantis.framework.gearless.common.HttpTransportClient;
-import indi.atlantis.framework.gearless.common.TransportClient;
+import indi.atlantis.framework.vortex.common.HttpTransportClient;
+import indi.atlantis.framework.vortex.common.TransportClient;
 import lombok.extern.slf4j.Slf4j;
 
 /**

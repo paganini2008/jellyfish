@@ -19,9 +19,9 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.multithreads.AtomicLongSequence;
 import com.github.paganini2008.devtools.net.NetUtils;
 
-import indi.atlantis.framework.gearless.common.HashPartitioner;
-import indi.atlantis.framework.gearless.common.TransportClient;
-import indi.atlantis.framework.gearless.common.Tuple;
+import indi.atlantis.framework.vortex.common.HashPartitioner;
+import indi.atlantis.framework.vortex.common.TransportClient;
+import indi.atlantis.framework.vortex.common.Tuple;
 import lombok.extern.slf4j.Slf4j;
 
 /**

@@ -3,8 +3,8 @@ package indi.atlantis.framework.jellyfish.metrics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import indi.atlantis.framework.gearless.Handler;
-import indi.atlantis.framework.gearless.common.Tuple;
+import indi.atlantis.framework.vortex.Handler;
+import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 

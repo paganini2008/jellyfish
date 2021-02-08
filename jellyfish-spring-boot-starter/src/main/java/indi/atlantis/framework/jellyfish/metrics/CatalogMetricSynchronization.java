@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import indi.atlantis.framework.gearless.ServerInfo;
-import indi.atlantis.framework.gearless.common.NioClient;
+import indi.atlantis.framework.vortex.ServerInfo;
+import indi.atlantis.framework.vortex.common.NioClient;
 import lombok.extern.slf4j.Slf4j;
 
 /**

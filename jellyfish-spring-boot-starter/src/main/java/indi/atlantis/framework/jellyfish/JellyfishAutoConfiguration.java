@@ -15,21 +15,23 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
-import indi.atlantis.framework.gearless.common.HashPartitioner;
-import indi.atlantis.framework.gearless.common.NamedSelectionPartitioner;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
 import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalSynchronizationListener;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalSummarySynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.IncrementalCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.IncrementalHttpStatusCountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalStatisticSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalSummarySynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.IncrementalSynchronizationListener;
 import indi.atlantis.framework.jellyfish.metrics.QpsHandler;
 import indi.atlantis.framework.jellyfish.metrics.RealtimeStatisticHandler;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalStatisticSynchronizer;
 import indi.atlantis.framework.reditools.common.IdGenerator;
 import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
+import indi.atlantis.framework.seafloor.InstanceId;
+import indi.atlantis.framework.vortex.buffer.BufferZone;
+import indi.atlantis.framework.vortex.common.HashPartitioner;
+import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -44,7 +46,7 @@ import redis.clients.jedis.JedisPoolConfig;
 @Configuration(proxyBeanMethods = false)
 public class JellyfishAutoConfiguration {
 
-	private static final String keyPattern = "spring:application:cluster:jellyfish:%s:id";
+	private static final String keyPattern = "atlantis:framework:jellyfish:id:%s";
 
 	@Value("${spring.application.cluster.name:default}")
 	private String clusterName;
@@ -54,6 +56,12 @@ public class JellyfishAutoConfiguration {
 		final String[] fieldNames = { "clusterName", "applicationName", "host", "category", "path" };
 		HashPartitioner hashPartitioner = new HashPartitioner(fieldNames);
 		partitioner.addPartitioner(hashPartitioner);
+	}
+
+	@Autowired
+	public void configureBufferZone(BufferZone bufferZone, InstanceId instanceId) {
+		String subNamePrefix = clusterName + ":" + instanceId.get();
+		bufferZone.setCollectionNamePrefix(BufferZone.DEFAULT_COLLECTION_NAME_PREFIX, subNamePrefix);
 	}
 
 	@Bean

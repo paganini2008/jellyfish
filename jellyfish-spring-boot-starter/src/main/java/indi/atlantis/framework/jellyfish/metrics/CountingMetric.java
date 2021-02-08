@@ -1,6 +1,6 @@
 package indi.atlantis.framework.jellyfish.metrics;
 
-import indi.atlantis.framework.gearless.utils.CustomizedMetric;
+import indi.atlantis.framework.vortex.utils.CustomizedMetric;
 
 /**
  * 

@@ -10,7 +10,7 @@ import com.github.paganini2008.devtools.StringUtils;
 import com.github.paganini2008.devtools.collection.LruMap;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
-import indi.atlantis.framework.gearless.common.Tuple;
+import indi.atlantis.framework.vortex.common.Tuple;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

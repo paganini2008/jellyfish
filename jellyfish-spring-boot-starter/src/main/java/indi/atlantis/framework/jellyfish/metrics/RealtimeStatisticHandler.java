@@ -3,11 +3,11 @@ package indi.atlantis.framework.jellyfish.metrics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import indi.atlantis.framework.gearless.Handler;
-import indi.atlantis.framework.gearless.common.Tuple;
-import indi.atlantis.framework.gearless.utils.CustomizedMetric;
-import indi.atlantis.framework.gearless.utils.StatisticalMetric;
-import indi.atlantis.framework.gearless.utils.StatisticalMetrics;
+import indi.atlantis.framework.vortex.Handler;
+import indi.atlantis.framework.vortex.common.Tuple;
+import indi.atlantis.framework.vortex.utils.CustomizedMetric;
+import indi.atlantis.framework.vortex.utils.StatisticalMetric;
+import indi.atlantis.framework.vortex.utils.StatisticalMetrics;
 
 import static indi.atlantis.framework.jellyfish.metrics.MetricNames.*;
 

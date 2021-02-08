@@ -9,14 +9,14 @@ import indi.atlantis.framework.vortex.utils.CustomizedMetric;
 
 /**
  * 
- * CountingSynchronizer
+ * FullCountingSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CountingSynchronizer implements Handler {
+public class FullCountingSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = CountingSynchronizer.class.getName();
+	public static final String TOPIC_NAME = FullCountingSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired

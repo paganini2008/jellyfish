@@ -78,7 +78,7 @@ public final class CatalogContext {
 	private Tuple getHttpStatusCountingTuple(Catalog catalog, String metric, CustomizedMetric<HttpStatusCounter> customizedMetric,
 			boolean incremental) {
 		Tuple tuple = Tuple
-				.newOne(incremental ? IncrementalHttpStatusCountingSynchronizer.TOPIC_NAME : HttpStatusCountingSynchronizer.TOPIC_NAME);
+				.newOne(incremental ? IncrementalHttpStatusCountingSynchronizer.TOPIC_NAME : FullHttpStatusCountingSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
@@ -127,7 +127,7 @@ public final class CatalogContext {
 	}
 
 	private Tuple getCountingTuple(Catalog catalog, String metric, CustomizedMetric<Counter> customizedMetric, boolean incremental) {
-		Tuple tuple = Tuple.newOne(incremental ? IncrementalCountingSynchronizer.TOPIC_NAME : CountingSynchronizer.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(incremental ? IncrementalCountingSynchronizer.TOPIC_NAME : FullCountingSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
@@ -190,7 +190,7 @@ public final class CatalogContext {
 		long count = statisticalMetric.getCount();
 		long timestamp = statisticalMetric.getTimestamp();
 
-		Tuple tuple = Tuple.newOne(incremental ? IncrementalStatisticSynchronizer.TOPIC_NAME : StatisticSynchronizer.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(incremental ? IncrementalStatisticSynchronizer.TOPIC_NAME : FullStatisticSynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());
@@ -229,7 +229,7 @@ public final class CatalogContext {
 	}
 
 	private Tuple getSummaryTuple(Catalog catalog, Summary catalogSummary, boolean incremental) {
-		Tuple tuple = Tuple.newOne(incremental ? IncrementalSummarySynchronizer.TOPIC_NAME : SummarySynchronizer.TOPIC_NAME);
+		Tuple tuple = Tuple.newOne(incremental ? IncrementalSummarySynchronizer.TOPIC_NAME : FullSummarySynchronizer.TOPIC_NAME);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
 		tuple.setField("host", catalog.getHost());

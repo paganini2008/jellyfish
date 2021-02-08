@@ -10,14 +10,14 @@ import indi.atlantis.framework.vortex.utils.StatisticalMetrics;
 
 /**
  * 
- * StatisticSynchronizer
+ * FullStatisticSynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class StatisticSynchronizer implements Handler {
+public class FullStatisticSynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = StatisticSynchronizer.class.getName();
+	public static final String TOPIC_NAME = FullStatisticSynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired

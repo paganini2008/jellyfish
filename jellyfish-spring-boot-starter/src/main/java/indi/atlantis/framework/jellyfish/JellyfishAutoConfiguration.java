@@ -19,9 +19,9 @@ import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
 import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
-import indi.atlantis.framework.jellyfish.metrics.CountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.FullCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.FullSynchronizationListener;
-import indi.atlantis.framework.jellyfish.metrics.HttpStatusCountingSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.FullHttpStatusCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.IncrementalCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.IncrementalHttpStatusCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.IncrementalStatisticSynchronizer;
@@ -29,8 +29,8 @@ import indi.atlantis.framework.jellyfish.metrics.IncrementalSummarySynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.IncrementalSynchronizationListener;
 import indi.atlantis.framework.jellyfish.metrics.QpsHandler;
 import indi.atlantis.framework.jellyfish.metrics.RealtimeStatisticHandler;
-import indi.atlantis.framework.jellyfish.metrics.StatisticSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.SummarySynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.FullStatisticSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.FullSummarySynchronizer;
 import indi.atlantis.framework.reditools.common.IdGenerator;
 import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
 import indi.atlantis.framework.seafloor.InstanceId;
@@ -105,23 +105,23 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public SummarySynchronizer summarySynchronizer() {
-		return new SummarySynchronizer();
+	public FullSummarySynchronizer summarySynchronizer() {
+		return new FullSummarySynchronizer();
 	}
 
 	@Bean
-	public CountingSynchronizer countingSynchronizer() {
-		return new CountingSynchronizer();
+	public FullCountingSynchronizer countingSynchronizer() {
+		return new FullCountingSynchronizer();
 	}
 
 	@Bean
-	public HttpStatusCountingSynchronizer httpStatusCountingSynchronizer() {
-		return new HttpStatusCountingSynchronizer();
+	public FullHttpStatusCountingSynchronizer httpStatusCountingSynchronizer() {
+		return new FullHttpStatusCountingSynchronizer();
 	}
 
 	@Bean
-	public StatisticSynchronizer statisticSynchronizer() {
-		return new StatisticSynchronizer();
+	public FullStatisticSynchronizer statisticSynchronizer() {
+		return new FullStatisticSynchronizer();
 	}
 
 	@Bean

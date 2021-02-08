@@ -8,14 +8,14 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * SummarySynchronizer
+ * FullSummarySynchronizer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class SummarySynchronizer implements Handler {
+public class FullSummarySynchronizer implements Handler {
 
-	public static final String TOPIC_NAME = SummarySynchronizer.class.getName();
+	public static final String TOPIC_NAME = FullSummarySynchronizer.class.getName();
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired

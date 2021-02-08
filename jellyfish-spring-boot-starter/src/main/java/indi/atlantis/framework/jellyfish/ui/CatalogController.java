@@ -28,11 +28,11 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 import indi.atlantis.framework.jellyfish.metrics.Catalog;
 import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
 import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsCollector;
+import indi.atlantis.framework.jellyfish.metrics.Counter;
+import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 import indi.atlantis.framework.jellyfish.metrics.Summary;
 import indi.atlantis.framework.vortex.utils.CustomizedMetric;
 import indi.atlantis.framework.vortex.utils.StatisticalMetric;
-import indi.atlantis.framework.jellyfish.metrics.Counter;
-import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 
 /**
  * 
@@ -45,7 +45,7 @@ import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 @RestController
 public class CatalogController {
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("primaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 

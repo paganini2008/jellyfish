@@ -34,9 +34,8 @@ public class FullHttpStatusCountingSynchronizer implements Handler {
 		long timestamp = tuple.getTimestamp();
 
 		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> collector = catalogContext.httpStatusCountingCollector();
-		collector.clear();
 		collector.update(catalog, MetricNames.HTTP_STATUS, timestamp, new HttpStatusCountingMetric(
-				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false));
+				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false), false);
 
 	}
 

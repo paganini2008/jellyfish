@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>indi.atlantis.framework</groupId>
-			<artifactId>gearless-common</artifactId>
+			<artifactId>vortex-common</artifactId>
 			<version>1.0-RC1</version>
 		</dependency>
 

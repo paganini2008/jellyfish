@@ -32,11 +32,10 @@ public class FullStatisticSynchronizer implements Handler {
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		
+
 		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
-		collector.clear();
 		collector.update(catalog, metric, timestamp,
-				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false));
+				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false), false);
 	}
 
 	@Override

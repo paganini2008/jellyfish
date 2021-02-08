@@ -257,7 +257,6 @@ public final class CatalogContext {
 		tuple.setField("countOf3xx", countOf3xx);
 		tuple.setField("countOf4xx", countOf4xx);
 		tuple.setField("countOf5xx", countOf5xx);
-
 		if (incremental) {
 			catalogSummary.reset(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx));
 		}

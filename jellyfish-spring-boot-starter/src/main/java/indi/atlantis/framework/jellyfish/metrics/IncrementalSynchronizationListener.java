@@ -21,7 +21,7 @@ public class IncrementalSynchronizationListener implements ApplicationListener<A
 	@Override
 	public void onApplicationEvent(ApplicationClusterRefreshedEvent event) {
 		final ApplicationInfo leaderInfo = event.getLeaderInfo();
-		synchronization.startIncrementalSynchronization(leaderInfo);
+		//synchronization.startIncrementalSynchronization(leaderInfo);
 	}
 
 }

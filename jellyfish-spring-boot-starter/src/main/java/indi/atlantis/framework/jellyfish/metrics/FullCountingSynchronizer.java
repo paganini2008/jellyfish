@@ -30,9 +30,8 @@ public class FullCountingSynchronizer implements Handler {
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		long timestamp = tuple.getTimestamp();
 		CatalogMetricsCollector<CustomizedMetric<Counter>> collector = catalogContext.countingCollector();
-		collector.clear();
 		collector.update(category, MetricNames.COUNT, timestamp,
-				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false));
+				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false), false);
 	}
 
 	@Override

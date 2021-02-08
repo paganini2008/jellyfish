@@ -7,8 +7,6 @@ import org.springframework.util.Base64Utils;
 import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.CharsetUtils;
 import com.github.paganini2008.devtools.StringUtils;
-import com.github.paganini2008.devtools.collection.LruMap;
-import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.vortex.common.Tuple;
 import lombok.EqualsAndHashCode;
@@ -87,18 +85,13 @@ public final class Catalog implements Comparable<Catalog> {
 		return repr.compareTo(otherRepr);
 	}
 
-	private static final LruMap<String, Catalog> cache = new LruMap<String, Catalog>(10000);
-
 	public static Catalog of(Tuple tuple) {
-		String identifier = tuple.getField("identifier", String.class);
-		return MapUtils.get(cache, identifier, () -> {
-			String clusterName = tuple.getField("clusterName", String.class);
-			String applicationName = tuple.getField("applicationName", String.class);
-			String host = tuple.getField("host", String.class);
-			String category = tuple.getField("category", String.class);
-			String path = tuple.getField("path", String.class);
-			return new Catalog(clusterName, applicationName, host, category, path);
-		});
+		String clusterName = tuple.getField("clusterName", String.class);
+		String applicationName = tuple.getField("applicationName", String.class);
+		String host = tuple.getField("host", String.class);
+		String category = tuple.getField("category", String.class);
+		String path = tuple.getField("path", String.class);
+		return new Catalog(clusterName, applicationName, host, category, path);
 	}
 
 }

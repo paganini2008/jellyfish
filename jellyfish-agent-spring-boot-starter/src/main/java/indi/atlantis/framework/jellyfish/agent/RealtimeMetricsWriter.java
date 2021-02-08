@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.Base64Utils;
 
-import com.github.paganini2008.devtools.CharsetUtils;
 import com.github.paganini2008.devtools.StringUtils;
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.net.NetUtils;
@@ -33,7 +31,6 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class RealtimeMetricsWriter extends StatisticalWriter {
 
 	private static final String TOPIC_NAME = RealtimeMetricsWriter.class.getName();
-	private static final String IDENTIFIER_PATTERN = "%s+%s+%s+%s+%s";
 
 	private final ConcurrentMap<String, AtomicInteger> concurrencies = new ConcurrentHashMap<String, AtomicInteger>();
 
@@ -82,12 +79,9 @@ public class RealtimeMetricsWriter extends StatisticalWriter {
 		HttpStatus status = HttpStatus.valueOf(response.getStatus());
 		final boolean failed = (e != null) || (!status.is2xxSuccessful());
 
-		String host = this.hostName + port;
+		String host = this.hostName + ":" + port;
 		String category = pathMatcher.matchCategory(path);
 		String decorator = pathMatcher.matchDecoration(path);
-		String repr = String.format(IDENTIFIER_PATTERN, clusterName, applicationName, host, category, decorator);
-		String identifier = Base64Utils.encodeToString(repr.getBytes(CharsetUtils.UTF_8));
-
 		Map<String, Object> contextMap = new HashMap<String, Object>();
 		contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
 		contextMap.put("requestId", requestId);
@@ -96,7 +90,6 @@ public class RealtimeMetricsWriter extends StatisticalWriter {
 		contextMap.put("host", host);
 		contextMap.put("category", category);
 		contextMap.put("path", decorator);
-		contextMap.put("identifier", identifier);
 		contextMap.put("requestTime", begin.longValue());
 		contextMap.put("elapsed", elapsed);
 		contextMap.put("timeout", timeout);

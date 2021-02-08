@@ -70,7 +70,7 @@ public final class CatalogContext {
 			}
 		}
 		if (log.isTraceEnabled()) {
-			log.trace("Synchronize HttpStatusCountingData completed. Effected numbers: {}", n);
+			log.trace("[{}]Synchronize HttpStatus counting data completed. Effected numbers: {}", (incremental ? '+' : '-'), n);
 		}
 
 	}
@@ -122,7 +122,7 @@ public final class CatalogContext {
 			}
 		}
 		if (log.isTraceEnabled()) {
-			log.trace("Synchronize CountingData completed. Effected numbers: {}", n);
+			log.trace("[{}]Synchronize counting data completed. Effected numbers: {}", (incremental ? '+' : '-'), n);
 		}
 	}
 
@@ -165,7 +165,7 @@ public final class CatalogContext {
 			n += doSyncStatisticData(catalog, QPS, data, nioClient, remoteAddress, incremental);
 		}
 		if (log.isTraceEnabled()) {
-			log.trace("Synchronize StatisticData completed. Effected numbers: {}", n);
+			log.trace("[{}]Synchronize statistic data completed. Effected numbers: {}", (incremental ? '+' : '-'), n);
 		}
 
 	}
@@ -224,7 +224,7 @@ public final class CatalogContext {
 			n++;
 		}
 		if (log.isTraceEnabled()) {
-			log.trace("Synchronize SummaryData completed. Effected numbers: {}", n);
+			log.trace("[{}]Synchronize summary data completed. Effected numbers: {}", (incremental ? '+' : '-'), n);
 		}
 	}
 
@@ -243,8 +243,10 @@ public final class CatalogContext {
 		tuple.setField("count", count);
 		tuple.setField("failedCount", failedCount);
 		tuple.setField("timeoutCount", timeoutCount);
-		catalogSummary.reset(new Counter(count, failedCount, timeoutCount));
-
+		if (incremental) {
+			catalogSummary.reset(new Counter(count, failedCount, timeoutCount));
+		}
+		
 		long countOf1xx = catalogSummary.getCountOf1xx();
 		long countOf2xx = catalogSummary.getCountOf2xx();
 		long countOf3xx = catalogSummary.getCountOf3xx();

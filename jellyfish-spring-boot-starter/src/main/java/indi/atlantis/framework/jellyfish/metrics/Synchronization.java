@@ -40,7 +40,7 @@ public class Synchronization {
 
 	@Qualifier("secondaryCatalogContext")
 	@Autowired
-	private CatalogContext secondCatalogContext;
+	private CatalogContext secondaryCatalogContext;
 
 	@Value("${atlantis.framework.jellyfish.metrics.synchronizer.interval:5}")
 	private int interval;
@@ -48,30 +48,32 @@ public class Synchronization {
 	@Value("${atlantis.framework.jellyfish.metrics.synchronizer.incrementalInterval:5}")
 	private int incrementalInterval;
 
-	private volatile ScheduledFuture<?> future;
+	private volatile ScheduledFuture<?> fullFuture;
+
+	private volatile ScheduledFuture<?> incrementalFuture;
 
 	public synchronized void startFullSynchronization(ApplicationInfo leaderInfo) {
-		if (future != null) {
-			future.cancel(false);
+		if (fullFuture != null) {
+			throw new IllegalStateException("Full synchronization is running now.");
 		}
-		future = taskScheduler.scheduleWithFixedDelay(() -> {
+		fullFuture = taskScheduler.scheduleWithFixedDelay(() -> {
 			ServerInfo[] serverInfos = applicationTransportContext.getServerInfos(info -> {
 				return !info.equals(leaderInfo);
 			});
 			for (ServerInfo serverInfo : serverInfos) {
 				InetSocketAddress remoteAddress = new InetSocketAddress(serverInfo.getHostName(), serverInfo.getPort());
-				secondCatalogContext.synchronizeSummaryData(nioClient, remoteAddress, false);
-				secondCatalogContext.synchronizeCountingData(nioClient, remoteAddress, false);
-				secondCatalogContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, false);
-				secondCatalogContext.synchronizeStatisticData(nioClient, remoteAddress, false);
+				secondaryCatalogContext.synchronizeSummaryData(nioClient, remoteAddress, false);
+				secondaryCatalogContext.synchronizeCountingData(nioClient, remoteAddress, false);
+				secondaryCatalogContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, false);
+				secondaryCatalogContext.synchronizeStatisticData(nioClient, remoteAddress, false);
 			}
 		}, Duration.ofSeconds(interval));
 		log.info("Start full synchronization from {} with {} seconds.", leaderInfo, interval);
 	}
 
 	public synchronized void startIncrementalSynchronization(ApplicationInfo leaderInfo) {
-		if (future != null) {
-			future.cancel(false);
+		if (incrementalFuture != null) {
+			incrementalFuture.cancel(false);
 		}
 		taskScheduler.scheduleWithFixedDelay(() -> {
 			ServerInfo serverInfo = applicationTransportContext.getServerInfo(leaderInfo);
@@ -82,10 +84,22 @@ public class Synchronization {
 				primaryCatalogContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, true);
 				primaryCatalogContext.synchronizeStatisticData(nioClient, remoteAddress, true);
 			} else {
-				log.warn("No leader application info");
+				log.warn("Leader nioserver is not available now.");
 			}
 		}, Duration.ofSeconds(incrementalInterval));
 		log.info("Start incremental synchronization to {} with {} seconds.", leaderInfo, incrementalInterval);
+	}
+
+	public void stopFullSynchronization() {
+		if (fullFuture != null) {
+			fullFuture.cancel(false);
+		}
+	}
+
+	public void stopIncrementalSynchronization() {
+		if (incrementalFuture != null) {
+			incrementalFuture.cancel(false);
+		}
 	}
 
 }

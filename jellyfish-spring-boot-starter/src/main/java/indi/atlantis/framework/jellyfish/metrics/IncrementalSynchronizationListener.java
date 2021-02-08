@@ -14,7 +14,7 @@ import indi.atlantis.framework.seafloor.election.ApplicationClusterRefreshedEven
  * @version 1.0
  */
 public class IncrementalSynchronizationListener implements ApplicationListener<ApplicationClusterRefreshedEvent> {
-	
+
 	@Autowired
 	private Synchronization synchronization;
 

@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class AgentAutoConfiguration implements WebMvcConfigurer {
 
-	@Value("#{'${spring.application.cluster.jellyfish.excludedUrlPatterns:}'.split(',')}")
+	@Value("#{'${atlantis.framework.jellyfish.agent.excludedUrlPatterns:}'.split(',')}")
 	private List<String> excludedUrlPatterns = new ArrayList<String>();
 
 	@ConditionalOnMissingBean
@@ -62,7 +62,7 @@ public class AgentAutoConfiguration implements WebMvcConfigurer {
 	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
 	public ThreadPoolTaskScheduler jellyfishMonitorTaskScheduler(
-			@Value("${atlantis.framework.jellyfish.jellyfish.scheduler.maxSize:8}") int maxSize) {
+			@Value("${atlantis.framework.jellyfish.agent.scheduler.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
 		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-agent-task-scheduler-"));

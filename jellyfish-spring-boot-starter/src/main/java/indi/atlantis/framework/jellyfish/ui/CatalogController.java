@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.jellyfish.metrics.Catalog;
-import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
-import indi.atlantis.framework.jellyfish.metrics.CatalogMetricsCollector;
+import indi.atlantis.framework.jellyfish.metrics.CatalogMetricCollector;
+import indi.atlantis.framework.jellyfish.metrics.CatalogMetricContext;
 import indi.atlantis.framework.jellyfish.metrics.Counter;
 import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 import indi.atlantis.framework.jellyfish.metrics.Summary;
@@ -45,13 +45,13 @@ import indi.atlantis.framework.vortex.utils.StatisticalMetric;
 @RestController
 public class CatalogController {
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@GetMapping("/list")
 	public Response pathList(@RequestParam(name = "level", required = false, defaultValue = "0") int level) {
-		List<Catalog> catalogs = catalogContext.getCatalogs();
+		List<Catalog> catalogs = catalogMetricContext.getCatalogs();
 		catalogs = catalogs.stream().filter(c -> c.getLevel() == level).collect(Collectors.toList());
 		Collections.sort(catalogs);
 		return Response.success(catalogs);
@@ -59,7 +59,7 @@ public class CatalogController {
 
 	@PostMapping("/summary")
 	public Response summary(@RequestBody Catalog catalog) {
-		Summary catalogSummary = catalogContext.getSummary(catalog);
+		Summary catalogSummary = catalogMetricContext.getSummary(catalog);
 		return catalogSummary != null ? Response.success(catalogSummary.toEntries()) : Response.success();
 	}
 
@@ -75,7 +75,7 @@ public class CatalogController {
 		case RT:
 		case CC:
 		case QPS:
-			CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
+			CatalogMetricCollector<StatisticalMetric> collector = catalogMetricContext.statisticCollector();
 			Map<String, StatisticalMetric> sequence = collector.sequence(catalog, metric);
 			for (Map.Entry<String, StatisticalMetric> entry : sequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
@@ -92,7 +92,7 @@ public class CatalogController {
 			}
 			return data;
 		case COUNT:
-			CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = catalogContext.countingCollector();
+			CatalogMetricCollector<CustomizedMetric<Counter>> countingCollector = catalogMetricContext.countingCollector();
 			Map<String, CustomizedMetric<Counter>> countingSequence = countingCollector.sequence(catalog, metric);
 			for (Map.Entry<String, CustomizedMetric<Counter>> entry : countingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().get());
@@ -103,7 +103,7 @@ public class CatalogController {
 			}
 			return data;
 		case HTTP_STATUS:
-			CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogContext
+			CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogMetricContext
 					.httpStatusCountingCollector();
 			Map<String, CustomizedMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingCollector.sequence(catalog,
 					metric);

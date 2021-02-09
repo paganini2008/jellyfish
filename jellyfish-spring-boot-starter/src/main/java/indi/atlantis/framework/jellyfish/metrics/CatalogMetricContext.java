@@ -23,18 +23,18 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * CatalogContext
+ * CatalogMetricContext
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public final class CatalogContext {
+public final class CatalogMetricContext {
 
 	private final Map<Catalog, Summary> summary = new ConcurrentHashMap<Catalog, Summary>();
-	private final CatalogMetricsCollector<StatisticalMetric> statisticCollector = new CatalogMetricsCollector<StatisticalMetric>();
-	private final CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector = new CatalogMetricsCollector<CustomizedMetric<Counter>>();
-	private final CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = new CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>>();
+	private final CatalogMetricCollector<StatisticalMetric> statisticCollector = new CatalogMetricCollector<StatisticalMetric>();
+	private final CatalogMetricCollector<CustomizedMetric<Counter>> countingCollector = new CatalogMetricCollector<CustomizedMetric<Counter>>();
+	private final CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = new CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>>();
 
 	public List<Catalog> getCatalogs() {
 		return new ArrayList<Catalog>(summary.keySet());
@@ -44,15 +44,15 @@ public final class CatalogContext {
 		return MapUtils.get(summary, catalog, () -> new Summary());
 	}
 
-	public CatalogMetricsCollector<StatisticalMetric> statisticCollector() {
+	public CatalogMetricCollector<StatisticalMetric> statisticCollector() {
 		return statisticCollector;
 	}
 
-	public CatalogMetricsCollector<CustomizedMetric<Counter>> countingCollector() {
+	public CatalogMetricCollector<CustomizedMetric<Counter>> countingCollector() {
 		return countingCollector;
 	}
 
-	public CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector() {
+	public CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector() {
 		return httpStatusCountingCollector;
 	}
 

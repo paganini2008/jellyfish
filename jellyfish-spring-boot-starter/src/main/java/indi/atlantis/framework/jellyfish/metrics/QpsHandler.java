@@ -19,9 +19,9 @@ import indi.atlantis.framework.vortex.utils.StatisticalMetrics;
  */
 public class QpsHandler implements Handler {
 
-	@Qualifier("primaryCatalogContext")
+	@Qualifier("primaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -42,7 +42,7 @@ public class QpsHandler implements Handler {
 	private void doCollect(Catalog catalog, Tuple tuple) {
 		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField(QPS, Integer.class);
-		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
+		CatalogMetricCollector<StatisticalMetric> collector = catalogMetricContext.statisticCollector();
 		collector.update(catalog, QPS, timestamp, StatisticalMetrics.valueOf(qps, timestamp));
 	}
 

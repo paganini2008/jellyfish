@@ -18,7 +18,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
-import indi.atlantis.framework.jellyfish.metrics.CatalogContext;
+import indi.atlantis.framework.jellyfish.metrics.CatalogMetricContext;
 import indi.atlantis.framework.jellyfish.metrics.FullCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.FullHttpStatusCountingSynchronizer;
 import indi.atlantis.framework.jellyfish.metrics.FullStatisticSynchronizer;
@@ -126,13 +126,13 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public CatalogContext primaryCatalogContext() {
-		return new CatalogContext();
+	public CatalogMetricContext primaryCatalogMetricContext() {
+		return new CatalogMetricContext();
 	}
 
 	@Bean
-	public CatalogContext secondaryCatalogContext() {
-		return new CatalogContext();
+	public CatalogMetricContext secondaryCatalogMetricContext() {
+		return new CatalogMetricContext();
 	}
 
 	@Bean

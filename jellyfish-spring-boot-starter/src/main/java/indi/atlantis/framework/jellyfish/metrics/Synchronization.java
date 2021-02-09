@@ -34,13 +34,13 @@ public class Synchronization {
 	@Autowired
 	private NioClient nioClient;
 
-	@Qualifier("primaryCatalogContext")
+	@Qualifier("primaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext primaryCatalogContext;
+	private CatalogMetricContext primaryCatalogMetricContext;
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext secondaryCatalogContext;
+	private CatalogMetricContext secondaryCatalogMetricContext;
 
 	@Value("${atlantis.framework.jellyfish.metrics.synchronizer.interval:5}")
 	private int interval;
@@ -62,10 +62,10 @@ public class Synchronization {
 			});
 			for (ServerInfo serverInfo : serverInfos) {
 				InetSocketAddress remoteAddress = new InetSocketAddress(serverInfo.getHostName(), serverInfo.getPort());
-				secondaryCatalogContext.synchronizeSummaryData(nioClient, remoteAddress, false);
-				secondaryCatalogContext.synchronizeCountingData(nioClient, remoteAddress, false);
-				secondaryCatalogContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, false);
-				secondaryCatalogContext.synchronizeStatisticData(nioClient, remoteAddress, false);
+				secondaryCatalogMetricContext.synchronizeSummaryData(nioClient, remoteAddress, false);
+				secondaryCatalogMetricContext.synchronizeCountingData(nioClient, remoteAddress, false);
+				secondaryCatalogMetricContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, false);
+				secondaryCatalogMetricContext.synchronizeStatisticData(nioClient, remoteAddress, false);
 			}
 		}, Duration.ofSeconds(interval));
 		log.info("Start full synchronization from {} with {} seconds.", leaderInfo, interval);
@@ -79,10 +79,10 @@ public class Synchronization {
 			ServerInfo serverInfo = applicationTransportContext.getServerInfo(leaderInfo);
 			if (serverInfo != null) {
 				InetSocketAddress remoteAddress = new InetSocketAddress(serverInfo.getHostName(), serverInfo.getPort());
-				primaryCatalogContext.synchronizeSummaryData(nioClient, remoteAddress, true);
-				primaryCatalogContext.synchronizeCountingData(nioClient, remoteAddress, true);
-				primaryCatalogContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, true);
-				primaryCatalogContext.synchronizeStatisticData(nioClient, remoteAddress, true);
+				primaryCatalogMetricContext.synchronizeSummaryData(nioClient, remoteAddress, true);
+				primaryCatalogMetricContext.synchronizeCountingData(nioClient, remoteAddress, true);
+				primaryCatalogMetricContext.synchronizeHttpStatusCountingData(nioClient, remoteAddress, true);
+				primaryCatalogMetricContext.synchronizeStatisticData(nioClient, remoteAddress, true);
 			} else {
 				log.warn("Leader nioserver is not available now.");
 			}

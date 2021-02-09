@@ -18,9 +18,9 @@ public class FullHttpStatusCountingSynchronizer implements Handler {
 
 	public static final String TOPIC_NAME = FullHttpStatusCountingSynchronizer.class.getName();
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -33,7 +33,7 @@ public class FullHttpStatusCountingSynchronizer implements Handler {
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
 
-		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> collector = catalogContext.httpStatusCountingCollector();
+		CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>> collector = catalogMetricContext.httpStatusCountingCollector();
 		collector.update(catalog, MetricNames.HTTP_STATUS, timestamp, new HttpStatusCountingMetric(
 				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false), false);
 

@@ -18,9 +18,9 @@ public class IncrementalHttpStatusCountingSynchronizer implements Handler {
 
 	public static final String TOPIC_NAME = IncrementalHttpStatusCountingSynchronizer.class.getName();
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -33,7 +33,7 @@ public class IncrementalHttpStatusCountingSynchronizer implements Handler {
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
 
-		CatalogMetricsCollector<CustomizedMetric<HttpStatusCounter>> statisticCollector = catalogContext.httpStatusCountingCollector();
+		CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>> statisticCollector = catalogMetricContext.httpStatusCountingCollector();
 		statisticCollector.update(catalog, MetricNames.HTTP_STATUS, timestamp, new HttpStatusCountingMetric(
 				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false));
 

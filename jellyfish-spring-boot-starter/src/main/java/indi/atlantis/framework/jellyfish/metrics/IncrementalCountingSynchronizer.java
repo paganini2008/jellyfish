@@ -18,9 +18,9 @@ public class IncrementalCountingSynchronizer implements Handler {
 
 	public static final String TOPIC_NAME = IncrementalCountingSynchronizer.class.getName();
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -29,7 +29,7 @@ public class IncrementalCountingSynchronizer implements Handler {
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		long timestamp = tuple.getTimestamp();
-		CatalogMetricsCollector<CustomizedMetric<Counter>> collector = catalogContext.countingCollector();
+		CatalogMetricCollector<CustomizedMetric<Counter>> collector = catalogMetricContext.countingCollector();
 		collector.update(category, MetricNames.COUNT, timestamp,
 				new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false));
 	}

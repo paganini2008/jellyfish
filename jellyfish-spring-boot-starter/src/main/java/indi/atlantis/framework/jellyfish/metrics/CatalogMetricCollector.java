@@ -12,12 +12,12 @@ import indi.atlantis.framework.vortex.utils.SpanUnit;
 
 /**
  * 
- * CatalogMetricsCollector
+ * CatalogMetricCollector
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CatalogMetricsCollector<T extends Metric<T>> {
+public class CatalogMetricCollector<T extends Metric<T>> {
 
 	private final Map<Catalog, SequentialMetricsCollector<T>> collectors = new ConcurrentHashMap<Catalog, SequentialMetricsCollector<T>>();
 	private int span = 1;

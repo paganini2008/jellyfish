@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 
 import indi.atlantis.framework.seafloor.InstanceId;
+import indi.atlantis.framework.seafloor.LeaderState;
 import indi.atlantis.framework.seafloor.election.ApplicationClusterLeaderEvent;
 
 /**
@@ -23,7 +24,9 @@ public class FullSynchronizationListener implements ApplicationListener<Applicat
 
 	@Override
 	public void onApplicationEvent(ApplicationClusterLeaderEvent event) {
-		synchronization.startFullSynchronization(instanceId.getApplicationInfo());
+		if (event.getLeaderState() == LeaderState.LEADABLE) {
+			synchronization.startFullSynchronization(instanceId.getApplicationInfo());
+		}
 	}
 
 }

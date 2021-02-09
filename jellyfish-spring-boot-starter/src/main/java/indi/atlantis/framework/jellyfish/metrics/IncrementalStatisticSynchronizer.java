@@ -19,9 +19,9 @@ public class IncrementalStatisticSynchronizer implements Handler {
 
 	public static final String TOPIC_NAME = IncrementalStatisticSynchronizer.class.getName();
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -32,7 +32,7 @@ public class IncrementalStatisticSynchronizer implements Handler {
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		CatalogMetricsCollector<StatisticalMetric> collector = catalogContext.statisticCollector();
+		CatalogMetricCollector<StatisticalMetric> collector = catalogMetricContext.statisticCollector();
 		collector.update(catalog, metric, timestamp,
 				new StatisticalMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false));
 	}

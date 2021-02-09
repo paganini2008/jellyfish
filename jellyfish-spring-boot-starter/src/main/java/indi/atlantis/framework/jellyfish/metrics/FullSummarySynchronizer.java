@@ -17,15 +17,15 @@ public class FullSummarySynchronizer implements Handler {
 
 	public static final String TOPIC_NAME = FullSummarySynchronizer.class.getName();
 
-	@Qualifier("secondaryCatalogContext")
+	@Qualifier("secondaryCatalogMetricContext")
 	@Autowired
-	private CatalogContext catalogContext;
+	private CatalogMetricContext catalogMetricContext;
 
 	@Override
 	public void onData(Tuple tuple) {
 
 		Catalog catalog = Catalog.of(tuple);
-		Summary summary = catalogContext.getSummary(catalog);
+		Summary summary = catalogMetricContext.getSummary(catalog);
 		summary.clear();
 
 		long count = tuple.getField("count", Long.class);

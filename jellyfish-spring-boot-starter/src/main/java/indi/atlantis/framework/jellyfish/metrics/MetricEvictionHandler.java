@@ -1,6 +1,6 @@
 package indi.atlantis.framework.jellyfish.metrics;
 
-import indi.atlantis.framework.vortex.utils.Metric;
+import indi.atlantis.framework.vortex.aggregation.Metric;
 
 /**
  * 

@@ -31,8 +31,8 @@ import indi.atlantis.framework.jellyfish.metrics.CatalogMetricContext;
 import indi.atlantis.framework.jellyfish.metrics.Counter;
 import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
 import indi.atlantis.framework.jellyfish.metrics.Summary;
-import indi.atlantis.framework.vortex.utils.CustomizedMetric;
-import indi.atlantis.framework.vortex.utils.StatisticalMetric;
+import indi.atlantis.framework.vortex.aggregation.CustomizedMetric;
+import indi.atlantis.framework.vortex.aggregation.StatisticalMetric;
 
 /**
  * 

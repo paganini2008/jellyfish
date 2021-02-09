@@ -5,10 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
-import indi.atlantis.framework.vortex.utils.Metric;
-import indi.atlantis.framework.vortex.utils.SequentialMetricsCollector;
-import indi.atlantis.framework.vortex.utils.SimpleSequentialMetricsCollector;
-import indi.atlantis.framework.vortex.utils.SpanUnit;
+import indi.atlantis.framework.vortex.aggregation.Metric;
+import indi.atlantis.framework.vortex.aggregation.SequentialMetricsCollector;
+import indi.atlantis.framework.vortex.aggregation.SimpleSequentialMetricsCollector;
+import indi.atlantis.framework.vortex.aggregation.SpanUnit;
 
 /**
  * 

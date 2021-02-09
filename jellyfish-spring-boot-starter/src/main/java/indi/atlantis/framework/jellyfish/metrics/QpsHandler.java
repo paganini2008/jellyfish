@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import indi.atlantis.framework.vortex.Handler;
+import indi.atlantis.framework.vortex.aggregation.StatisticalMetric;
+import indi.atlantis.framework.vortex.aggregation.StatisticalMetrics;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.utils.StatisticalMetric;
-import indi.atlantis.framework.vortex.utils.StatisticalMetrics;
 
 /**
  * 

@@ -2,7 +2,7 @@ package indi.atlantis.framework.jellyfish.metrics;
 
 import org.springframework.http.HttpStatus;
 
-import indi.atlantis.framework.vortex.utils.CustomizedMetric;
+import indi.atlantis.framework.vortex.aggregation.CustomizedMetric;
 
 /**
  * 

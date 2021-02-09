@@ -3,7 +3,7 @@ package indi.atlantis.framework.jellyfish.ui;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import indi.atlantis.framework.vortex.utils.SpanUnit;
+import indi.atlantis.framework.vortex.aggregation.SpanUnit;
 
 /**
  * 

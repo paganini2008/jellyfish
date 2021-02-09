@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
+import indi.atlantis.framework.vortex.aggregation.CustomizedMetric;
+import indi.atlantis.framework.vortex.aggregation.StatisticalMetric;
+import indi.atlantis.framework.vortex.aggregation.StatisticalMetrics;
 import indi.atlantis.framework.vortex.common.NioClient;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.utils.CustomizedMetric;
-import indi.atlantis.framework.vortex.utils.StatisticalMetric;
-import indi.atlantis.framework.vortex.utils.StatisticalMetrics;
 import lombok.extern.slf4j.Slf4j;
 
 /**

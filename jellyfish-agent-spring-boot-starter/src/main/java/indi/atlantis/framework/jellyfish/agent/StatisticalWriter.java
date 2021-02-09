@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class StatisticalWriter implements HandlerInterceptor {
 
-	static final String REQUEST_ID = "jellyfish-monitor-request-id";
-	static final String REQUEST_TIMESTAMP = "jellyfish-monitor-request-time";
+	static final String REQUEST_ID = "jellyfish-agent-request-id";
+	static final String REQUEST_TIMESTAMP = "jellyfish-agent-request-time";
 
 	@Override
 	public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

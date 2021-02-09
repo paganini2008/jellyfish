@@ -45,7 +45,7 @@ import indi.atlantis.framework.vortex.utils.StatisticalMetric;
 @RestController
 public class CatalogController {
 
-	@Qualifier("primaryCatalogContext")
+	@Qualifier("secondaryCatalogContext")
 	@Autowired
 	private CatalogContext catalogContext;
 

@@ -75,7 +75,7 @@ public class Synchronization {
 		if (incrementalFuture != null) {
 			incrementalFuture.cancel(false);
 		}
-		taskScheduler.scheduleWithFixedDelay(() -> {
+		incrementalFuture = taskScheduler.scheduleWithFixedDelay(() -> {
 			ServerInfo serverInfo = applicationTransportContext.getServerInfo(leaderInfo);
 			if (serverInfo != null) {
 				InetSocketAddress remoteAddress = new InetSocketAddress(serverInfo.getHostName(), serverInfo.getPort());
@@ -92,13 +92,13 @@ public class Synchronization {
 
 	public void stopFullSynchronization() {
 		if (fullFuture != null) {
-			fullFuture.cancel(false);
+			fullFuture.cancel(true);
 		}
 	}
 
 	public void stopIncrementalSynchronization() {
 		if (incrementalFuture != null) {
-			incrementalFuture.cancel(false);
+			incrementalFuture.cancel(true);
 		}
 	}
 

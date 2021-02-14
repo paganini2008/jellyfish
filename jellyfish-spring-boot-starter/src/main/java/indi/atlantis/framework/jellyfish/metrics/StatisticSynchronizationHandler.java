@@ -12,6 +12,7 @@ import indi.atlantis.framework.vortex.sequence.MetricSequencer;
 import indi.atlantis.framework.vortex.sequence.NumberMetric;
 import indi.atlantis.framework.vortex.sequence.NumberMetrics;
 import indi.atlantis.framework.vortex.sequence.UserMetric;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -20,6 +21,7 @@ import indi.atlantis.framework.vortex.sequence.UserMetric;
  * @author Jimmy Hoff
  * @version 1.0
  */
+@Slf4j
 public class StatisticSynchronizationHandler implements Handler {
 
 	private final String topic;
@@ -46,6 +48,9 @@ public class StatisticSynchronizationHandler implements Handler {
 		case CC:
 		case QPS:
 			synchronizeLongMetric(metric, tuple);
+			break;
+		default:
+			log.warn("Unknown metric for synchronization: {}", metric);
 			break;
 		}
 	}

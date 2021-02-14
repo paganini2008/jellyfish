@@ -1,5 +1,7 @@
 package indi.atlantis.framework.jellyfish.metrics;
 
+import java.io.Serializable;
+
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
@@ -16,8 +18,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class HttpStatusCounter {
+public class HttpStatusCounter implements Serializable {
 
+	private static final long serialVersionUID = -3704644371457858977L;
 	private long countOf1xx;
 	private long countOf2xx;
 	private long countOf3xx;

@@ -1,4 +1,4 @@
-package indi.atlantis.framework.jellyfish.ui;
+package indi.atlantis.framework.jellyfish.metrics;
 
 import static indi.atlantis.framework.jellyfish.metrics.MetricNames.CC;
 import static indi.atlantis.framework.jellyfish.metrics.MetricNames.COUNT;
@@ -26,11 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
-import indi.atlantis.framework.jellyfish.metrics.Catalog;
-import indi.atlantis.framework.jellyfish.metrics.Counter;
-import indi.atlantis.framework.jellyfish.metrics.Environment;
-import indi.atlantis.framework.jellyfish.metrics.HttpStatusCounter;
-import indi.atlantis.framework.jellyfish.metrics.Summary;
+import indi.atlantis.framework.jellyfish.ui.Response;
 import indi.atlantis.framework.vortex.sequence.DataRenderer;
 import indi.atlantis.framework.vortex.sequence.MetricSequencer;
 import indi.atlantis.framework.vortex.sequence.NumberMetric;
@@ -50,7 +46,7 @@ public class CatalogController {
 	@Value("${atlantis.framework.jellyfish.ui.metric.sort:true}")
 	private boolean asc;
 
-	@Qualifier("secondaryEnviroment")
+	@Qualifier("secondaryEnvironment")
 	@Autowired
 	private Environment environment;
 

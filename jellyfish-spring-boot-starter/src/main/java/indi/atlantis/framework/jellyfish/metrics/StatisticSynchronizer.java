@@ -9,6 +9,7 @@ import indi.atlantis.framework.vortex.sequence.NumberMetric;
 import indi.atlantis.framework.vortex.sequence.NumberMetrics;
 import indi.atlantis.framework.vortex.sequence.Synchronizer;
 import indi.atlantis.framework.vortex.sequence.UserMetric;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -17,6 +18,7 @@ import indi.atlantis.framework.vortex.sequence.UserMetric;
  * @author Jimmy Hoff
  * @version 1.0
  */
+@Slf4j
 public class StatisticSynchronizer implements Synchronizer {
 
 	private final String topic;
@@ -31,6 +33,7 @@ public class StatisticSynchronizer implements Synchronizer {
 
 	@Override
 	public void synchronize(NioClient nioClient, SocketAddress remoteAddress) {
+		log.trace("Statistic synchronization begin...");
 		environment.countingMetricSequencer().scan((catalog, metric, data) -> {
 			for (Map.Entry<String, UserMetric<Counter>> entry : data.entrySet()) {
 				Tuple tuple = forCounter(catalog, metric, entry.getValue());
@@ -49,6 +52,7 @@ public class StatisticSynchronizer implements Synchronizer {
 				nioClient.send(remoteAddress, tuple);
 			}
 		});
+		log.trace("Statistic synchronization end");
 	}
 
 	private Tuple forCounter(Catalog catalog, String metric, UserMetric<Counter> metricUnit) {

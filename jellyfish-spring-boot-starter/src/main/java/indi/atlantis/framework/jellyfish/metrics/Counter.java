@@ -1,5 +1,7 @@
 package indi.atlantis.framework.jellyfish.metrics;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,8 +16,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Counter {
+public class Counter implements Serializable {
 
+	private static final long serialVersionUID = -8870925173668637122L;
 	private long count;
 	private long failedCount;
 	private long timeoutCount;

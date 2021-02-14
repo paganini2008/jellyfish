@@ -9,6 +9,7 @@ import indi.atlantis.framework.vortex.sequence.NumberMetric;
 import indi.atlantis.framework.vortex.sequence.NumberMetrics;
 import indi.atlantis.framework.vortex.sequence.Synchronizer;
 import indi.atlantis.framework.vortex.sequence.UserMetric;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -17,6 +18,7 @@ import indi.atlantis.framework.vortex.sequence.UserMetric;
  * @author Jimmy Hoff
  * @version 1.0
  */
+@Slf4j
 public class SummarySynchronizer implements Synchronizer {
 
 	private final String topic;
@@ -31,6 +33,7 @@ public class SummarySynchronizer implements Synchronizer {
 
 	@Override
 	public void synchronize(NioClient nioClient, SocketAddress remoteAddress) {
+		log.trace("Summary synchronization begin...");
 		environment.getCatalogs().forEach(catalog -> {
 			Summary summary = environment.getSummary(catalog);
 			for (Map.Entry<String, UserMetric<Counter>> entry : summary.countingMetricCollector().all().entrySet()) {
@@ -46,7 +49,7 @@ public class SummarySynchronizer implements Synchronizer {
 				nioClient.send(remoteAddress, tuple);
 			}
 		});
-
+		log.trace("Summary synchronization end.");
 	}
 
 	private Tuple forHttpStatusCounter(Catalog catalog, String metric, UserMetric<HttpStatusCounter> metricUnit, Summary summary) {
@@ -71,7 +74,7 @@ public class SummarySynchronizer implements Synchronizer {
 		tuple.setField("countOf4xx", countOf4xx);
 		tuple.setField("countOf5xx", countOf5xx);
 		tuple.setField("timestamp", timestamp);
-		
+
 		if (incremental) {
 			summary.httpStatusCountingMetricCollector().set(metric, new HttpStatusCountingMetric(
 					new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, true), true);
@@ -97,7 +100,7 @@ public class SummarySynchronizer implements Synchronizer {
 		tuple.setField("failedCount", failedCount);
 		tuple.setField("timeoutCount", timeoutCount);
 		tuple.setField("timestamp", timestamp);
-		
+
 		if (incremental) {
 			summary.countingMetricCollector().set(metric,
 					new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, true), true);

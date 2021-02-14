@@ -50,7 +50,7 @@ import redis.clients.jedis.JedisPoolConfig;
 @Configuration(proxyBeanMethods = false)
 public class JellyfishAutoConfiguration {
 
-	private static final String keyPattern = "atlantis:framework:jellyfish:id:%s";
+	private static final String idKeyPattern = "atlantis:framework:jellyfish:id:%s";
 
 	@Value("${spring.application.cluster.name:default}")
 	private String clusterName;
@@ -64,7 +64,7 @@ public class JellyfishAutoConfiguration {
 
 	@Autowired
 	public void configureBufferZone(BufferZone bufferZone, InstanceId instanceId) {
-		String subNamePrefix = clusterName + ":" + instanceId.get();
+		final String subNamePrefix = clusterName + ":" + instanceId.get();
 		bufferZone.setCollectionNamePrefix(BufferZone.DEFAULT_COLLECTION_NAME_PREFIX, subNamePrefix);
 	}
 
@@ -163,7 +163,7 @@ public class JellyfishAutoConfiguration {
 	@ConditionalOnMissingBean(name = "logIdGenerator")
 	@Bean
 	public IdGenerator logIdGenerator(RedisConnectionFactory redisConnectionFactory) {
-		final String keyPrefix = String.format(keyPattern, clusterName);
+		final String keyPrefix = String.format(idKeyPattern, clusterName);
 		return new TimestampIdGenerator(keyPrefix, redisConnectionFactory);
 	}
 

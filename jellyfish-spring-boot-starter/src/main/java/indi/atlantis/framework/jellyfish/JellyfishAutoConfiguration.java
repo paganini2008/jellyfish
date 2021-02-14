@@ -3,6 +3,7 @@ package indi.atlantis.framework.jellyfish;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,26 +19,23 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
-import indi.atlantis.framework.jellyfish.metrics.CatalogMetricContext;
-import indi.atlantis.framework.jellyfish.metrics.FullCountingSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.FullHttpStatusCountingSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.FullStatisticSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.FullSummarySynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.FullSynchronizationListener;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalCountingSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalHttpStatusCountingSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalStatisticSynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalSummarySynchronizer;
-import indi.atlantis.framework.jellyfish.metrics.IncrementalSynchronizationListener;
+import indi.atlantis.framework.jellyfish.metrics.Environment;
 import indi.atlantis.framework.jellyfish.metrics.QpsHandler;
-import indi.atlantis.framework.jellyfish.metrics.RealtimeStatisticHandler;
-import indi.atlantis.framework.jellyfish.metrics.Synchronization;
+import indi.atlantis.framework.jellyfish.metrics.StatisticHandler;
+import indi.atlantis.framework.jellyfish.metrics.StatisticSynchronizationHandler;
+import indi.atlantis.framework.jellyfish.metrics.StatisticSynchronizer;
+import indi.atlantis.framework.jellyfish.metrics.SummarySynchronizationHandler;
+import indi.atlantis.framework.jellyfish.metrics.SummarySynchronizer;
 import indi.atlantis.framework.reditools.common.IdGenerator;
 import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
 import indi.atlantis.framework.seafloor.InstanceId;
+import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.HashPartitioner;
 import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
+import indi.atlantis.framework.vortex.sequence.FullSynchronizationExecutor;
+import indi.atlantis.framework.vortex.sequence.IncrementalSynchronizationExecutor;
+import indi.atlantis.framework.vortex.sequence.Synchronizer;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -71,83 +69,85 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public Slf4jHandler slf4jHandler() {
+	public Environment primaryEnvironment() {
+		return new Environment();
+	}
+
+	@Bean
+	public Environment secondaryEnvironment() {
+		return new Environment();
+	}
+
+	@Bean
+	public Handler slf4jHandler() {
 		return new Slf4jHandler();
 	}
 
 	@Bean
-	public RealtimeStatisticHandler realtimeStatisticalHandler() {
-		return new RealtimeStatisticHandler();
+	public Handler statisticHandler() {
+		return new StatisticHandler();
 	}
 
 	@Bean
-	public QpsHandler qpsHandler() {
+	public Handler qpsHandler() {
 		return new QpsHandler();
 	}
 
 	@Bean
-	public IncrementalSummarySynchronizer incrementalSummarySynchronizer() {
-		return new IncrementalSummarySynchronizer();
+	public Handler statisticSynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+		return new StatisticSynchronizationHandler("statistic-", environment, false);
 	}
 
 	@Bean
-	public IncrementalCountingSynchronizer incrementalCountingSynchronizer() {
-		return new IncrementalCountingSynchronizer();
+	public Handler incrementalStatisticSynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+		return new StatisticSynchronizationHandler("statistic+", environment, true);
 	}
 
 	@Bean
-	public IncrementalHttpStatusCountingSynchronizer incrementalHttpStatusCountingSynchronizer() {
-		return new IncrementalHttpStatusCountingSynchronizer();
+	public Handler summarySynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+		return new SummarySynchronizationHandler("summary-", environment, false);
 	}
 
 	@Bean
-	public IncrementalStatisticSynchronizer incrementalStatisticSynchronizer() {
-		return new IncrementalStatisticSynchronizer();
+	public Handler incrementalSummarySynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+		return new SummarySynchronizationHandler("summary+", environment, true);
 	}
 
 	@Bean
-	public FullSummarySynchronizer summarySynchronizer() {
-		return new FullSummarySynchronizer();
+	public Synchronizer statisticSynchronizer(@Qualifier("secondaryEnvironment") Environment environment) {
+		return new StatisticSynchronizer("statistic-", environment, false);
 	}
 
 	@Bean
-	public FullCountingSynchronizer countingSynchronizer() {
-		return new FullCountingSynchronizer();
+	public Synchronizer incrementalStatisticSynchronizer(@Qualifier("primaryEnvironment") Environment environment) {
+		return new StatisticSynchronizer("statistic+", environment, true);
 	}
 
 	@Bean
-	public FullHttpStatusCountingSynchronizer httpStatusCountingSynchronizer() {
-		return new FullHttpStatusCountingSynchronizer();
+	public Synchronizer summarySynchronizer(@Qualifier("secondaryEnvironment") Environment environment) {
+		return new SummarySynchronizer("summary-", environment, false);
 	}
 
 	@Bean
-	public FullStatisticSynchronizer statisticSynchronizer() {
-		return new FullStatisticSynchronizer();
+	public Synchronizer incrementalSummarySynchronizer(@Qualifier("primaryEnvironment") Environment environment) {
+		return new SummarySynchronizer("summary+", environment, true);
 	}
 
 	@Bean
-	public CatalogMetricContext primaryCatalogMetricContext() {
-		return new CatalogMetricContext();
+	public FullSynchronizationExecutor fullSynchronizationExecutor(@Qualifier("summarySynchronizer") Synchronizer summarySynchronizer,
+			@Qualifier("statisticSynchronizer") Synchronizer statisticSynchronizer) {
+		FullSynchronizationExecutor executor = new FullSynchronizationExecutor();
+		executor.addSynchronizers(summarySynchronizer, statisticSynchronizer);
+		return executor;
 	}
 
 	@Bean
-	public CatalogMetricContext secondaryCatalogMetricContext() {
-		return new CatalogMetricContext();
-	}
-
-	@Bean
-	public IncrementalSynchronizationListener incrementalSynchronizationListener() {
-		return new IncrementalSynchronizationListener();
-	}
-
-	@Bean
-	public FullSynchronizationListener fullSynchronizationListener() {
-		return new FullSynchronizationListener();
-	}
-
-	@Bean
-	public Synchronization synchronization() {
-		return new Synchronization();
+	public IncrementalSynchronizationExecutor incrementalSynchronizationExecutor(
+			@Qualifier("incrementalSummarySynchronizer") Synchronizer summarySynchronizer,
+			@Qualifier("incrementalStatisticSynchronizer") Synchronizer statisticSynchronizer) {
+		IncrementalSynchronizationExecutor executor = new IncrementalSynchronizationExecutor();
+		executor.addSynchronizers(summarySynchronizer, statisticSynchronizer);
+		return executor;
 	}
 
 	@Bean

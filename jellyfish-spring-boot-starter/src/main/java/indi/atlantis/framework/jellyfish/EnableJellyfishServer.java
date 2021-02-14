@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 
 import indi.atlantis.framework.jellyfish.ui.JellyfishUIAutoConfiguration;
 import indi.atlantis.framework.seafloor.EnableApplicationCluster;
-import indi.atlantis.framework.vortex.EnableVortex;
+import indi.atlantis.framework.vortex.EnableNioTransport;
 
 /**
  * 
@@ -22,7 +22,7 @@ import indi.atlantis.framework.vortex.EnableVortex;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@EnableVortex
+@EnableNioTransport
 @EnableApplicationCluster(enableLeaderElection = true, enableMonitor = true)
 @Import({ JellyfishAutoConfiguration.class, JellyfishUIAutoConfiguration.class })
 public @interface EnableJellyfishServer {

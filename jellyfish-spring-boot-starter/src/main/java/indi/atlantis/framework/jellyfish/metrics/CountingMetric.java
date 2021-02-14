@@ -1,6 +1,9 @@
 package indi.atlantis.framework.jellyfish.metrics;
 
-import indi.atlantis.framework.vortex.aggregation.CustomizedMetric;
+import java.util.HashMap;
+import java.util.Map;
+
+import indi.atlantis.framework.vortex.sequence.UserMetric;
 
 /**
  * 
@@ -9,7 +12,7 @@ import indi.atlantis.framework.vortex.aggregation.CustomizedMetric;
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class CountingMetric implements CustomizedMetric<Counter> {
+public class CountingMetric implements UserMetric<Counter> {
 
 	public CountingMetric(boolean failed, boolean timeout, long timestamp) {
 		this(new Counter(1, failed ? 1 : 0, timeout ? 1 : 0), timestamp, false);
@@ -31,7 +34,7 @@ public class CountingMetric implements CustomizedMetric<Counter> {
 	}
 
 	@Override
-	public CustomizedMetric<Counter> reset(CustomizedMetric<Counter> currentMetric) {
+	public UserMetric<Counter> reset(UserMetric<Counter> currentMetric) {
 		Counter current = this.get();
 		Counter update = currentMetric.get();
 		Counter counter = new Counter();
@@ -42,7 +45,7 @@ public class CountingMetric implements CustomizedMetric<Counter> {
 	}
 
 	@Override
-	public CustomizedMetric<Counter> merge(CustomizedMetric<Counter> anotherMetric) {
+	public UserMetric<Counter> merge(UserMetric<Counter> anotherMetric) {
 		Counter current = this.get();
 		Counter update = anotherMetric.get();
 		Counter counter = new Counter();
@@ -60,6 +63,16 @@ public class CountingMetric implements CustomizedMetric<Counter> {
 	@Override
 	public Counter get() {
 		return counter;
+	}
+
+	@Override
+	public Map<String, Object> toEntries() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("count", counter.getCount());
+		map.put("successCount", counter.getSuccessCount());
+		map.put("failedCount", counter.getFailedCount());
+		map.put("timeoutCount", counter.getTimeoutCount());
+		return map;
 	}
 
 }

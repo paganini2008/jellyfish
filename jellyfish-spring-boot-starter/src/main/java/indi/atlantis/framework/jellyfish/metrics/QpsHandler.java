@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import indi.atlantis.framework.vortex.Handler;
-import indi.atlantis.framework.vortex.aggregation.StatisticalMetric;
-import indi.atlantis.framework.vortex.aggregation.StatisticalMetrics;
 import indi.atlantis.framework.vortex.common.Tuple;
+import indi.atlantis.framework.vortex.sequence.MetricSequencer;
+import indi.atlantis.framework.vortex.sequence.NumberMetric;
+import indi.atlantis.framework.vortex.sequence.NumberMetrics;
 
 /**
  * 
@@ -19,9 +20,9 @@ import indi.atlantis.framework.vortex.common.Tuple;
  */
 public class QpsHandler implements Handler {
 
-	@Qualifier("primaryCatalogMetricContext")
+	@Qualifier("primaryEnvironment")
 	@Autowired
-	private CatalogMetricContext catalogMetricContext;
+	private Environment environment;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -42,8 +43,11 @@ public class QpsHandler implements Handler {
 	private void doCollect(Catalog catalog, Tuple tuple) {
 		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField(QPS, Integer.class);
-		CatalogMetricCollector<StatisticalMetric> collector = catalogMetricContext.statisticCollector();
-		collector.update(catalog, QPS, timestamp, StatisticalMetrics.valueOf(qps, timestamp));
+		MetricSequencer<Catalog, NumberMetric<Long>> sequencer = environment.longMetricSequencer();
+		sequencer.update(catalog, QPS, timestamp, NumberMetrics.valueOf(qps, timestamp));
+
+		Summary summary = environment.getSummary(catalog);
+		summary.longMetricCollector().set(QPS, NumberMetrics.valueOf(qps, timestamp), true);
 	}
 
 	@Override

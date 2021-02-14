@@ -9,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import indi.atlantis.framework.vortex.Handler;
-import indi.atlantis.framework.vortex.aggregation.CustomizedMetric;
-import indi.atlantis.framework.vortex.aggregation.StatisticalMetric;
-import indi.atlantis.framework.vortex.aggregation.StatisticalMetrics;
 import indi.atlantis.framework.vortex.common.Tuple;
+import indi.atlantis.framework.vortex.sequence.MetricSequencer;
+import indi.atlantis.framework.vortex.sequence.NumberMetric;
+import indi.atlantis.framework.vortex.sequence.NumberMetrics;
+import indi.atlantis.framework.vortex.sequence.UserMetric;
 
 /**
  * 
@@ -21,11 +22,11 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class RealtimeStatisticHandler implements Handler {
+public class StatisticHandler implements Handler {
 
-	@Qualifier("primaryCatalogMetricContext")
+	@Qualifier("primaryEnvironment")
 	@Autowired
-	private CatalogMetricContext catalogMetricContext;
+	private Environment environment;
 
 	@Override
 	public void onData(Tuple tuple) {
@@ -51,24 +52,25 @@ public class RealtimeStatisticHandler implements Handler {
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
 		CountingMetric countingMetric = new CountingMetric(failed, timeout, timestamp);
-		CatalogMetricCollector<CustomizedMetric<Counter>> countingCollector = catalogMetricContext.countingCollector();
-		countingCollector.update(catalog, COUNT, timestamp, countingMetric);
+		MetricSequencer<Catalog, UserMetric<Counter>> countingMetricSequencer = environment.countingMetricSequencer();
+		countingMetricSequencer.update(catalog, COUNT, timestamp, countingMetric);
 
 		HttpStatusCountingMetric httpStatusCountingMetric = new HttpStatusCountingMetric(httpStatusCode, timestamp);
-		CatalogMetricCollector<CustomizedMetric<HttpStatusCounter>> httpStatusCountingCollector = catalogMetricContext
-				.httpStatusCountingCollector();
-		httpStatusCountingCollector.update(catalog, HTTP_STATUS, timestamp, httpStatusCountingMetric);
-
-		Summary summary = catalogMetricContext.getSummary(catalog);
-		summary.merge(countingMetric.get());
-		summary.merge(httpStatusCountingMetric.get());
+		MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCountingMetricSequencer = environment
+				.httpStatusCountingMetricSequencer();
+		httpStatusCountingMetricSequencer.update(catalog, HTTP_STATUS, timestamp, httpStatusCountingMetric);
 
 		long elapsed = tuple.getField("elapsed", Long.class);
 		long concurrency = tuple.getField("concurrency", Long.class);
-		CatalogMetricCollector<StatisticalMetric> statisticCollector = catalogMetricContext.statisticCollector();
-		statisticCollector.update(catalog, RT, timestamp, StatisticalMetrics.valueOf(elapsed, timestamp));
-		statisticCollector.update(catalog, CC, timestamp, StatisticalMetrics.valueOf(concurrency, timestamp));
+		MetricSequencer<Catalog, NumberMetric<Long>> longMetricSequencer = environment.longMetricSequencer();
+		longMetricSequencer.update(catalog, RT, timestamp, NumberMetrics.valueOf(elapsed, timestamp));
+		longMetricSequencer.update(catalog, CC, timestamp, NumberMetrics.valueOf(concurrency, timestamp));
 
+		Summary summary = environment.getSummary(catalog);
+		summary.countingMetricCollector().set(COUNT, countingMetric, true);
+		summary.httpStatusCountingMetricCollector().set(HTTP_STATUS, httpStatusCountingMetric, true);
+		summary.longMetricCollector().set(RT, NumberMetrics.valueOf(elapsed, timestamp), true);
+		summary.longMetricCollector().set(CC, NumberMetrics.valueOf(concurrency, timestamp), true);
 	}
 
 	@Override

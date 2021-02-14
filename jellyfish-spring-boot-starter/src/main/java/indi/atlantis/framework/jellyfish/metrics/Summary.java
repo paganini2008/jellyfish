@@ -2,8 +2,11 @@ package indi.atlantis.framework.jellyfish.metrics;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
+import indi.atlantis.framework.vortex.sequence.MetricCollector;
+import indi.atlantis.framework.vortex.sequence.NumberMetric;
+import indi.atlantis.framework.vortex.sequence.SimpleMetricCollector;
+import indi.atlantis.framework.vortex.sequence.UserMetric;
 import lombok.ToString;
 
 /**
@@ -14,106 +17,36 @@ import lombok.ToString;
  * @version 1.0
  */
 @ToString
-public class Summary {
+public final class Summary {
 
-	private final AtomicLong totalExecution = new AtomicLong();
-	private final AtomicLong failedExecution = new AtomicLong();
-	private final AtomicLong timeoutExecution = new AtomicLong();
-
-	private final AtomicLong countOf1xx = new AtomicLong();
-	private final AtomicLong countOf2xx = new AtomicLong();
-	private final AtomicLong countOf3xx = new AtomicLong();
-	private final AtomicLong countOf4xx = new AtomicLong();
-	private final AtomicLong countOf5xx = new AtomicLong();
-
-	public long getTotalExecutionCount() {
-		return totalExecution.get();
-	}
-
-	public long getFailedExecutionCount() {
-		return failedExecution.get();
-	}
-
-	public long getTimeoutExecutionCount() {
-		return timeoutExecution.get();
-	}
-
-	public long getSuccessExecutionCount() {
-		return getTotalExecutionCount() - getFailedExecutionCount() - getTimeoutExecutionCount();
-	}
-
-	public long getCountOf1xx() {
-		return countOf1xx.get();
-	}
-
-	public long getCountOf2xx() {
-		return countOf2xx.get();
-	}
-
-	public long getCountOf3xx() {
-		return countOf3xx.get();
-	}
-
-	public long getCountOf4xx() {
-		return countOf4xx.get();
-	}
-
-	public long getCountOf5xx() {
-		return countOf5xx.get();
-	}
+	private final MetricCollector<NumberMetric<Long>> longMetricCollector = new SimpleMetricCollector<NumberMetric<Long>>();
+	private final MetricCollector<UserMetric<Counter>> countingMetricCollector = new SimpleMetricCollector<UserMetric<Counter>>();
+	private final MetricCollector<UserMetric<HttpStatusCounter>> httpStatusCountingMetricCollector = new SimpleMetricCollector<UserMetric<HttpStatusCounter>>();
 
 	public Map<String, Object> toEntries() {
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("totalExecutionCount", getTotalExecutionCount());
-		data.put("successExecutionCount", getSuccessExecutionCount());
-		data.put("failedExecutionCount", getFailedExecutionCount());
-		data.put("timeoutExecutionCount", getTimeoutExecutionCount());
-		data.put("countOf1xx", getCountOf1xx());
-		data.put("countOf2xx", getCountOf2xx());
-		data.put("countOf3xx", getCountOf3xx());
-		data.put("countOf4xx", getCountOf4xx());
-		data.put("countOf5xx", getCountOf5xx());
+		for (Map.Entry<String, UserMetric<Counter>> entry : countingMetricCollector.all().entrySet()) {
+			data.put(entry.getKey(), entry.getValue().toEntries());
+		}
+		for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : httpStatusCountingMetricCollector.all().entrySet()) {
+			data.put(entry.getKey(), entry.getValue().toEntries());
+		}
+		for (Map.Entry<String, NumberMetric<Long>> entry : longMetricCollector.all().entrySet()) {
+			data.put(entry.getKey(), entry.getValue().toEntries());
+		}
 		return data;
 	}
 
-	public void reset(Counter counter) {
-		totalExecution.addAndGet(-1 * counter.getCount());
-		failedExecution.addAndGet(-1 * counter.getFailedCount());
-		timeoutExecution.addAndGet(-1 * counter.getTimeoutCount());
+	public MetricCollector<NumberMetric<Long>> longMetricCollector() {
+		return longMetricCollector;
 	}
 
-	public void reset(HttpStatusCounter counter) {
-		countOf1xx.addAndGet(-1 * counter.getCountOf1xx());
-		countOf2xx.addAndGet(-1 * counter.getCountOf2xx());
-		countOf3xx.addAndGet(-1 * counter.getCountOf3xx());
-		countOf4xx.addAndGet(-1 * counter.getCountOf4xx());
-		countOf5xx.addAndGet(-1 * counter.getCountOf5xx());
+	public MetricCollector<UserMetric<Counter>> countingMetricCollector() {
+		return countingMetricCollector;
 	}
 
-	public void merge(Counter counter) {
-		totalExecution.addAndGet(counter.getCount());
-		failedExecution.addAndGet(counter.getFailedCount());
-		timeoutExecution.addAndGet(counter.getTimeoutCount());
-	}
-
-	public void merge(HttpStatusCounter counter) {
-		countOf1xx.addAndGet(counter.getCountOf1xx());
-		countOf2xx.addAndGet(counter.getCountOf2xx());
-		countOf3xx.addAndGet(counter.getCountOf3xx());
-		countOf4xx.addAndGet(counter.getCountOf4xx());
-		countOf5xx.addAndGet(counter.getCountOf5xx());
-	}
-
-	public void clear() {
-		totalExecution.set(0);
-		failedExecution.set(0);
-		timeoutExecution.set(0);
-		
-		countOf1xx.set(0);
-		countOf2xx.set(0);
-		countOf3xx.set(0);
-		countOf4xx.set(0);
-		countOf5xx.set(0);
+	public MetricCollector<UserMetric<HttpStatusCounter>> httpStatusCountingMetricCollector() {
+		return httpStatusCountingMetricCollector;
 	}
 
 }

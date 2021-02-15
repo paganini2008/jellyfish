@@ -10,44 +10,43 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>jellyfish-spring-boot-starter</artifactId>
+	<artifactId>jellyfish-console</artifactId>
 	<packaging>jar</packaging>
 
-	<name>jellyfish-spring-boot-starter</name>
+	<name>jellyfish-console</name>
 	<url>https://github.com/paganini2008/jellyfish</url>
 
 	<dependencies>
 		<dependency>
-			<groupId>indi.atlantis.framework</groupId>
-			<artifactId>vortex-common</artifactId>
-			<version>1.0-RC1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>indi.atlantis.framework</groupId>
-			<artifactId>vortex-spring-boot-starter</artifactId>
-			<version>1.0-RC1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-elasticsearch</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+
+		<dependency>
+			<artifactId>jellyfish-spring-boot-starter</artifactId>
+			<groupId>indi.atlantis.framework</groupId>
+			<version>1.0-RC1</version>
 		</dependency>
 	</dependencies>
 

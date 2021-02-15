@@ -33,6 +33,7 @@ import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.HashPartitioner;
 import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
+import indi.atlantis.framework.vortex.common.Partitioner;
 import indi.atlantis.framework.vortex.sequence.FullSynchronizationExecutor;
 import indi.atlantis.framework.vortex.sequence.IncrementalSynchronizationExecutor;
 import indi.atlantis.framework.vortex.sequence.Synchronizer;
@@ -56,10 +57,11 @@ public class JellyfishAutoConfiguration {
 	private String clusterName;
 
 	@Autowired
-	public void addHashPartitioner(NamedSelectionPartitioner partitioner) {
+	public void addPartitioner(Partitioner partitioner) {
+		NamedSelectionPartitioner namedSelectionPartitioner = (NamedSelectionPartitioner) partitioner;
 		final String[] fieldNames = { "clusterName", "applicationName", "host", "category", "path" };
 		HashPartitioner hashPartitioner = new HashPartitioner(fieldNames);
-		partitioner.addPartitioner(hashPartitioner);
+		namedSelectionPartitioner.addPartitioner(hashPartitioner);
 	}
 
 	@Autowired

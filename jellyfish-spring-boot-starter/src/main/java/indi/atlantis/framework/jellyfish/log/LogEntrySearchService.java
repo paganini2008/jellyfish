@@ -6,9 +6,9 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import com.github.paganini2008.devtools.jdbc.PageRequest;
 import com.github.paganini2008.devtools.jdbc.PageResponse;
 
-import indi.atlantis.framework.jellyfish.ui.HistoryQuery;
-import indi.atlantis.framework.jellyfish.ui.SearchQuery;
-import indi.atlantis.framework.jellyfish.ui.SearchResult;
+import indi.atlantis.framework.jellyfish.HistoryQuery;
+import indi.atlantis.framework.jellyfish.SearchQuery;
+import indi.atlantis.framework.jellyfish.SearchResult;
 
 /**
  * 

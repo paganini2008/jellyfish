@@ -1,7 +1,7 @@
 package indi.atlantis.framework.jellyfish.log;
 
-import static indi.atlantis.framework.jellyfish.ui.SearchResult.SEARCH_FIELD_MESSAGE;
-import static indi.atlantis.framework.jellyfish.ui.SearchResult.SEARCH_FIELD_REASON;
+import static indi.atlantis.framework.jellyfish.SearchResult.SEARCH_FIELD_MESSAGE;
+import static indi.atlantis.framework.jellyfish.SearchResult.SEARCH_FIELD_REASON;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 
 import com.github.paganini2008.devtools.StringUtils;
 
-import indi.atlantis.framework.jellyfish.ui.SearchQuery;
-import indi.atlantis.framework.jellyfish.ui.SearchResult;
+import indi.atlantis.framework.jellyfish.SearchQuery;
+import indi.atlantis.framework.jellyfish.SearchResult;
 
 /**
  * 

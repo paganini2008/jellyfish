@@ -1,8 +1,8 @@
 package indi.atlantis.framework.jellyfish.log;
 
-import static indi.atlantis.framework.jellyfish.ui.SearchResult.SEARCH_FIELD_MESSAGE;
-import static indi.atlantis.framework.jellyfish.ui.SearchResult.SEARCH_FIELD_REASON;
-import static indi.atlantis.framework.jellyfish.ui.SearchResult.SORTED_FIELD_CREATE_TIME;
+import static indi.atlantis.framework.jellyfish.SearchResult.SEARCH_FIELD_MESSAGE;
+import static indi.atlantis.framework.jellyfish.SearchResult.SEARCH_FIELD_REASON;
+import static indi.atlantis.framework.jellyfish.SearchResult.SORTED_FIELD_CREATE_TIME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import com.github.paganini2008.devtools.beans.BeanUtils;
 import com.github.paganini2008.devtools.jdbc.PageableResultSetSlice;
 
-import indi.atlantis.framework.jellyfish.ui.SearchResult;
+import indi.atlantis.framework.jellyfish.SearchResult;
 
 /**
  * 

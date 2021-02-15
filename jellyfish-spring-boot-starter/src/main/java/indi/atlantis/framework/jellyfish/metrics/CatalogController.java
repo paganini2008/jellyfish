@@ -8,6 +8,7 @@ import static indi.atlantis.framework.jellyfish.metrics.MetricNames.RT;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
-import indi.atlantis.framework.jellyfish.ui.Response;
+import indi.atlantis.framework.jellyfish.Response;
 import indi.atlantis.framework.vortex.sequence.DataRenderer;
 import indi.atlantis.framework.vortex.sequence.MetricSequencer;
 import indi.atlantis.framework.vortex.sequence.NumberMetric;
@@ -92,20 +93,39 @@ public class CatalogController {
 			Map<String, UserMetric<Counter>> countingSequence = countingSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, UserMetric<Counter>> entry : countingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 			startTime = asc ? new Date(timestamp) : new Date();
-			return DataRenderer.renderNumberMetric(data, startTime, asc, countingSequencer.getSpanUnit(), countingSequencer.getSpan(),
-					countingSequencer.getBufferSize());
+			return DataRenderer.render(data, startTime, asc, countingSequencer.getSpanUnit(), countingSequencer.getSpan(),
+					countingSequencer.getBufferSize(), time -> {
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put("count", 0);
+						map.put("successCount", 0);
+						map.put("failedCount", 0);
+						map.put("timeoutCount", 0);
+						map.put("timestamp", time);
+						return map;
+					});
 		case HTTP_STATUS:
 			MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCountingSequencer = environment
 					.httpStatusCountingMetricSequencer();
 			Map<String, UserMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : httpStatusCountingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 			startTime = asc ? new Date(timestamp) : new Date();
-			return DataRenderer.renderNumberMetric(data, startTime, asc, httpStatusCountingSequencer.getSpanUnit(),
-					httpStatusCountingSequencer.getSpan(), httpStatusCountingSequencer.getBufferSize());
+			return DataRenderer.render(data, startTime, asc, httpStatusCountingSequencer.getSpanUnit(),
+					httpStatusCountingSequencer.getSpan(), httpStatusCountingSequencer.getBufferSize(), time -> {
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put("countOf1xx", 0);
+						map.put("countOf2xx", 0);
+						map.put("countOf3xx", 0);
+						map.put("countOf4xx", 0);
+						map.put("countOf5xx", 0);
+						map.put("timestamp", time);
+						return map;
+					});
 		}
 		return MapUtils.emptyMap();
 	}

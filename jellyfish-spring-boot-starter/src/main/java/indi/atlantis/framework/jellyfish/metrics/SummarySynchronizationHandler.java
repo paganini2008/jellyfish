@@ -37,7 +37,7 @@ public class SummarySynchronizationHandler implements Handler {
 	@Override
 	public void onData(Tuple tuple) {
 		final String metric = tuple.getField("metric", String.class);
-		switch (metric.toLowerCase()) {
+		switch (metric) {
 		case COUNT:
 			synchronizeCountingMetric(metric, tuple);
 			break;

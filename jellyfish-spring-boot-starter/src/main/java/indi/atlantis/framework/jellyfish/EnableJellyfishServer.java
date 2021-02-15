@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import indi.atlantis.framework.jellyfish.ui.JellyfishUIAutoConfiguration;
 import indi.atlantis.framework.seafloor.EnableApplicationCluster;
 import indi.atlantis.framework.vortex.EnableNioTransport;
 
@@ -24,6 +23,6 @@ import indi.atlantis.framework.vortex.EnableNioTransport;
 @Documented
 @EnableNioTransport
 @EnableApplicationCluster(enableLeaderElection = true, enableMonitor = true)
-@Import({ JellyfishAutoConfiguration.class, JellyfishUIAutoConfiguration.class })
+@Import(JellyfishAutoConfiguration.class)
 public @interface EnableJellyfishServer {
 }

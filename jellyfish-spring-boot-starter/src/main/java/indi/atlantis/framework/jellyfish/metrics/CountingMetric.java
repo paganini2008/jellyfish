@@ -72,6 +72,7 @@ public class CountingMetric implements UserMetric<Counter> {
 		map.put("successCount", counter.getSuccessCount());
 		map.put("failedCount", counter.getFailedCount());
 		map.put("timeoutCount", counter.getTimeoutCount());
+		map.put("timestamp", timestamp);
 		return map;
 	}
 

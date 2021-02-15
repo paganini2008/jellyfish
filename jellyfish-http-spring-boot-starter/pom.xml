@@ -10,13 +10,19 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>jellyfish-spring-boot-starter</artifactId>
+	<artifactId>jellyfish-http-spring-boot-starter</artifactId>
 	<packaging>jar</packaging>
 
-	<name>jellyfish-spring-boot-starter</name>
+	<name>jellyfish-http-spring-boot-starter</name>
 	<url>https://github.com/paganini2008/jellyfish</url>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>indi.atlantis.framework</groupId>
 			<artifactId>vortex-common</artifactId>
@@ -24,29 +30,26 @@
 		</dependency>
 
 		<dependency>
-			<groupId>indi.atlantis.framework</groupId>
-			<artifactId>vortex-spring-boot-starter</artifactId>
-			<version>1.0-RC1</version>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-elasticsearch</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

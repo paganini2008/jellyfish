@@ -52,7 +52,7 @@ public class QpsHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.agent.QpsWriter";
+		return "indi.atlantis.framework.jellyfish.http.QpsWriter";
 	}
 
 }

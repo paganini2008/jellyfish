@@ -75,7 +75,7 @@ public class StatisticHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.agent.RealtimeMetricsWriter";
+		return "indi.atlantis.framework.jellyfish.http.RealtimeMetricsWriter";
 	}
 
 }

@@ -79,6 +79,7 @@ public class HttpStatusCountingMetric implements UserMetric<HttpStatusCounter> {
 		map.put("countOf3xx", httpStatusCounter.getCountOf3xx());
 		map.put("countOf4xx", httpStatusCounter.getCountOf4xx());
 		map.put("countOf5xx", httpStatusCounter.getCountOf5xx());
+		map.put("timestamp", timestamp);
 		return map;
 	}
 

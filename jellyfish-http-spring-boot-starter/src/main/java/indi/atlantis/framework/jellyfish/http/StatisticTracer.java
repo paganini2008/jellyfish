@@ -7,12 +7,12 @@ import org.springframework.http.HttpStatus;
 
 /**
  * 
- * StatisticalTracer
+ * StatisticTracer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public interface StatisticalTracer {
+public interface StatisticTracer {
 
 	void onError(String requestId, String path, long elapsed, HttpServletRequest request, HttpServletResponse response, HttpStatus status,
 			Exception cause);

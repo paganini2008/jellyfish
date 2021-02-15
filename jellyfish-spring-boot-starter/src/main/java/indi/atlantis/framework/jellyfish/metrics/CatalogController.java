@@ -73,7 +73,7 @@ public class CatalogController {
 
 	private Map<String, Map<String, Object>> fetchMerticData(Catalog catalog, String metric) {
 		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
-		long timestamp = 0;
+		long timestamp = System.currentTimeMillis();
 		Date startTime = null;
 		switch (metric) {
 		case RT:

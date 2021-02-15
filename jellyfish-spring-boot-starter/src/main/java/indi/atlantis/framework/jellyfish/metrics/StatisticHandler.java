@@ -17,7 +17,7 @@ import indi.atlantis.framework.vortex.sequence.UserMetric;
 
 /**
  * 
- * RealtimeStatisticHandler
+ * StatisticHandler
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -75,7 +75,7 @@ public class StatisticHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.http.RealtimeMetricsWriter";
+		return "indi.atlantis.framework.jellyfish.http.StatisticWriter";
 	}
 
 }

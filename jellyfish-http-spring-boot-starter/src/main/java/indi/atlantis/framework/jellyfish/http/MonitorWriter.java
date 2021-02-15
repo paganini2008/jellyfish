@@ -13,16 +13,16 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * StatisticalWriter
+ * MonitorWriter
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public abstract class StatisticalWriter implements HandlerInterceptor {
+public abstract class MonitorWriter implements HandlerInterceptor {
 
-	static final String REQUEST_ID = "jellyfish-agent-request-id";
-	static final String REQUEST_TIMESTAMP = "jellyfish-agent-request-time";
+	static final String REQUEST_ID = "jellyfish-http-request-id";
+	static final String REQUEST_TIMESTAMP = "jellyfish-http-request-time";
 
 	@Override
 	public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -23,14 +23,14 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * RealtimeMetricsWriter
+ * StatisticWriter
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class RealtimeMetricsWriter extends StatisticalWriter {
+public class StatisticWriter extends MonitorWriter {
 
-	private static final String TOPIC_NAME = RealtimeMetricsWriter.class.getName();
+	private static final String TOPIC_NAME = StatisticWriter.class.getName();
 
 	private final ConcurrentMap<String, AtomicInteger> concurrencies = new ConcurrentHashMap<String, AtomicInteger>();
 
@@ -50,7 +50,7 @@ public class RealtimeMetricsWriter extends StatisticalWriter {
 	private TransportClient transportClient;
 
 	@Autowired(required = false)
-	private StatisticalTracer statisticalTracer;
+	private StatisticTracer statisticTracer;
 
 	private String hostName = NetUtils.getLocalHost();
 
@@ -99,12 +99,12 @@ public class RealtimeMetricsWriter extends StatisticalWriter {
 
 		transportClient.write(TOPIC_NAME, contextMap);
 
-		if (statisticalTracer != null) {
+		if (statisticTracer != null) {
 			if (failed) {
-				statisticalTracer.onError(requestId, path, elapsed, request, response, status, e);
+				statisticTracer.onError(requestId, path, elapsed, request, response, status, e);
 			}
 			if (timeout) {
-				statisticalTracer.onTimeout(requestId, path, elapsed, request, response);
+				statisticTracer.onTimeout(requestId, path, elapsed, request, response);
 			}
 		}
 	}

@@ -41,14 +41,14 @@ public class JellyfishHttpAutoConfiguration implements WebMvcConfigurer {
 		return new PathMatcher();
 	}
 
-	@Bean("realtimeStatisticalWriter")
-	public StatisticalWriter realtimeStatisticalWriter() {
-		log.info("Load RealtimeStatisticalWriter");
-		return new RealtimeMetricsWriter();
+	@Bean("statisticalWriter")
+	public MonitorWriter statisticalWriter() {
+		log.info("Load statisticalWriter");
+		return new StatisticWriter();
 	}
 
 	@Bean("qpsWriter")
-	public StatisticalWriter qpsWriter() {
+	public MonitorWriter qpsWriter() {
 		log.info("Load QpsWriter");
 		return new QpsWriter();
 	}
@@ -73,7 +73,7 @@ public class JellyfishHttpAutoConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		InterceptorRegistration interceptorRegistration = registry.addInterceptor(realtimeStatisticalWriter()).addPathPatterns("/**");
+		InterceptorRegistration interceptorRegistration = registry.addInterceptor(statisticalWriter()).addPathPatterns("/**");
 		if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
 			interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
 		}

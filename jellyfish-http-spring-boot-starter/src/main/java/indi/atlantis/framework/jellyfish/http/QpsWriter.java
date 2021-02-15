@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class QpsWriter extends StatisticalWriter implements InitializingBean {
+public class QpsWriter extends MonitorWriter implements InitializingBean {
 
 	private static final String TOPIC_NAME = QpsWriter.class.getName();
 	private final Map<String, QPS> contexts = new ConcurrentHashMap<String, QPS>();

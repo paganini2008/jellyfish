@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish Statistics</title>
+<title>Jellyfish Statistic</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -16,13 +16,23 @@
 <script>
 
 	$(function(){
+		$('#groupBox ul li').click(function(){
+			$(this).siblings().css({'font-weight':'normal','background-color':''});
+			var index = $('#groupBox ul li').index($(this));
+			$('#groupBox ul li').slice(0, index + 1).each(function(){
+				$(this).css({'font-weight':'bold','background-color':'red'});
+			});
+			renderTable(index);
+		});
 		
-		initialize();
+		
+		renderTable(0);
+		
 	});
 	
-	function initialize(){
+	function renderTable(level){
 		$.ajax({
-			    url: '${contextPath}/atlantis/jellyfish/catalog/list',
+			    url: '${contextPath}/atlantis/jellyfish/catalog/list?level=' + level,
 				type:'get',
 				contentType: 'application/json;charset=UTF-8',
 				dataType:'json',
@@ -31,7 +41,7 @@
 					if(data.data != null) {
 						$.each(data.data,function(i, item){
 							html += '<tr>';
-							html += '<td class="tdRight10" width="5%">' + i + '</td>';
+							html += '<td class="tdRight10" width="5%">' + (i + 1) + '</td>';
 							html += '<td class="tdLeft10" width="10%">' + item.clusterName + '</td>';
 							html += '<td class="tdLeft10" width="10%">' + item.applicationName + '</td>';
 							html += '<td class="tdLeft10" width="10%">' + item.host + '</td>';
@@ -54,6 +64,16 @@
 		<label id="title">Jellyfish ${version!}</label>
 	</div>
 	<div id="container">
+		<div id="groupBox">
+			<label>Group By: </label>
+			<ul>
+				<li style="font-weight: bold; background-color: red;">Cluster Name</li>
+				<li>Application Name</li>
+				<li>Host</li>
+				<li>Category</li>
+				<li>Path</li>
+			</ul>
+		</div>
 		<div id="tableBox">
 			<table id="pathList" width="100%" border="0" cellspacing="0" cellpadding="0" class="tblCom">
 				<thead>

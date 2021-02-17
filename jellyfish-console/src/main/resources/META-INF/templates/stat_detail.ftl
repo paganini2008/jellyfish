@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish Statistics</title>
+<title>Jellyfish Statistic</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -12,22 +12,23 @@
 <script type="text/javascript" src="${contextPath}/static/js/lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/map.js"></script>
+<script type="text/javascript" src="${contextPath}/static/js/app2.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
 <script src="https://code.highcharts.com/themes/dark-unica.js"></script>
 </head>
 <script>
-	var map = new Map();
 
 	$(function(){
-		loadTotalChart();
-		loadRtChart();
-		loadRealtimeChart('cons', 'cons','Realtime Concurrency Summary', 'Concurrency', '');
-		loadRealtimeChart('qps', 'qps','Realtime QPS Summary', 'QPS', '');
+		loadStatisticChart('rt','rt','API Response Time Summary','Response Time (ms)',' ms');
+		loadStatisticChart('cc', 'cc','API Concurrency Summary', 'Concurrency', '');
+		loadStatisticChart('qps', 'qps','API QPS Summary', 'QPS', '');
+		loadCallChart();
+		loadHttpStatusCountChart();
 	});
 	
-	function loadTotalChart(){
+	function loadHttpStatusCountChart(){
 		setInterval(function(){
 			var param = {
 					"clusterName": '${(catalog.clusterName)!}',
@@ -37,32 +38,32 @@
 					"path": '${(catalog.path ? html)!}'
 				};
 			$.ajax({
-			    url: '${contextPath}/application/cluster/statistic/summary',
+			    url: '${contextPath}/atlantis/jellyfish/catalog/httpStatus/summary',
 				type:'post',
 				contentType: 'application/json;charset=UTF-8',
 				data: JSON.stringify(param),
 				dataType:'json',
+				async: true,
 				success: function(data) {
 					var entries = data.data;
 					if(entries != null){
-						var data = [{
-										name: 'Success Execution Count',
-										y: entries['successExecutionCount']
-									}, {
-										name: 'Failed Execution Count',
-										y: entries['failedExecutionCount']
-									}, {
-										name: 'Timeout Execution Count',
-										y: entries['timeoutExecutionCount']
-									}]
-						doLoadPieChart('total','Total Summary', data);
+						var categories = [], countOf1xx=[], countOf2xx=[], countOf3xx=[], countOf4xx=[], countOf5xx=[];
+						for(var category in entries){
+							categories.push(category);
+							countOf1xx.push(entries[category]['countOf1xx']);
+							countOf2xx.push(entries[category]['countOf2xx']);
+							countOf3xx.push(entries[category]['countOf3xx']);
+							countOf4xx.push(entries[category]['countOf4xx']);
+							countOf5xx.push(entries[category]['countOf5xx']);
+						}
+						SequenceChartUtils.loadHttpStatusCountChart('httpStatus','Http Status Count Summary', categories, countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
 					}
 				}
 		    });
 		},5000);
 	}
 	
-	function loadRtChart(){
+	function loadCallChart(){
 		setInterval(function(){
 			var param = {
 					"clusterName": '${(catalog.clusterName)!}',
@@ -72,35 +73,30 @@
 					"path": '${(catalog.path ? html)!}'
 				};
 			$.ajax({
-			    url: '${contextPath}/application/cluster/statistic/rt/summary',
+			    url: '${contextPath}/atlantis/jellyfish/catalog/count/summary',
 				type:'post',
 				contentType: 'application/json;charset=UTF-8',
 				data: JSON.stringify(param),
 				dataType:'json',
-				async: false,
+				async: true,
 				success: function(data) {
 					var entries = data.data;
 					if(entries != null){
-						var categories = [], highestValues=[], middleValues=[];
-						var failedCount = [], timeoutCount = [], successCount = [];
+						var categories = [], successCount=[], failedCount=[], timeoutCount=[];
 						for(var category in entries){
 							categories.push(category);
-							highestValues.push(entries[category]['highestValue']);
-							middleValues.push(entries[category]['middleValue']);
+							successCount.push(entries[category]['successCount']);
 							failedCount.push(entries[category]['failedCount']);
 							timeoutCount.push(entries[category]['timeoutCount']);
-							successCount.push(entries[category]['successCount']);
 						}
-						
-						doLoadRealtimeChart('rt','Realtime Response Time Summary',categories,highestValues, middleValues, 'Response Time (ms)', ' ms');
-						doLoadAreaChart('count', 'Realtime Count Summary', categories, successCount, failedCount, timeoutCount);
+						SequenceChartUtils.loadCallChart('count','API Call Summary',categories, successCount, failedCount, timeoutCount);
 					}
 				}
 		    });
 		},5000);
 	}
 	
-	function loadRealtimeChart(metric, divId, title, yTitle, tooltipUnit){
+	function loadStatisticChart(metric, divId, title, yTitle, tip){
 		setInterval(function(){
 			var param = {
 					"clusterName": '${(catalog.clusterName)!}',
@@ -110,208 +106,27 @@
 					"path": '${(catalog.path ? html)!}'
 				};
 			$.ajax({
-			    url: '${contextPath}/application/cluster/statistic/' + metric +'/summary',
+			    url: '${contextPath}/atlantis/jellyfish/catalog/'+ metric + '/summary',
 				type:'post',
 				contentType: 'application/json;charset=UTF-8',
 				data: JSON.stringify(param),
 				dataType:'json',
-				async: false,
+				async: true,
 				success: function(data) {
 					var entries = data.data;
 					if(entries != null){
-						var categories = [], highestValues=[], middleValues=[];
+						var categories = [], highestValues=[], middleValues=[], lowestValues=[];
 						for(var category in entries){
 							categories.push(category);
 							highestValues.push(entries[category]['highestValue']);
 							middleValues.push(entries[category]['middleValue']);
+							lowestValues.push(entries[category]['lowestValue']);
 						}
-						doLoadRealtimeChart(divId,title,categories,highestValues, middleValues, yTitle, tooltipUnit);
+						SequenceChartUtils.loadStatisticChart(divId, title, categories, highestValues, middleValues, lowestValues, yTitle, tip);
 					}
 				}
 		    });
 		},5000);
-	}
-	
-	function doLoadPieChart(divId, title, data){
-		if(map.containsKey(divId)){
-			var chart = map.get(divId);
-			chart.update({
-				series: [{
-						name: 'Brands',
-						colorByPoint: true,
-						data: data
-					}]
-			});
-		}else{
-			var chart = Highcharts.chart(divId, {
-				chart: {
-						plotBackgroundColor: null,
-						plotBorderWidth: null,
-						plotShadow: false,
-						type: 'pie'
-				},
-				title: {
-						text: title
-				},
-				tooltip: {
-						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-				},
-				plotOptions: {
-						pie: {
-								allowPointSelect: true,
-								cursor: 'pointer',
-								dataLabels: {
-										enabled: false
-								},
-								showInLegend: true
-						}
-				},
-				series: [{
-						name: 'Brands',
-						colorByPoint: true,
-						data: data
-					}]
-			});
-			map.put(divId, chart);
-		}
-		
-	}
-	
-	function doLoadAreaChart(divId, title, categories, success, failed, timeout){
-		if(map.containsKey(divId)){
-			var chart = map.get(divId);
-			var data = [{
-			        name: 'Success Count',
-			        data: success
-			    }, {
-			        name: 'Failed Count',
-			        data: failed
-			    }, {
-			        name: 'Timeout Count',
-			        data: timeout
-			    }];
-			chart.update({
-				xAxis: {
-			        categories: categories,
-			        tickmarkPlacement: 'on',
-			        title: {
-			            enabled: false
-			        }
-			    },
-				series: data
-			});
-		}else{
-			var configData = {
-		    chart: {
-		        type: 'area'
-		    },
-		    title: {
-		        text: title
-		    },
-		    xAxis: {
-		        categories: categories,
-		        tickmarkPlacement: 'on',
-		        title: {
-		            enabled: false
-		        }
-		    },
-		    yAxis: {
-		        title: {
-		            text: 'Percent'
-		        }
-		    },
-		    tooltip: {
-		        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
-		        shared: true
-		    },
-		    plotOptions: {
-		        area: {
-		            stacking: 'percent',
-		            lineColor: '#ffffff',
-		            lineWidth: 1,
-		            marker: {
-		                lineWidth: 1,
-		                lineColor: '#ffffff'
-		            }
-		        }
-		    },
-		    series: [{
-		        name: 'Success Count',
-		        data: success
-			    }, {
-			        name: 'Failed Count',
-			        data: failed
-			    }, {
-			        name: 'Timeout Count',
-			        data: timeout
-			    }]
-			};
-			var chart = Highcharts.chart(divId, configData);
-			map.put(divId, chart);
-		}
-	}
-	
-	function doLoadRealtimeChart(divId,title,categories,highestValues, middleValues,yTitle,tooltipUnit){
-		if(map.containsKey(divId)){
-			var chart = map.get(divId);
-			var data = [{
-			        name: 'Maximum',
-			        data: highestValues
-			    }, {
-			        name: 'Average',
-			        data: middleValues
-			    }];
-			chart.update({
-				xAxis: {
-			        categories: categories
-			    },
-				series: data
-			});
-		}else{
-			var chart = Highcharts.chart(divId, {
-			    chart: {
-			        type: 'areaspline'
-			    },
-			    title: {
-			        text: title
-			    },
-			    legend: {
-			        layout: 'vertical',
-			        align: 'left',
-			        verticalAlign: 'top',
-			        x: 150,
-			        y: 100,
-			        floating: true,
-			        borderWidth: 1,
-			        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-			    },
-			    xAxis: {
-			        categories: categories
-			    },
-			    yAxis: {
-			        title: {
-			            text: yTitle
-			        }
-			    },
-			    tooltip: {
-			        shared: true,
-			        valueSuffix: tooltipUnit
-			    },
-			    plotOptions: {
-			        areaspline: {
-			            fillOpacity: 0.5
-			        }
-			    },
-			    series: [{
-			        name: 'Maximum',
-			        data: highestValues
-			    }, {
-			        name: 'Average',
-			        data: middleValues
-			    }]
-			});
-			map.put(divId, chart);
-		}
 	}
 	
 </script>
@@ -346,10 +161,14 @@
 				</div>
 				<div id="total" style="width: 60%; height:320px; float: right;"></div>
 			</div>
+			
 			<div class="chartObj" id="rt"></div>
-			<div class="chartObj" id="count"></div>
-			<div class="chartObj" id="cons"></div>
 			<div class="chartObj" id="qps"></div>
+			<div class="chartObj" id="cc"></div>
+			<div class="chartObj" id="count"></div>
+			<div class="chartObj" id="httpStatus"></div>
+			<div class="chartObj" id="complex"></div>
+			
 		</div>
 	</div>
 	<div id="foot">

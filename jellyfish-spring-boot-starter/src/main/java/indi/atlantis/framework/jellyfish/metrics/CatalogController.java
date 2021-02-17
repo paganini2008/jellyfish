@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
+import com.github.paganini2008.devtools.date.DateUtils;
 
 import indi.atlantis.framework.jellyfish.Response;
 import indi.atlantis.framework.vortex.sequence.DataRenderer;
@@ -67,14 +69,46 @@ public class CatalogController {
 
 	@PostMapping("/{metric}/summary")
 	public Response metricSummary(@PathVariable("metric") String metric, @RequestBody Catalog catalog) {
-		Map<String, Map<String, Object>> data = fetchMerticData(catalog, metric);
+		Map<String, Map<String, Object>> data;
+		if (metric.equals("combined")) {
+			data = fetchCombinedMerticData(catalog);
+		} else {
+			data = fetchMerticData(catalog, metric);
+		}
 		return Response.success(data);
+	}
+
+	private Map<String, Map<String, Object>> fetchCombinedMerticData(Catalog catalog) {
+		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
+		long timestamp = System.currentTimeMillis();
+		MetricSequencer<Catalog, NumberMetric<Long>> longSequencer = environment.longMetricSequencer();
+		Map<String, NumberMetric<Long>> sequence = longSequencer.sequence(catalog, RT);
+		String time;
+		NumberMetric<Long> metricUnit;
+		for (String metric : new String[] { RT, CC, QPS }) {
+			for (Map.Entry<String, NumberMetric<Long>> entry : sequence.entrySet()) {
+				time = entry.getKey();
+				metricUnit = entry.getValue();
+				Map<String, Object> map = MapUtils.get(data, time, () -> new HashMap<String, Object>());
+				map.put(metric + "-middleValue", metricUnit.getMiddleValue());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
+						: entry.getValue().getTimestamp();
+			}
+		}
+		return renderData(data, timestamp, longSequencer, ms -> {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("highestValue", 0L);
+			map.put("middleValue", 0L);
+			map.put("lowestValue", 0L);
+			map.put("count", 0);
+			map.put("timestamp", ms);
+			return map;
+		});
 	}
 
 	private Map<String, Map<String, Object>> fetchMerticData(Catalog catalog, String metric) {
 		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 		long timestamp = System.currentTimeMillis();
-		Date startTime = null;
 		switch (metric) {
 		case RT:
 		case CC:
@@ -83,51 +117,79 @@ public class CatalogController {
 			Map<String, NumberMetric<Long>> sequence = longSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, NumberMetric<Long>> entry : sequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
+						: entry.getValue().getTimestamp();
 			}
-			startTime = asc ? new Date(timestamp) : new Date();
-			return DataRenderer.renderNumberMetric(data, startTime, asc, longSequencer.getSpanUnit(), longSequencer.getSpan(),
-					longSequencer.getBufferSize());
+			return renderData(data, timestamp, longSequencer, ms -> {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("highestValue", 0L);
+				map.put("middleValue", 0L);
+				map.put("lowestValue", 0L);
+				map.put("count", 0);
+				map.put("timestamp", ms);
+				return map;
+			});
 		case COUNT:
 			MetricSequencer<Catalog, UserMetric<Counter>> countingSequencer = environment.countingMetricSequencer();
 			Map<String, UserMetric<Counter>> countingSequence = countingSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, UserMetric<Counter>> entry : countingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
+						: entry.getValue().getTimestamp();
 			}
-			startTime = asc ? new Date(timestamp) : new Date();
-			return DataRenderer.render(data, startTime, asc, countingSequencer.getSpanUnit(), countingSequencer.getSpan(),
-					countingSequencer.getBufferSize(), time -> {
-						Map<String, Object> map = new HashMap<String, Object>();
-						map.put("count", 0);
-						map.put("successCount", 0);
-						map.put("failedCount", 0);
-						map.put("timeoutCount", 0);
-						map.put("timestamp", time);
-						return map;
-					});
+			return renderData(data, timestamp, countingSequencer, ms -> {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("count", 0);
+				map.put("successCount", 0);
+				map.put("failedCount", 0);
+				map.put("timeoutCount", 0);
+				map.put("timestamp", ms);
+				return map;
+			});
+
 		case HTTP_STATUS:
 			MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCountingSequencer = environment
 					.httpStatusCountingMetricSequencer();
-			Map<String, UserMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingSequencer.sequence(catalog, metric);
+			Map<String, UserMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingSequencer
+					.sequence(catalog, metric);
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : httpStatusCountingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
+						: entry.getValue().getTimestamp();
 			}
-			startTime = asc ? new Date(timestamp) : new Date();
-			return DataRenderer.render(data, startTime, asc, httpStatusCountingSequencer.getSpanUnit(),
-					httpStatusCountingSequencer.getSpan(), httpStatusCountingSequencer.getBufferSize(), time -> {
-						Map<String, Object> map = new HashMap<String, Object>();
-						map.put("countOf1xx", 0);
-						map.put("countOf2xx", 0);
-						map.put("countOf3xx", 0);
-						map.put("countOf4xx", 0);
-						map.put("countOf5xx", 0);
-						map.put("timestamp", time);
-						return map;
-					});
+			return renderData(data, timestamp, httpStatusCountingSequencer, ms -> {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("countOf1xx", 0);
+				map.put("countOf2xx", 0);
+				map.put("countOf3xx", 0);
+				map.put("countOf4xx", 0);
+				map.put("countOf5xx", 0);
+				map.put("timestamp", ms);
+				return map;
+			});
 		}
 		return MapUtils.emptyMap();
+	}
+
+	private Map<String, Map<String, Object>> renderData(Map<String, Map<String, Object>> data, long timestamp,
+			MetricSequencer<Catalog, ?> sequencer, Function<Long, Map<String, Object>> f) {
+		boolean asc = this.asc;
+		Date startTime = null;
+		if (asc) {
+			Date date = new Date(timestamp);
+			int amount = sequencer.getSpan() * sequencer.getBufferSize();
+			Date endTime = DateUtils.addField(date, sequencer.getSpanUnit().getCalendarField(), amount);
+			if (endTime.compareTo(new Date()) <= 0) {
+				asc = false;
+				startTime = new Date();
+			} else {
+				startTime = date;
+			}
+		} else {
+			startTime = new Date();
+		}
+		return DataRenderer.render(data, startTime, asc, sequencer.getSpanUnit(), sequencer.getSpan(),
+				sequencer.getBufferSize(), f);
 	}
 
 }

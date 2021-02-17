@@ -81,6 +81,45 @@ body {
 	margin-bottom: 10px;
 }
 
+#groupBox{
+	width: calc(100% - 20px);
+	height: 32px;
+	clear: both;
+	text-align: left;
+	margin: 10px auto;
+}
+
+#groupBox label{
+	float: left;
+	display: inline-block;
+	width: 60px;
+	height: 32px;
+	line-height: 32px;
+	padding-right: 10px;
+	text-align: right;
+}
+
+#groupBox ul{
+	float: left;
+	height: 32px;
+	line-height: 32px;
+	display: inline-block;
+}
+
+#groupBox ul li{
+	float: left;
+	list-style: none;
+	display: inline-block;
+	padding: 0px 10px;
+	height: 32px;
+	line-height: 32px;
+	text-align: center;
+	cursor: pointer;
+	text-decoration: underline;
+	border-radius: 6px;
+	margin-right: 5px;
+}
+
 #tableBox{
 	width: calc(100% - 20px);
 	text-align: left;
@@ -207,7 +246,7 @@ body {
 
 .chartObj{
 	width: 90%;
-	height:320px;
+	height:360px;
 	margin: 5px auto;
 	clear: both;
 }

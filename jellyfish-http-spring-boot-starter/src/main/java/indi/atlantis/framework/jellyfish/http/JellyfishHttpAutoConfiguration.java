@@ -3,9 +3,9 @@ package indi.atlantis.framework.jellyfish.http;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -28,12 +28,8 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-@ConditionalOnWebApplication
-@Configuration
-public class JellyfishHttpAutoConfiguration implements WebMvcConfigurer {
-
-	@Value("#{'${atlantis.framework.jellyfish.http.excludedUrlPatterns:}'.split(',')}")
-	private List<String> excludedUrlPatterns = new ArrayList<String>();
+@Configuration(proxyBeanMethods = false)
+public class JellyfishHttpAutoConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean
@@ -41,15 +37,15 @@ public class JellyfishHttpAutoConfiguration implements WebMvcConfigurer {
 		return new PathMatcher();
 	}
 
-	@Bean("statisticalWriter")
-	public MonitorWriter statisticalWriter() {
-		log.info("Load statisticalWriter");
+	@Bean("statisticWriter")
+	public StatisticWriter statisticWriter() {
+		log.info("Load {}", StatisticWriter.class.getName());
 		return new StatisticWriter();
 	}
 
 	@Bean("qpsWriter")
-	public MonitorWriter qpsWriter() {
-		log.info("Load QpsWriter");
+	public QpsWriter qpsWriter() {
+		log.info("Load {}", QpsWriter.class.getName());
 		return new QpsWriter();
 	}
 
@@ -61,7 +57,7 @@ public class JellyfishHttpAutoConfiguration implements WebMvcConfigurer {
 
 	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskScheduler jellyfishMonitorTaskScheduler(
+	public ThreadPoolTaskScheduler taskScheduler(
 			@Value("${atlantis.framework.jellyfish.http.scheduler.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
@@ -71,15 +67,37 @@ public class JellyfishHttpAutoConfiguration implements WebMvcConfigurer {
 		return threadPoolTaskScheduler;
 	}
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		InterceptorRegistration interceptorRegistration = registry.addInterceptor(statisticalWriter()).addPathPatterns("/**");
-		if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
-			interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
-		}
-		interceptorRegistration = registry.addInterceptor(qpsWriter()).addPathPatterns("/**");
-		if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
-			interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
+	/**
+	 * 
+	 * JellyfishHttpWebMvcConfig
+	 * 
+	 * @author Fred Feng
+	 *
+	 * @version 1.0
+	 */
+	@Configuration
+	static class JellyfishHttpWebMvcConfig implements WebMvcConfigurer {
+
+		@Value("#{'${atlantis.framework.jellyfish.http.excludedUrlPatterns:}'.split(',')}")
+		private List<String> excludedUrlPatterns = new ArrayList<String>();
+
+		@Autowired
+		private StatisticWriter statisticWriter;
+
+		@Autowired
+		private QpsWriter qpsWriter;
+
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			InterceptorRegistration interceptorRegistration = registry.addInterceptor(statisticWriter)
+					.addPathPatterns("/**");
+			if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
+				interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
+			}
+			interceptorRegistration = registry.addInterceptor(qpsWriter).addPathPatterns("/**");
+			if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
+				interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
+			}
 		}
 	}
 

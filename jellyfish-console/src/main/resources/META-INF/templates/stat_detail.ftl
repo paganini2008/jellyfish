@@ -26,7 +26,45 @@
 		loadStatisticChart('qps', 'qps','API QPS Summary', 'QPS', '');
 		loadCallChart();
 		loadHttpStatusCountChart();
+		
+		loadCombinedChart();
+		setInterval(function(){
+			loadCombinedChart();
+		},60000);
+		
 	});
+	
+	function loadCombinedChart(){
+			var param = {
+					"clusterName": '${(catalog.clusterName)!}',
+					"applicationName": '${(catalog.applicationName)!}',
+					"host": '${(catalog.host ? html)!}',
+					"category": '${(catalog.category ? html)!}',
+					"path": '${(catalog.path ? html)!}'
+				};
+			$.ajax({
+			    url: '${contextPath}/atlantis/jellyfish/catalog/combined/summary',
+				type:'post',
+				contentType: 'application/json;charset=UTF-8',
+				data: JSON.stringify(param),
+				dataType:'json',
+				async: true,
+				success: function(data) {
+					var entries = data.data;
+					if(entries != null){
+						var categories = [], count=[], rt=[], qps=[], cc=[];
+						for(var category in entries){
+							categories.push(category);
+							count.push(entries[category]['count']);
+							rt.push(entries[category]['rt-middleValue']);
+							qps.push(entries[category]['qps-middleValue']);
+							cc.push(entries[category]['cc-middleValue']);
+						}
+						SequenceChartUtils.loadCombinedChart('combined','Response Time/QPS Summary', categories, count, rt, qps, cc);
+					}
+				}
+		    });
+	}
 	
 	function loadHttpStatusCountChart(){
 		setInterval(function(){
@@ -167,7 +205,7 @@
 			<div class="chartObj" id="cc"></div>
 			<div class="chartObj" id="count"></div>
 			<div class="chartObj" id="httpStatus"></div>
-			<div class="chartObj" id="complex"></div>
+			<div class="chartObj" id="combined"></div>
 			
 		</div>
 	</div>

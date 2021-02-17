@@ -91,15 +91,16 @@ public class CatalogController {
 				metricUnit = entry.getValue();
 				Map<String, Object> map = MapUtils.get(data, time, () -> new HashMap<String, Object>());
 				map.put(metric + "-middleValue", metricUnit.getMiddleValue());
+				map.put("count", metricUnit.getCount());
 				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
 						: entry.getValue().getTimestamp();
 			}
 		}
 		return renderData(data, timestamp, longSequencer, ms -> {
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("highestValue", 0L);
-			map.put("middleValue", 0L);
-			map.put("lowestValue", 0L);
+			map.put("rt-middleValue", 0L);
+			map.put("cc-middleValue", 0L);
+			map.put("qps-middleValue", 0L);
 			map.put("count", 0);
 			map.put("timestamp", ms);
 			return map;

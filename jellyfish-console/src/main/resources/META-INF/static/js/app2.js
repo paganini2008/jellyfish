@@ -213,102 +213,171 @@ var SequenceChartUtils = {
 		}
 	},
 	
-	loadComplexChart: function(divId, title, categories, call, rt, qps){
-		var chart = Highcharts.chart(divId, {
-			chart: {
-					zoomType: 'xy'
-			},
-			title: {
-					text: title
-			},
-			xAxis: [{
+	loadCombinedChart: function(divId, title, categories, call, rt, qps, cc){
+		if(map.containsKey(divId)){
+			var chart = map.get(divId);
+			var data = [{
+						name: 'Calls',
+						type: 'column',
+						yAxis: 1,
+						data: call,
+						tooltip: {
+							valueSuffix: ''
+						}
+					}, {
+							name: 'Response Time',
+							type: 'spline',
+							yAxis: 2,
+							data: rt,
+							marker: {
+								enabled: false
+							},
+							tooltip: {
+								valueSuffix: ' ms'
+							}
+					}, {
+							name: 'QPS',
+							type: 'spline',
+							data: qps,
+							tooltip: {
+								valueSuffix: ''
+							}
+					},{
+						name: 'Concurrency',
+						type: 'spline',
+						data: cc,
+						tooltip: {
+							valueSuffix: ''
+						}
+					}];
+			chart.update({
+				xAxis: [{
 					categories: categories,
 					crosshair: true
-			}],
-			yAxis: [{
-					labels: {
-							format: '{value} ms',
-							style: {
-									color: Highcharts.getOptions().colors[2]
-							}
-					},
-					title: {
-							text: 'Response Time',
-							style: {
-									color: Highcharts.getOptions().colors[2]
-							}
-					},
-					opposite: true
-			}, {
+				}],
+				series: data
+			});
+		}else{
+			var chart = Highcharts.chart(divId, {
+				chart: {
+						zoomType: 'xy'
+				},
+				title: {
+						text: title
+				},
+				xAxis: [{
+						categories: categories,
+						crosshair: true
+				}],
+				yAxis: [{
+						labels: {
+								format: '{value} ms',
+								style: {
+										color: Highcharts.getOptions().colors[1]
+								}
+						},
+						title: {
+								text: 'Response Time',
+								style: {
+										color: Highcharts.getOptions().colors[1]
+								}
+						},
+						opposite: true
+				}, {
+						gridLineWidth: 0,
+						title: {
+								text: 'Call',
+								style: {
+										color: Highcharts.getOptions().colors[0]
+								}
+						},
+						labels: {
+								format: '{value}',
+								style: {
+										color: Highcharts.getOptions().colors[0]
+								}
+						}
+				}, {
+						gridLineWidth: 0,
+						title: {
+								text: 'QPS',
+								style: {
+										color: Highcharts.getOptions().colors[2]
+								}
+						},
+						labels: {
+								format: '{value}',
+								style: {
+										color: Highcharts.getOptions().colors[2]
+								}
+						},
+						opposite: true
+				}, {
 					gridLineWidth: 0,
 					title: {
-							text: 'Call',
+							text: 'Concurrency',
 							style: {
-									color: Highcharts.getOptions().colors[0]
+									color: Highcharts.getOptions().colors[3]
 							}
 					},
 					labels: {
 							format: '{value}',
 							style: {
-									color: Highcharts.getOptions().colors[0]
-							}
-					}
-			}, {
-					gridLineWidth: 0,
-					title: {
-							text: 'QPS',
-							style: {
-									color: Highcharts.getOptions().colors[1]
-							}
-					},
-					labels: {
-							format: '{value}',
-							style: {
-									color: Highcharts.getOptions().colors[1]
+									color: Highcharts.getOptions().colors[3]
 							}
 					},
 					opposite: true
-			}],
-			tooltip: {
-					shared: true
-			},
-			legend: {
-					layout: 'vertical',
-					align: 'left',
-					x: 80,
-					verticalAlign: 'top',
-					y: 55,
-					floating: true,
-					backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-			},
-			series: [{
-					name: 'Calls',
-					type: 'column',
-					yAxis: 1,
-					data: call,
-					tooltip: {
-						valueSuffix: ' calls'
-					}
-			}, {
-					name: 'Response Time',
+				}],
+				tooltip: {
+						shared: true
+				},
+				legend: {
+						layout: 'vertical',
+						align: 'right',
+						x: -150,
+						verticalAlign: 'top',
+						y: 0,
+						floating: true,
+						backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+				},
+				series: [{
+						name: 'Calls',
+						type: 'column',
+						yAxis: 1,
+						data: call,
+						tooltip: {
+							valueSuffix: ''
+						}
+				}, {
+						name: 'Response Time',
+						type: 'spline',
+						yAxis: 2,
+						data: rt,
+						tooltip: {
+							valueSuffix: ' ms'
+						}
+				}, {
+						name: 'QPS',
+						type: 'spline',
+						yAxis: 3,
+						data: qps,
+						dashStyle: 'LongDashDot',
+						tooltip: {
+							valueSuffix: ''
+						}
+				},{
+					name: 'Concurrency',
 					type: 'spline',
-					yAxis: 2,
-					data: rt,
-					marker: {
-						enabled: false
-					},
-					tooltip: {
-						valueSuffix: ' ms'
-					}
-			}, {
-					name: 'QPS',
-					type: 'spline',
-					data: qps,
+					data: cc,
+					dashStyle: 'LongDash',
 					tooltip: {
 						valueSuffix: ''
 					}
-			}]
-		});
+				}]
+			});
+			map.put(divId, chart);
+		}
+		
 	},
 
 	loadStatisticChart: function(divId, title, categories, highestValues, middleValues, lowestValues, yTitle, tip){

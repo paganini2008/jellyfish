@@ -229,16 +229,15 @@ var SequenceChartUtils = {
 							type: 'spline',
 							yAxis: 2,
 							data: rt,
-							marker: {
-								enabled: false
-							},
 							tooltip: {
 								valueSuffix: ' ms'
 							}
 					}, {
 							name: 'QPS',
 							type: 'spline',
+							yAxis: 3,
 							data: qps,
+							dashStyle: 'LongDash',
 							tooltip: {
 								valueSuffix: ''
 							}
@@ -246,6 +245,7 @@ var SequenceChartUtils = {
 						name: 'Concurrency',
 						type: 'spline',
 						data: cc,
+						dashStyle: 'Dash',
 						tooltip: {
 							valueSuffix: ''
 						}
@@ -334,7 +334,7 @@ var SequenceChartUtils = {
 				legend: {
 						layout: 'vertical',
 						align: 'right',
-						x: -150,
+						x: -200,
 						verticalAlign: 'top',
 						y: 0,
 						floating: true,
@@ -361,7 +361,7 @@ var SequenceChartUtils = {
 						type: 'spline',
 						yAxis: 3,
 						data: qps,
-						dashStyle: 'LongDashDot',
+						dashStyle: 'LongDash',
 						tooltip: {
 							valueSuffix: ''
 						}
@@ -369,7 +369,7 @@ var SequenceChartUtils = {
 					name: 'Concurrency',
 					type: 'spline',
 					data: cc,
-					dashStyle: 'LongDash',
+					dashStyle: 'Dash',
 					tooltip: {
 						valueSuffix: ''
 					}

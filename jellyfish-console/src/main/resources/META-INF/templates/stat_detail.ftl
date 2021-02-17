@@ -60,7 +60,7 @@
 							qps.push(entries[category]['qps-middleValue']);
 							cc.push(entries[category]['cc-middleValue']);
 						}
-						SequenceChartUtils.loadCombinedChart('combined','Response Time/QPS Summary', categories, count, rt, qps, cc);
+						SequenceChartUtils.loadCombinedChart('combined','API Response Time/QPS/Concurrency Summary', categories, count, rt, qps, cc);
 					}
 				}
 		    });

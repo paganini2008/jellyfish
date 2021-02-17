@@ -82,10 +82,11 @@ public class CatalogController {
 		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 		long timestamp = System.currentTimeMillis();
 		MetricSequencer<Catalog, NumberMetric<Long>> longSequencer = environment.longMetricSequencer();
-		Map<String, NumberMetric<Long>> sequence = longSequencer.sequence(catalog, RT);
+		Map<String, NumberMetric<Long>> sequence;
 		String time;
 		NumberMetric<Long> metricUnit;
 		for (String metric : new String[] { RT, CC, QPS }) {
+			sequence = longSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, NumberMetric<Long>> entry : sequence.entrySet()) {
 				time = entry.getKey();
 				metricUnit = entry.getValue();

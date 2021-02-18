@@ -92,9 +92,8 @@ public class CatalogController {
 				metricUnit = entry.getValue();
 				Map<String, Object> map = MapUtils.get(data, time, () -> new HashMap<String, Object>());
 				map.put(metric + "-middleValue", metricUnit.getMiddleValue());
-				map.put("count", metricUnit.getCount());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
-						: entry.getValue().getTimestamp();
+				map.putIfAbsent("count", metricUnit.getCount());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 		}
 		return renderData(data, timestamp, longSequencer, ms -> {
@@ -119,8 +118,7 @@ public class CatalogController {
 			Map<String, NumberMetric<Long>> sequence = longSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, NumberMetric<Long>> entry : sequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
-						: entry.getValue().getTimestamp();
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 			return renderData(data, timestamp, longSequencer, ms -> {
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -136,8 +134,7 @@ public class CatalogController {
 			Map<String, UserMetric<Counter>> countingSequence = countingSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, UserMetric<Counter>> entry : countingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
-						: entry.getValue().getTimestamp();
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 			return renderData(data, timestamp, countingSequencer, ms -> {
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -152,12 +149,10 @@ public class CatalogController {
 		case HTTP_STATUS:
 			MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCountingSequencer = environment
 					.httpStatusCountingMetricSequencer();
-			Map<String, UserMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingSequencer
-					.sequence(catalog, metric);
+			Map<String, UserMetric<HttpStatusCounter>> httpStatusCountingSequence = httpStatusCountingSequencer.sequence(catalog, metric);
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : httpStatusCountingSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
-				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp)
-						: entry.getValue().getTimestamp();
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 			return renderData(data, timestamp, httpStatusCountingSequencer, ms -> {
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -190,8 +185,7 @@ public class CatalogController {
 		} else {
 			startTime = new Date();
 		}
-		return DataRenderer.render(data, startTime, asc, sequencer.getSpanUnit(), sequencer.getSpan(),
-				sequencer.getBufferSize(), f);
+		return DataRenderer.render(data, startTime, asc, sequencer.getSpanUnit(), sequencer.getSpan(), sequencer.getBufferSize(), f);
 	}
 
 }

@@ -14,25 +14,94 @@
 <script type="text/javascript" src="${contextPath}/static/js/lib/map.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/app2.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com.cn/highcharts/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com.cn/highcharts/modules/solid-gauge.js"></script>
 <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
 <script src="https://code.highcharts.com/themes/dark-unica.js"></script>
 </head>
 <script>
 
 	$(function(){
+	
+		loadSummaryChart();
+		setInterval(function(){
+			loadSummaryChart();
+		},5000);
+		
 		loadStatisticChart('rt','rt','API Response Time Summary','Response Time (ms)',' ms');
 		loadStatisticChart('cc', 'cc','API Concurrency Summary', 'Concurrency', '');
 		loadStatisticChart('qps', 'qps','API QPS Summary', 'QPS', '');
-		loadCallChart();
+		setInterval(function(){
+			loadStatisticChart('rt','rt','API Response Time Summary','Response Time (ms)',' ms');
+			loadStatisticChart('cc', 'cc','API Concurrency Summary', 'Concurrency', '');
+			loadStatisticChart('qps', 'qps','API QPS Summary', 'QPS', '');
+		},5000);
+		
+		loadCallCountChart();
+		setInterval(function(){
+			loadCallCountChart();
+		},5000);
+		
 		loadHttpStatusCountChart();
+		setInterval(function(){
+			loadHttpStatusCountChart();
+		},5000);
 		
 		loadCombinedChart();
 		setInterval(function(){
 			loadCombinedChart();
-		},60000);
+		},5000);
 		
 	});
+	
+	function loadSummaryChart(){
+			var param = {
+					"clusterName": '${(catalog.clusterName)!}',
+					"applicationName": '${(catalog.applicationName)!}',
+					"host": '${(catalog.host ? html)!}',
+					"category": '${(catalog.category ? html)!}',
+					"path": '${(catalog.path ? html)!}'
+				};
+			$.ajax({
+			    url: '${contextPath}/atlantis/jellyfish/catalog/summary',
+				type:'post',
+				contentType: 'application/json;charset=UTF-8',
+				data: JSON.stringify(param),
+				dataType:'json',
+				async: true,
+				success: function(data) {
+					var entries = data.data;
+					if(entries != null){
+						var dataEntries = entries['count'];
+						var successCount=dataEntries['successCount'];
+						var failedCount=dataEntries['failedCount'];
+						var timeoutCount=dataEntries['timeoutCount'];
+						SummaryChartUtils.loadCallCountChart('summaryCount','API Call Count Total', successCount, failedCount, timeoutCount);
+						
+						dataEntries = entries['httpStatus'];
+						var countOf1xx=dataEntries['countOf1xx'];
+						var countOf2xx=dataEntries['countOf2xx'];
+						var countOf3xx=dataEntries['countOf3xx'];
+						var countOf4xx=dataEntries['countOf4xx'];
+						var countOf5xx=dataEntries['countOf5xx'];
+						SummaryChartUtils.loadHttpStatusCountChart('summaryHttpStatus','API Http Status Count Total', countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
+						
+						dataEntries = entries['rt'];
+						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
+						SummaryChartUtils.loadStatisticChart('rtSummary', 'Response Time', 60000, values, 'ms');
+						
+						dataEntries = entries['qps'];
+						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
+						SummaryChartUtils.loadStatisticChart('qpsSummary', 'QPS', 10000, values, '');
+						
+						dataEntries = entries['cc'];
+						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
+						SummaryChartUtils.loadStatisticChart('ccSummary', 'Concurrency', 200, values, '');
+					}
+				}
+		    });
+	}
 	
 	function loadCombinedChart(){
 			var param = {
@@ -67,7 +136,6 @@
 	}
 	
 	function loadHttpStatusCountChart(){
-		setInterval(function(){
 			var param = {
 					"clusterName": '${(catalog.clusterName)!}',
 					"applicationName": '${(catalog.applicationName)!}',
@@ -94,15 +162,13 @@
 							countOf4xx.push(entries[category]['countOf4xx']);
 							countOf5xx.push(entries[category]['countOf5xx']);
 						}
-						SequenceChartUtils.loadHttpStatusCountChart('httpStatus','Http Status Count Summary', categories, countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
+						SequenceChartUtils.loadHttpStatusCountChart('httpStatus','API Http Status Count Summary', categories, countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
 					}
 				}
 		    });
-		},5000);
 	}
 	
-	function loadCallChart(){
-		setInterval(function(){
+	function loadCallCountChart(){
 			var param = {
 					"clusterName": '${(catalog.clusterName)!}',
 					"applicationName": '${(catalog.applicationName)!}',
@@ -127,15 +193,13 @@
 							failedCount.push(entries[category]['failedCount']);
 							timeoutCount.push(entries[category]['timeoutCount']);
 						}
-						SequenceChartUtils.loadCallChart('count','API Call Summary',categories, successCount, failedCount, timeoutCount);
+						SequenceChartUtils.loadCallCountChart('count','API Call Count Summary',categories, successCount, failedCount, timeoutCount);
 					}
 				}
 		    });
-		},5000);
 	}
 	
 	function loadStatisticChart(metric, divId, title, yTitle, tip){
-		setInterval(function(){
 			var param = {
 					"clusterName": '${(catalog.clusterName)!}',
 					"applicationName": '${(catalog.applicationName)!}',
@@ -164,7 +228,6 @@
 					}
 				}
 		    });
-		},5000);
 	}
 	
 </script>
@@ -174,8 +237,8 @@
 	</div>
 	<div id="container">
 		<div id="chartBox">
-			<div id="totalBox">
-				<div id="catalog" style="width: 30%; float: left;">
+			<div id="infoBox">
+				<div id="catalog" style="width: 20%; float: left;">
 					<p>
 						<label>Cluster Name: </label>
 						<span>${(catalog.clusterName)!}</span>
@@ -197,9 +260,16 @@
 						<span>${(catalog.path)!}</span>
 					</p>
 				</div>
-				<div id="total" style="width: 60%; height:320px; float: right;"></div>
 			</div>
-			
+			<div class="summaryBox">
+				<div id="rtSummary" style="width: 35%; height:320px; float: right;"></div>
+				<div id="qpsSummary" style="width: 35%; height:320px; float: right;"></div>
+				<div id="ccSummary" style="width: 30%; height:320px; float: right;"></div>
+			</div>
+			<div class="summaryBox">
+				<div id="summaryCount" style="width: 50%; height:320px; float: right;"></div>
+				<div id="summaryHttpStatus" style="width: 50%; height:320px; float: right;"></div>
+			</div>
 			<div class="chartObj" id="rt"></div>
 			<div class="chartObj" id="qps"></div>
 			<div class="chartObj" id="cc"></div>

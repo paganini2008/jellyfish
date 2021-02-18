@@ -90,20 +90,27 @@ public class CatalogController {
 			for (Map.Entry<String, NumberMetric<Long>> entry : sequence.entrySet()) {
 				time = entry.getKey();
 				metricUnit = entry.getValue();
-				Map<String, Object> map = MapUtils.get(data, time, () -> new HashMap<String, Object>());
+				Map<String, Object> map = MapUtils.get(data, time, () -> {
+					Map<String, Object> blank = new HashMap<String, Object>();
+					blank.put("rt-middleValue", 0L);
+					blank.put("cc-middleValue", 0L);
+					blank.put("qps-middleValue", 0L);
+					return blank;
+				});
 				map.put(metric + "-middleValue", metricUnit.getMiddleValue());
 				map.putIfAbsent("count", metricUnit.getCount());
+				map.putIfAbsent("timestamp", metricUnit.getTimestamp());
 				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 		}
 		return renderData(data, timestamp, longSequencer, ms -> {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("rt-middleValue", 0L);
-			map.put("cc-middleValue", 0L);
-			map.put("qps-middleValue", 0L);
-			map.put("count", 0);
-			map.put("timestamp", ms);
-			return map;
+			Map<String, Object> blank = new HashMap<String, Object>();
+			blank.put("rt-middleValue", 0L);
+			blank.put("cc-middleValue", 0L);
+			blank.put("qps-middleValue", 0L);
+			blank.put("count", 0);
+			blank.put("timestamp", ms);
+			return blank;
 		});
 	}
 

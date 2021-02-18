@@ -219,11 +219,12 @@ body {
 	overflow-x: hidden;
 }
 
-#totalBox{
+#infoBox, .summaryBox{
 	width: 90%;
 	height:320px;
 	clear: both;
 	margin: 5px auto;
+	overflow: hidden;
 }
 
 #catalog p label{

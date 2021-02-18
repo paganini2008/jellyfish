@@ -2,44 +2,232 @@ var map = new Map();
 
 var SummaryChartUtils = {
 		
-	loadCallChart: function(divId, title, data){
+	loadStatisticChart: function(divId, title, max, values, unit){
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			chart.update({
 				series: [{
-						name: 'Brands',
-						colorByPoint: true,
-						data: data
-					}]
+			        name: title,
+			        data: values,
+			        dataLabels: {
+			            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+			            ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+			            '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
+			        },
+			        tooltip: {
+			            valueSuffix: unit
+			        }
+			    }]
 			});
 		}else{
 			var chart = Highcharts.chart(divId, {
 				chart: {
-						plotBackgroundColor: null,
-						plotBorderWidth: null,
-						plotShadow: false,
-						type: 'pie'
-				},
-				title: {
-						text: title
-				},
-				tooltip: {
-						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-				},
-				plotOptions: {
-						pie: {
-								allowPointSelect: true,
-								cursor: 'pointer',
-								dataLabels: {
-										enabled: false
-								},
-								showInLegend: true
-						}
-				},
+			        type: 'solidgauge'
+			    },
+			    title: null,
+			    pane: {
+			        center: ['50%', '85%'],
+			        size: '140%',
+			        startAngle: -90,
+			        endAngle: 90,
+			        background: {
+			            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+			            innerRadius: '60%',
+			            outerRadius: '100%',
+			            shape: 'arc'
+			        }
+			    },
+			    tooltip: {
+			        enabled: true
+			    },
+			    yAxis: {
+			        stops: [
+			            [0.2, '#55BF3B'], // green
+			            [0.5, '#DDDF0D'], // yellow
+			            [0.9, '#DF5353'] // red
+			        ],
+			        lineWidth: 0,
+			        minorTickInterval: null,
+			        tickPixelInterval: 100,
+			        tickWidth: 0,
+			        title: {
+			            y: -70,
+			            text: title
+			        },
+			        labels: {
+			            y: 16
+			        },
+			        min: 0,
+			        max: max
+			    },
+			    credits: {
+			        enabled: false
+			    },
+			    plotOptions: {
+			        solidgauge: {
+			            dataLabels: {
+			                y: 5,
+			                borderWidth: 0,
+			                useHTML: true
+			            }
+			        }
+			    },
+			    series: [{
+			        name: title,
+			        data: values,
+			        dataLabels: {
+			            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+			            ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+			            '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
+			        },
+			        tooltip: {
+			            valueSuffix: unit
+			        }
+			    }]
+			});
+			map.put(divId, chart);
+		}
+		
+	},
+		
+	loadHttpStatusCountChart: function(divId, title, countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx){
+		if(map.containsKey(divId)){
+			var chart = map.get(divId);
+			chart.update({
 				series: [{
-						name: 'Brands',
-						colorByPoint: true,
-						data: data
+					name: 'Brands',
+					colorByPoint: true,
+					data: [{
+							name: '1xx Count',
+							y: countOf1xx
+					}, {
+						name: '2xx Count',
+						y: countOf2xx,
+						sliced: true,
+						selected: true
+					}, {
+							name: '3xx Count',
+							y: countOf3xx
+					}, {
+						name: '4xx Count',
+						y: countOf4xx
+					}, {
+						name: '5xx Count',
+						y: countOf5xx
+					}]
+				}]
+			});
+		}else{
+			var chart = Highcharts.chart(divId, {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie'
+					},
+					title: {
+							text: title
+					},
+					tooltip: {
+							pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					},
+					plotOptions: {
+							pie: {
+									allowPointSelect: true,
+									cursor: 'pointer',
+									dataLabels: {
+										enabled: true
+									},
+									showInLegend: true
+							}
+					},
+					series: [{
+							name: 'Brands',
+							colorByPoint: true,
+							data: [{
+								name: '1xx Count',
+								y: countOf1xx
+							}, {
+								name: '2xx Count',
+								y: countOf2xx,
+								sliced: true,
+								selected: true
+							}, {
+								name: '3xx Count',
+								y: countOf3xx
+							}, {
+								name: '4xx Count',
+								y: countOf4xx
+							}, {
+								name: '5xx Count',
+								y: countOf5xx
+							}]
+					}]
+			});
+			map.put(divId, chart);
+		}
+	},
+		
+	loadCallCountChart: function(divId, title, successCount, failedCount, timeoutCount){
+		if(map.containsKey(divId)){
+			var chart = map.get(divId);
+			chart.update({
+				series: [{
+					name: 'Brands',
+					colorByPoint: true,
+					data: [{
+							name: 'Success Count',
+							y: successCount,
+							sliced: true,
+							selected: true
+					}, {
+							name: 'Failed Count',
+							y: failedCount
+					}, {
+							name: 'Timeout Count',
+							y: timeoutCount
+					}]
+				}]
+			});
+		}else{
+			var chart = Highcharts.chart(divId, {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie'
+					},
+					title: {
+							text: title
+					},
+					tooltip: {
+							pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					},
+					plotOptions: {
+							pie: {
+									allowPointSelect: true,
+									cursor: 'pointer',
+									dataLabels: {
+										enabled: true
+									},
+									showInLegend: true
+							}
+					},
+					series: [{
+							name: 'Brands',
+							colorByPoint: true,
+							data: [{
+									name: 'Success Count',
+									y: successCount,
+									sliced: true,
+									selected: true
+							}, {
+									name: 'Failed Count',
+									y: failedCount
+							}, {
+									name: 'Timeout Count',
+									y: timeoutCount
+							}]
 					}]
 			});
 			map.put(divId, chart);
@@ -49,7 +237,7 @@ var SummaryChartUtils = {
 
 var SequenceChartUtils = {
 
-	loadCallChart: function(divId, title, categories, successCount, failedCount, timeoutCount){
+	loadCallCountChart: function(divId, title, categories, successCount, failedCount, timeoutCount){
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			var data = [{
@@ -233,6 +421,14 @@ var SequenceChartUtils = {
 								valueSuffix: ' ms'
 							}
 					}, {
+						name: 'Concurrency',
+						type: 'spline',
+						data: cc,
+						dashStyle: 'Dash',
+						tooltip: {
+							valueSuffix: ''
+						}
+					}, {
 							name: 'QPS',
 							type: 'spline',
 							yAxis: 3,
@@ -241,14 +437,6 @@ var SequenceChartUtils = {
 							tooltip: {
 								valueSuffix: ''
 							}
-					},{
-						name: 'Concurrency',
-						type: 'spline',
-						data: cc,
-						dashStyle: 'Dash',
-						tooltip: {
-							valueSuffix: ''
-						}
 					}];
 			chart.update({
 				xAxis: [{
@@ -283,51 +471,51 @@ var SequenceChartUtils = {
 								}
 						},
 						opposite: true
-				}, {
-						gridLineWidth: 0,
-						title: {
-								text: 'Call',
-								style: {
-										color: Highcharts.getOptions().colors[0]
+						}, {
+								gridLineWidth: 0,
+								title: {
+										text: 'Call',
+										style: {
+												color: Highcharts.getOptions().colors[0]
+										}
+								},
+								labels: {
+										format: '{value}',
+										style: {
+												color: Highcharts.getOptions().colors[0]
+										}
 								}
-						},
-						labels: {
-								format: '{value}',
-								style: {
-										color: Highcharts.getOptions().colors[0]
-								}
-						}
-				}, {
-						gridLineWidth: 0,
-						title: {
-								text: 'QPS',
-								style: {
-										color: Highcharts.getOptions().colors[2]
-								}
-						},
-						labels: {
-								format: '{value}',
-								style: {
-										color: Highcharts.getOptions().colors[2]
-								}
-						},
-						opposite: true
-				}, {
-					gridLineWidth: 0,
-					title: {
-							text: 'Concurrency',
-							style: {
-									color: Highcharts.getOptions().colors[3]
-							}
-					},
-					labels: {
-							format: '{value}',
-							style: {
-									color: Highcharts.getOptions().colors[3]
-							}
-					},
-					opposite: true
-				}],
+						}, {
+							gridLineWidth: 0,
+							title: {
+									text: 'Concurrency',
+									style: {
+											color: Highcharts.getOptions().colors[2]
+									}
+							},
+							labels: {
+									format: '{value}',
+									style: {
+											color: Highcharts.getOptions().colors[2]
+									}
+							},
+							opposite: true
+						}, {
+							gridLineWidth: 0,
+							title: {
+									text: 'QPS',
+									style: {
+											color: Highcharts.getOptions().colors[3]
+									}
+							},
+							labels: {
+									format: '{value}',
+									style: {
+											color: Highcharts.getOptions().colors[3]
+									}
+							},
+							opposite: true
+						}],
 				tooltip: {
 						shared: true
 				},
@@ -356,20 +544,20 @@ var SequenceChartUtils = {
 						tooltip: {
 							valueSuffix: ' ms'
 						}
-				}, {
-						name: 'QPS',
-						type: 'spline',
-						yAxis: 3,
-						data: qps,
-						dashStyle: 'LongDash',
-						tooltip: {
-							valueSuffix: ''
-						}
 				},{
 					name: 'Concurrency',
 					type: 'spline',
 					data: cc,
 					dashStyle: 'Dash',
+					tooltip: {
+						valueSuffix: ''
+					}
+				},{
+					name: 'QPS',
+					type: 'spline',
+					yAxis: 3,
+					data: qps,
+					dashStyle: 'LongDash',
 					tooltip: {
 						valueSuffix: ''
 					}

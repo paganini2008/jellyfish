@@ -20,8 +20,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.github.paganini2008.devtools.net.UrlUtils;
 
 import indi.atlantis.framework.jellyfish.JellyFishConstants;
+import indi.atlantis.framework.jellyfish.http.CatalogController;
 import indi.atlantis.framework.jellyfish.log.LogEntryController;
-import indi.atlantis.framework.jellyfish.metrics.CatalogController;
 
 /**
  * 

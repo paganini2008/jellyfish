@@ -24,15 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * QpsWriter
+ * QpsWatcher
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public class QpsWriter extends MonitorWriter implements InitializingBean {
+public class QpsWatcher extends HttpWatcher implements InitializingBean {
 
-	private static final String TOPIC_NAME = QpsWriter.class.getName();
+	private static final String TOPIC_NAME = QpsWatcher.class.getName();
 	private final Map<String, QPS> contexts = new ConcurrentHashMap<String, QPS>();
 
 	@Value("${spring.application.cluster.name:default}")

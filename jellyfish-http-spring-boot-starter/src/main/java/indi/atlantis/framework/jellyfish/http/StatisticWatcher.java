@@ -23,14 +23,14 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * StatisticWriter
+ * StatisticWatcher
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class StatisticWriter extends MonitorWriter {
+public class StatisticWatcher extends HttpWatcher {
 
-	private static final String TOPIC_NAME = StatisticWriter.class.getName();
+	private static final String TOPIC_NAME = StatisticWatcher.class.getName();
 
 	private final ConcurrentMap<String, AtomicInteger> concurrencies = new ConcurrentHashMap<String, AtomicInteger>();
 

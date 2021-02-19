@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * MonitorWriter
+ * HttpWatcher
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public abstract class MonitorWriter implements HandlerInterceptor {
+public abstract class HttpWatcher implements HandlerInterceptor {
 
 	static final String REQUEST_ID = "jellyfish-http-request-id";
 	static final String REQUEST_TIMESTAMP = "jellyfish-http-request-time";

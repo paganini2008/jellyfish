@@ -1,6 +1,6 @@
-package indi.atlantis.framework.jellyfish.metrics;
+package indi.atlantis.framework.jellyfish.http;
 
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.QPS;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.QPS;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,7 +52,7 @@ public class QpsHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.http.QpsWriter";
+		return "indi.atlantis.framework.jellyfish.http.QpsWatcher";
 	}
 
 }

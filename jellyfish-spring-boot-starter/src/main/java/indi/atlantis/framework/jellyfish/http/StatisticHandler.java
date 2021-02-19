@@ -1,9 +1,9 @@
-package indi.atlantis.framework.jellyfish.metrics;
+package indi.atlantis.framework.jellyfish.http;
 
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.CC;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.COUNT;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.HTTP_STATUS;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.RT;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.CC;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.COUNT;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.HTTP_STATUS;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.RT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -75,7 +75,7 @@ public class StatisticHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.http.StatisticWriter";
+		return "indi.atlantis.framework.jellyfish.http.StatisticWatcher";
 	}
 
 }

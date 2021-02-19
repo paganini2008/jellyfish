@@ -1,4 +1,4 @@
-package indi.atlantis.framework.jellyfish.metrics;
+package indi.atlantis.framework.jellyfish.http;
 
 /**
  * 

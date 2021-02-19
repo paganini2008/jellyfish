@@ -1,10 +1,10 @@
-package indi.atlantis.framework.jellyfish.metrics;
+package indi.atlantis.framework.jellyfish.http;
 
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.CC;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.COUNT;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.HTTP_STATUS;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.QPS;
-import static indi.atlantis.framework.jellyfish.metrics.MetricNames.RT;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.CC;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.COUNT;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.HTTP_STATUS;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.QPS;
+import static indi.atlantis.framework.jellyfish.http.MetricNames.RT;
 
 import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.common.Tuple;

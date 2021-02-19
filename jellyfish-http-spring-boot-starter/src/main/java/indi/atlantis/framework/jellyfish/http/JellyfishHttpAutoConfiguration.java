@@ -37,16 +37,16 @@ public class JellyfishHttpAutoConfiguration {
 		return new PathMatcher();
 	}
 
-	@Bean("statisticWriter")
-	public StatisticWriter statisticWriter() {
-		log.info("Load {}", StatisticWriter.class.getName());
-		return new StatisticWriter();
+	@Bean
+	public StatisticWatcher statisticWatcher() {
+		log.info("Load {}", StatisticWatcher.class.getName());
+		return new StatisticWatcher();
 	}
 
-	@Bean("qpsWriter")
-	public QpsWriter qpsWriter() {
-		log.info("Load {}", QpsWriter.class.getName());
-		return new QpsWriter();
+	@Bean
+	public QpsWatcher qpsWatcher() {
+		log.info("Load {}", QpsWatcher.class.getName());
+		return new QpsWatcher();
 	}
 
 	@ConditionalOnMissingBean
@@ -82,10 +82,10 @@ public class JellyfishHttpAutoConfiguration {
 		private List<String> excludedUrlPatterns = new ArrayList<String>();
 
 		@Autowired
-		private StatisticWriter statisticWriter;
+		private StatisticWatcher statisticWriter;
 
 		@Autowired
-		private QpsWriter qpsWriter;
+		private QpsWatcher qpsWriter;
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {

@@ -70,9 +70,37 @@ Watch and make a statistic of Web Application API, including these metrics:
 
 Look this:
 
+<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-response-time-summary.png" style="width:800px;" />
 
+<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-concurrency-summary.png" style="width:800px;" />
 
+<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-qps-summary.png" style="width:800px;" />
 
+<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-combined-summary.png" style="width:800px;" />
+
+## How to configure the API Watcher?
+
+Step  1:
+
+Add jar dependency in your pom.xml
+
+```
+		<dependency>
+			<artifactId>jellyfish-http-spring-boot-starter</artifactId>
+			<groupId>indi.atlantis.framework</groupId>
+			<version>1.0-RC1</version>
+		</dependency>
+```
+
+Step 2:
+
+Add one line in your application.properties:
+
+```
+atlantis.framework.jellyfish.brokerUrl=http://192.168.159.1:10010
+```
+
+That's all.
 
 
 

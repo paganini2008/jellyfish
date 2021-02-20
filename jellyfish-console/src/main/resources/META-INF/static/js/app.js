@@ -17,6 +17,12 @@ $.fn.parseForm = function(){
 	};
 
 $(function(){
+	
+	$('#nav li').hover(function(){
+		$(this).css({'text-decoration':'underline'});
+	},function(){
+		$(this).css({'text-decoration':'none'});
+	})
 		
 	$('#searchBtn').click(function(){
 		doSearch();

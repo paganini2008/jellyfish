@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish Statistic</title>
+<title>Jellyfish Http Watcher</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -11,11 +11,16 @@
 <link href="${contextPath}/static/css/base.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="${contextPath}/static/js/lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
-<script src="https://code.highcharts.com/themes/dark-unica.js"></script>
 </head>
 <script>
 
 	$(function(){
+		$('#nav li').hover(function(){
+			$(this).css({'text-decoration':'underline'});
+		},function(){
+			$(this).css({'text-decoration':'none'});
+		});
+	
 		$('#groupBox ul li').click(function(){
 			$(this).siblings().css({'font-weight':'normal','background-color':''});
 			var index = $('#groupBox ul li').index($(this));
@@ -24,7 +29,6 @@
 			});
 			renderTable(index);
 		});
-		
 		
 		renderTable(0);
 		
@@ -60,9 +64,7 @@
 	
 </script>
 <body>
-	<div id="top">
-		<label id="title">Jellyfish ${version!}</label>
-	</div>
+	<#include "top.ftl">
 	<div id="container">
 		<div id="groupBox">
 			<label>Group By: </label>
@@ -92,8 +94,6 @@
 			</table>
 		</div>
 	</div>
-	<div id="foot">
-		Atlantis Framework
-	</div>
+	<#include "foot.ftl">
 </body>
 </html>

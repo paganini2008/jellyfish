@@ -1,5 +1,13 @@
 var map = new Map();
 
+$(function(){
+	$('#nav li').hover(function(){
+		$(this).css({'text-decoration':'underline'});
+	},function(){
+		$(this).css({'text-decoration':'none'});
+	})
+});
+
 var SummaryChartUtils = {
 		
 	loadStatisticChart: function(divId, title, max, values, unit){

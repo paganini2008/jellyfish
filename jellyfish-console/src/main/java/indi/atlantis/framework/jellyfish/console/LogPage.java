@@ -20,9 +20,9 @@ import com.github.paganini2008.devtools.date.DateUtils;
 @Controller
 public class LogPage {
 
-	@GetMapping("/realtime")
+	@GetMapping("/")
 	public String realtime(Model ui) {
-		return "realtime";
+		return "log";
 	}
 
 	@GetMapping("/query")
@@ -30,7 +30,7 @@ public class LogPage {
 		Date now = new Date();
 		ui.addAttribute("startDate", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		ui.addAttribute("endDate", DateUtils.format(now, "yyyy-MM-dd HH:mm:ss"));
-		return "query";
+		return "log_history";
 	}
 
 }

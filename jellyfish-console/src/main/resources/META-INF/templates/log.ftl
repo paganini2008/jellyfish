@@ -3,47 +3,42 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish History</title>
+<title>Application Log Collector</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
 </script>
 <link href="${contextPath}/static/css/base.css" rel="stylesheet" type="text/css" />
-<link href="${contextPath}/static/css/jquery-ui-1.8.7.custom.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="${contextPath}/static/js/lib/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="${contextPath}/static/js/lib/jquery-ui-1.8.21.custom.min.js"></script>
-<script type="text/javascript" src="${contextPath}/static/js/lib/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/app.js"></script>
 </head>
 <script>
-
-	$(function(){
+	var latestTop;
 	
-		$('#startDate').datetimepicker({
-		  	dateFormat: 'yy-mm-dd',
-	        timeFormat: 'HH:mm:ss'
-		});
+	$(function(){
+		setInterval(doSearch, 1000);
 		
-		$('#endDate').datetimepicker({
-		    dateFormat: 'yy-mm-dd',
-	        timeFormat: 'HH:mm:ss'
-		});
+		latestTop = $('#logBox').scrollTop();
 		
-		$('input[type="radio"][name="asc"]').change(function(){
-			$('#logBox').html('');
-			$('#page').val('1');
+		$('#logBox').scroll(function(){
+			var top = $('#logBox').scrollTop();
+			if(latestTop != top){
+				if(latestTop > top){
+					scrollState = 'up';
+				}else{
+					scrollState = 'down';
+				}
+				latestTop = top;
+			}
 		});
-		
 	});
 </script>
 <body>
-	<div id="top">
-		<label id="title">Jellyfish ${version!}</label>
-	</div>
+	<#include "top.ftl">
 	<div id="container">
 		<div id="searchBox">
-			<form id="searchFrm" action="${contextPath}/atlantis/jellyfish/log/history/search" method="post">
+			<form id="searchFrm" action="${contextPath}/atlantis/jellyfish/log/entry/search" method="post">
 				<div class="searchCondition">
 					<span>
 						<label>Cluster Name: </label>
@@ -82,32 +77,16 @@
 						<input type="text" value="" name="keyword" id="keyword"/>
 					</span>
 					<span style="width: 25%">
-						<b>ASC</b><input type="radio" value="true" name="asc" checked="true"/>
-						<b>DESC</b><input type="radio" value="false" name="asc"/>
-						<input type="button" id="searchHistoryBtn" value="Search It"/>
+						<b>Asc</b><input type="radio" value="true" name="asc" checked="true"/>
+						<b>Desc</b><input type="radio" value="false" name="asc"/>
+						<input type="button" id="searchBtn" value="Search It"/>
 					</span>
 				</div>
-				<div class="searchCondition">
-					<span style="width: 25%">
-						<label>Start Date: </label>
-						<input type="text" value="${startDate!}" name="startDate" id="startDate" />
-					</span>
-					<span style="width: 25%">
-						<label>End Date: </label>
-						<input type="text" value="${endDate!}" name="endDate" id="endDate" />
-					</span>
-					<span style="width: 50%">
-					</span>
-				</div>
-				<input type="hidden" value="1" name="page" id="page" />
-				<input type="hidden" value="" name="totalPages" id="totalPages" />
 			</form>
 		</div>
 		<div id="logBox">
 		</div>
 	</div>
-	<div id="foot">
-		Spring Dessert Series
-	</div>
+	<#include "foot.ftl">
 </body>
 </html>

@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.github.paganini2008.devtools.net.UrlUtils;
+import com.github.paganini2008.devtools.net.Urls;
 
 import indi.atlantis.framework.jellyfish.JellyFishConstants;
 import indi.atlantis.framework.jellyfish.http.CatalogController;
@@ -94,7 +94,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		}
 
 		private String getContextPath(HttpServletRequest request) {
-			return UrlUtils.toHostUrl(request.getRequestURL().toString()) + request.getContextPath();
+			return Urls.toHostUrl(request.getRequestURL().toString()) + request.getContextPath();
 		}
 
 	}

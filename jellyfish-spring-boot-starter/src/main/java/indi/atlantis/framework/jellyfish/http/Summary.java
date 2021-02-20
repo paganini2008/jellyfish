@@ -7,7 +7,6 @@ import indi.atlantis.framework.vortex.sequence.MetricCollector;
 import indi.atlantis.framework.vortex.sequence.NumberMetric;
 import indi.atlantis.framework.vortex.sequence.SimpleMetricCollector;
 import indi.atlantis.framework.vortex.sequence.UserMetric;
-import lombok.ToString;
 
 /**
  * 
@@ -16,7 +15,6 @@ import lombok.ToString;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@ToString
 public final class Summary {
 
 	private final MetricCollector<NumberMetric<Long>> longMetricCollector = new SimpleMetricCollector<NumberMetric<Long>>();

@@ -40,7 +40,7 @@ public class LogEntryController {
 		return Response.success();
 	}
 
-	@GetMapping("/")
+	@GetMapping("/search")
 	public Response search(@RequestParam(value = "page", defaultValue = "1", required = false) int page,
 			@CookieValue(value = "PAGE_FETCH_SIZE", required = false, defaultValue = "100") int size) {
 		PageResponse<SearchResult> pageResponse = logEntrySearchService.search(page, size);

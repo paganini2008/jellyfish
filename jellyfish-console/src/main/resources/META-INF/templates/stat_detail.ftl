@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish Statistic</title>
+<title>Jellyfish Http Watcher</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -77,7 +77,7 @@
 						var successCount=dataEntries['successCount'];
 						var failedCount=dataEntries['failedCount'];
 						var timeoutCount=dataEntries['timeoutCount'];
-						SummaryChartUtils.loadCallCountChart('summaryCount','API Call Count Total', successCount, failedCount, timeoutCount);
+						SummaryChartUtils.loadCallCountChart('countSummary','API Call Count Total', successCount, failedCount, timeoutCount);
 						
 						dataEntries = entries['httpStatus'];
 						var countOf1xx=dataEntries['countOf1xx'];
@@ -85,7 +85,7 @@
 						var countOf3xx=dataEntries['countOf3xx'];
 						var countOf4xx=dataEntries['countOf4xx'];
 						var countOf5xx=dataEntries['countOf5xx'];
-						SummaryChartUtils.loadHttpStatusCountChart('summaryHttpStatus','API Http Status Count Total', countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
+						SummaryChartUtils.loadHttpStatusCountChart('httpStatusCountSummary','API Http Status Count Total', countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
 						
 						dataEntries = entries['rt'];
 						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
@@ -232,9 +232,7 @@
 	
 </script>
 <body>
-	<div id="top">
-		<label id="title">Jellyfish ${version!}</label>
-	</div>
+	<#include "top.ftl">
 	<div id="container">
 		<div id="chartBox">
 			<div id="infoBox">
@@ -267,8 +265,8 @@
 				<div id="ccSummary" style="width: 30%; height:320px; float: right;"></div>
 			</div>
 			<div class="summaryBox">
-				<div id="summaryCount" style="width: 50%; height:320px; float: right;"></div>
-				<div id="summaryHttpStatus" style="width: 50%; height:320px; float: right;"></div>
+				<div id="countSummary" style="width: 50%; height:320px; float: right;"></div>
+				<div id="httpStatusCountSummary" style="width: 50%; height:320px; float: right;"></div>
 			</div>
 			<div class="chartObj" id="rt"></div>
 			<div class="chartObj" id="qps"></div>
@@ -279,8 +277,6 @@
 			
 		</div>
 	</div>
-	<div id="foot">
-		Spring Dessert Series
-	</div>
+	<#include "foot.ftl">
 </body>
 </html>

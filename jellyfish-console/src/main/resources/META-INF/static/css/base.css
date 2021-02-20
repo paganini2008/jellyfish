@@ -28,11 +28,34 @@ body {
 	clear: both;
 }
 
-#title{
+#title {
 	font-size: 20pt;
 	display: inline-block;
 	float: left;
 	margin-left: 10px;
+}
+
+#nav {
+	display: inline-block;
+	float: right;
+	height: 28px;
+	line-height: 28px; 
+	margin-top: 20px;
+}
+
+#nav li {
+	list-style: none;
+	float: left;
+	margin-right: 5px;
+	height: 28px;
+	line-height: 28px; 
+	padding-right: 5px;
+	cursor: pointer;
+	font-weight: bolder;
+}
+
+#nav li a {
+	text-decoration: none;
 }
 
 #foot {
@@ -63,7 +86,7 @@ body {
 	text-align: left;
 }
 
-#searchBox{
+#searchBox {
 	width: 100%;
 	background-color: #fff;
 	height: 140px;
@@ -72,7 +95,7 @@ body {
 	background-color: #F0F0F0;
 }
 
-#logBox{
+#logBox {
 	width: 100%;
 	background-color: #fff;
 	overflow: auto;
@@ -81,7 +104,7 @@ body {
 	margin-bottom: 10px;
 }
 
-#groupBox{
+#groupBox {
 	width: calc(100% - 20px);
 	height: 32px;
 	clear: both;
@@ -89,7 +112,7 @@ body {
 	margin: 10px auto;
 }
 
-#groupBox label{
+#groupBox label {
 	float: left;
 	display: inline-block;
 	width: 60px;
@@ -99,14 +122,14 @@ body {
 	text-align: right;
 }
 
-#groupBox ul{
+#groupBox ul {
 	float: left;
 	height: 32px;
 	line-height: 32px;
 	display: inline-block;
 }
 
-#groupBox ul li{
+#groupBox ul li {
 	float: left;
 	list-style: none;
 	display: inline-block;
@@ -120,28 +143,28 @@ body {
 	margin-right: 5px;
 }
 
-#tableBox{
+#tableBox {
 	width: calc(100% - 20px);
 	text-align: left;
 	margin: 10px auto;
 	clear: both;
 }
 
-.logEntry{
+.logEntry {
 	clear: both;
 	padding-top: 5px;
 	padding-left: 5px;
 	margin-bottom: 2px;
 }
 
-.searchCondition{
+.searchCondition {
 	height: 30px;
 	line-height: 30px;
 	clear: both;
 	margin-bottom: 5px;
 }
 
-.searchCondition span{
+.searchCondition span {
 	display: inline-block;
 	float: left;
 	width: 25%;
@@ -150,43 +173,46 @@ body {
 
 .searchCondition span label {
 	width: 130px;
-	height: 30px;
-	line-height: 30px;
+	height: 22px;
+	line-height: 22px;
 	text-align: right;
-	padding-right: 5px;
+	padding-right: 10px;
+	display: inline-block;
+	float: left;
+	font-weight: bolder;
+}
+
+.searchCondition span input {
 	display: inline-block;
 	float: left;
 }
 
-.searchCondition span input{
-	display: inline-block;
-	float: left;
-}
-
-.searchCondition span b{
+.searchCondition span b {
 	display: inline-block;
 	float: left;
 	width: 26px;
-	height: 30px;
-	line-height: 30px;
+	height: 22px;
+	line-height: 22px;
+	text-align: right;
+	padding-right: 5px;
 }
 
-.searchCondition span input[type="text"]{
+.searchCondition span input[type="text"] {
 	width: calc(100% - 160px);
-	height: 26px;
-	line-height: 26px;
+	height: 22px;
+	line-height: 22px;
 	padding-left: 5px;
 }
 
-.searchCondition span input[type="radio"]{
-	margin: 10px 5px;
+.searchCondition span input[type="radio"] {
+	margin: 5px;
 }
 
 #keyword {
 	width: calc(100% - 160px);
 }
 
-#searchBtn, #searchHistoryBtn{
+#searchBtn, #searchHistoryBtn {
 	width: 120px;
 	height: 30px;
 	padding: 5px 20px;
@@ -196,7 +222,7 @@ body {
 	cursor: pointer;
 }
 
-#loadMore{
+#loadMore {
 	color: #9D9D9D;
 	width: 100%;
 	height: 22px;
@@ -207,27 +233,27 @@ body {
 	cursor: pointer;
 }
 
-.searchKeyword{
+.searchKeyword {
 	color: #FF0000;
 	font-weight: bold;
 }
 
-#chartBox{
+#chartBox {
 	width: 100%;
 	height: calc(100% - 100px);
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
 
-#infoBox, .summaryBox{
+#infoBox, .summaryBox {
 	width: 90%;
-	height:320px;
+	height: 320px;
 	clear: both;
 	margin: 5px auto;
 	overflow: hidden;
 }
 
-#catalog p label{
+#catalog p label {
 	width: 120px;
 	display: inline-block;
 	height: 32px;
@@ -237,7 +263,7 @@ body {
 	font-weight: bold;
 }
 
-#catalog p span{
+#catalog p span {
 	width: calc(100% - 150px);
 	display: inline-block;
 	height: 32px;
@@ -245,9 +271,9 @@ body {
 	text-align: left;
 }
 
-.chartObj{
+.chartObj {
 	width: 90%;
-	height:360px;
+	height: 360px;
 	margin: 5px auto;
 	clear: both;
 }
@@ -256,27 +282,27 @@ img {
 	cursor: pointer;
 }
 
-.fatal{
+.fatal {
 	color: #AE57A4;
 }
 
-.error{
+.error {
 	color: #FF0000;
 }
 
-.warn{
+.warn {
 	color: #FF8800;
 }
 
-.info{
+.info {
 	color: #00FF00;
 }
 
-.debug{
+.debug {
 	color: #8080C0;
 }
 
-.trace{
+.trace {
 	color: #A5A552;
 }
 
@@ -513,19 +539,22 @@ img {
 
 a:link {
 	text-decoration: none;
+	color: #000;
 }
 
 a:visited {
 	text-decoration: none;
+	color: #000;
 }
 
 a:hover {
 	text-decoration: none;
-	font-weight: bold;
+	color: #000;
 }
 
 a:active {
 	text-decoration: none;
+	color: #000;
 }
 
 .tabNoData {

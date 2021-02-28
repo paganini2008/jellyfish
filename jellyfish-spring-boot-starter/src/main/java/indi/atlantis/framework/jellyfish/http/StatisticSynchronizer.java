@@ -5,10 +5,10 @@ import java.util.Map;
 
 import indi.atlantis.framework.vortex.common.NioClient;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.sequence.NumberMetric;
-import indi.atlantis.framework.vortex.sequence.NumberMetrics;
-import indi.atlantis.framework.vortex.sequence.Synchronizer;
-import indi.atlantis.framework.vortex.sequence.UserMetric;
+import indi.atlantis.framework.vortex.metric.NumberMetric;
+import indi.atlantis.framework.vortex.metric.NumberMetrics;
+import indi.atlantis.framework.vortex.metric.Synchronizer;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**

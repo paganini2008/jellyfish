@@ -88,15 +88,15 @@
 						SummaryChartUtils.loadHttpStatusCountChart('httpStatusCountSummary','API Http Status Count Total', countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
 						
 						dataEntries = entries['rt'];
-						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
+						values = [dataEntries['middleValue'], dataEntries['lowestValue']];
 						SummaryChartUtils.loadStatisticChart('rtSummary', 'Response Time', 60000, values, 'ms');
 						
 						dataEntries = entries['qps'];
-						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
+						values = [dataEntries['middleValue'], dataEntries['lowestValue']];
 						SummaryChartUtils.loadStatisticChart('qpsSummary', 'QPS', 10000, values, '');
 						
 						dataEntries = entries['cc'];
-						values = [dataEntries['highestValue'], dataEntries['middleValue'], dataEntries['lowestValue']];
+						values = [dataEntries['middleValue'], dataEntries['lowestValue']];
 						SummaryChartUtils.loadStatisticChart('ccSummary', 'Concurrency', 200, values, '');
 					}
 				}

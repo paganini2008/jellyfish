@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-import indi.atlantis.framework.vortex.sequence.UserMetric;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 

@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
-import indi.atlantis.framework.vortex.sequence.MetricSequencer;
-import indi.atlantis.framework.vortex.sequence.NumberMetric;
-import indi.atlantis.framework.vortex.sequence.UserMetric;
+import indi.atlantis.framework.vortex.metric.MetricSequencer;
+import indi.atlantis.framework.vortex.metric.NumberMetric;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 

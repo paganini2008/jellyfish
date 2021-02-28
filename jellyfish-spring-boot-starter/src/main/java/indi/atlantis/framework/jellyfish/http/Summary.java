@@ -3,10 +3,10 @@ package indi.atlantis.framework.jellyfish.http;
 import java.util.HashMap;
 import java.util.Map;
 
-import indi.atlantis.framework.vortex.sequence.MetricCollector;
-import indi.atlantis.framework.vortex.sequence.NumberMetric;
-import indi.atlantis.framework.vortex.sequence.SimpleMetricCollector;
-import indi.atlantis.framework.vortex.sequence.UserMetric;
+import indi.atlantis.framework.vortex.metric.MetricCollector;
+import indi.atlantis.framework.vortex.metric.NumberMetric;
+import indi.atlantis.framework.vortex.metric.SimpleMetricCollector;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 

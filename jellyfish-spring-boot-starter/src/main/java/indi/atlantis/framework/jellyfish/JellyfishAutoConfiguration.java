@@ -34,9 +34,9 @@ import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.HashPartitioner;
 import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
 import indi.atlantis.framework.vortex.common.Partitioner;
-import indi.atlantis.framework.vortex.sequence.FullSynchronizationExecutor;
-import indi.atlantis.framework.vortex.sequence.IncrementalSynchronizationExecutor;
-import indi.atlantis.framework.vortex.sequence.Synchronizer;
+import indi.atlantis.framework.vortex.metric.FullSynchronizationExecutor;
+import indi.atlantis.framework.vortex.metric.IncrementalSynchronizationExecutor;
+import indi.atlantis.framework.vortex.metric.Synchronizer;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
 

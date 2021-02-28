@@ -56,7 +56,7 @@ public abstract class IndexSearchResultSetSlice extends PageableResultSetSlice<S
 		}
 		searchQueryBuilder.withQuery(queryBuilder).withSort(sortBuilder)
 				.withHighlightFields(new HighlightBuilder.Field(SEARCH_FIELD_MESSAGE), new HighlightBuilder.Field(SEARCH_FIELD_REASON))
-				.withHighlightBuilder(new HighlightBuilder().preTags("<font class=\"searchKeyword\">").postTags("</font>").fragmentSize(20)
+				.withHighlightBuilder(new HighlightBuilder().preTags("<font class=\"searchKeyword\">").postTags("</font>").fragmentSize(Integer.MAX_VALUE)
 						.numOfFragments(3));
 
 		if (maxResults > 0) {

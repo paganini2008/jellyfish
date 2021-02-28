@@ -30,6 +30,8 @@ $(function(){
 	});
 	
 	$('#searchHistoryBtn').click(function(){
+		$('#logBox').html('');
+		$('#page').val('1');
 		doSearchAndAppend();
 		return false;
 	});

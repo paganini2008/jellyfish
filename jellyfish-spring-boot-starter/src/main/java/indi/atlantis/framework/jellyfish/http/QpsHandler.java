@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.sequence.MetricSequencer;
-import indi.atlantis.framework.vortex.sequence.NumberMetric;
-import indi.atlantis.framework.vortex.sequence.NumberMetrics;
+import indi.atlantis.framework.vortex.metric.MetricSequencer;
+import indi.atlantis.framework.vortex.metric.NumberMetric;
+import indi.atlantis.framework.vortex.metric.NumberMetrics;
 
 /**
  * 

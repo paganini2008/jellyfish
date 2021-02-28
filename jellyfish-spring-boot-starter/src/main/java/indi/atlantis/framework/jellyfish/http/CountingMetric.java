@@ -3,7 +3,7 @@ package indi.atlantis.framework.jellyfish.http;
 import java.util.HashMap;
 import java.util.Map;
 
-import indi.atlantis.framework.vortex.sequence.UserMetric;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 

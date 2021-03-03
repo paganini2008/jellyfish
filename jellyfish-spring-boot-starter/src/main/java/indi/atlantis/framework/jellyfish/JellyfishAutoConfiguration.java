@@ -28,7 +28,7 @@ import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
 import indi.atlantis.framework.reditools.common.IdGenerator;
 import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
-import indi.atlantis.framework.seafloor.InstanceId;
+import indi.atlantis.framework.tridenter.InstanceId;
 import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.HashPartitioner;

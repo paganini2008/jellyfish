@@ -8,27 +8,27 @@ import static indi.atlantis.framework.jellyfish.http.MetricNames.RT;
 
 import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.common.Tuple;
+import indi.atlantis.framework.vortex.metric.BigInt;
+import indi.atlantis.framework.vortex.metric.BigIntMetric;
 import indi.atlantis.framework.vortex.metric.MetricCollector;
-import indi.atlantis.framework.vortex.metric.NumberMetric;
-import indi.atlantis.framework.vortex.metric.NumberMetrics;
 import indi.atlantis.framework.vortex.metric.UserMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * SummarySynchronizationHandler
+ * ApiSummarySynchronizationHandler
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public class SummarySynchronizationHandler implements Handler {
+public class ApiSummarySynchronizationHandler implements Handler {
 
 	private final String topic;
 	private final Environment environment;
 	private final boolean merged;
 
-	public SummarySynchronizationHandler(String topic, Environment environment, boolean merged) {
+	public ApiSummarySynchronizationHandler(String topic, Environment environment, boolean merged) {
 		this.topic = topic;
 		this.environment = environment;
 		this.merged = merged;
@@ -39,15 +39,15 @@ public class SummarySynchronizationHandler implements Handler {
 		final String metric = tuple.getField("metric", String.class);
 		switch (metric) {
 		case COUNT:
-			synchronizeCountingMetric(metric, tuple);
+			synchronizeCounterMetric(metric, tuple);
 			break;
 		case HTTP_STATUS:
-			synchronizeHttpStatusCountingMetric(metric, tuple);
+			synchronizeHttpStatusCounterMetric(metric, tuple);
 			break;
 		case RT:
 		case CC:
 		case QPS:
-			synchronizeLongMetric(metric, tuple);
+			synchronizeBigIntMetric(metric, tuple);
 			break;
 		default:
 			log.warn("Unknown metric for synchronization: {}", metric);
@@ -55,41 +55,42 @@ public class SummarySynchronizationHandler implements Handler {
 		}
 	}
 
-	private void synchronizeCountingMetric(String metric, Tuple tuple) {
+	private void synchronizeCounterMetric(String metric, Tuple tuple) {
 		Catalog catalog = Catalog.of(tuple);
-		Summary summary = environment.getSummary(catalog);
+		ApiSummary summary = environment.getSummary(catalog);
 		long timestamp = tuple.getTimestamp();
 		long count = tuple.getField("count", Long.class);
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
-		MetricCollector<UserMetric<Counter>> collector = summary.countingMetricCollector();
-		collector.set(metric, new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, false), merged);
+		MetricCollector<UserMetric<ApiCounter>> collector = summary.getCounterMetricCollector();
+		collector.set(metric, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp), merged);
 	}
 
-	private void synchronizeHttpStatusCountingMetric(String metric, Tuple tuple) {
+	private void synchronizeHttpStatusCounterMetric(String metric, Tuple tuple) {
 		Catalog catalog = Catalog.of(tuple);
-		Summary summary = environment.getSummary(catalog);
+		ApiSummary summary = environment.getSummary(catalog);
 		long countOf1xx = tuple.getField("countOf1xx", Long.class);
 		long countOf2xx = tuple.getField("countOf2xx", Long.class);
 		long countOf3xx = tuple.getField("countOf3xx", Long.class);
 		long countOf4xx = tuple.getField("countOf4xx", Long.class);
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
-		MetricCollector<UserMetric<HttpStatusCounter>> collector = summary.httpStatusCountingMetricCollector();
-		collector.set(metric, new HttpStatusCountingMetric(
-				new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, false), merged);
+		MetricCollector<UserMetric<HttpStatusCounter>> collector = summary.getHttpStatusCounterMetricCollector();
+		collector.set(metric,
+				new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp),
+				merged);
 	}
 
-	private void synchronizeLongMetric(String metric, Tuple tuple) {
+	private void synchronizeBigIntMetric(String metric, Tuple tuple) {
 		Catalog catalog = Catalog.of(tuple);
-		Summary summary = environment.getSummary(catalog);
+		ApiSummary summary = environment.getSummary(catalog);
 		long timestamp = tuple.getTimestamp();
 		long highestValue = tuple.getField("highestValue", Long.class);
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		MetricCollector<NumberMetric<Long>> collector = summary.longMetricCollector();
-		collector.set(metric, new NumberMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false), merged);
+		MetricCollector<UserMetric<BigInt>> collector = summary.getBigIntMetricCollector();
+		collector.set(metric, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp), merged);
 	}
 
 	@Override

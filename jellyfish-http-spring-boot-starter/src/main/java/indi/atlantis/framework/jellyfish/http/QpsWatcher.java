@@ -93,17 +93,21 @@ public class QpsWatcher extends HttpWatcher implements InitializingBean {
 		@Override
 		public void run() {
 			Map<String, Object> contextMap;
+			int qps;
 			for (Map.Entry<String, QPS> entry : contexts.entrySet()) {
-				contextMap = getContextMap(entry.getKey(), entry.getValue());
-				try {
-					transportClient.write(TOPIC_NAME, contextMap);
-				} catch (RuntimeException e) {
-					log.error(e.getMessage(), e);
+				qps = entry.getValue().checkpoint();
+				if (qps > 0) {
+					try {
+						contextMap = getContextMap(entry.getKey(), qps);
+						transportClient.write(TOPIC_NAME, contextMap);
+					} catch (RuntimeException e) {
+						log.error(e.getMessage(), e);
+					}
 				}
 			}
 		}
 
-		private Map<String, Object> getContextMap(final String path, QPS qps) {
+		private Map<String, Object> getContextMap(final String path, int qps) {
 			String host = hostName + ":" + port;
 			String category = pathMatcher.matchCategory(path);
 			String decorator = pathMatcher.matchDecoration(path);
@@ -114,7 +118,7 @@ public class QpsWatcher extends HttpWatcher implements InitializingBean {
 			contextMap.put("host", host);
 			contextMap.put("category", category);
 			contextMap.put("path", decorator);
-			contextMap.put("qps", qps.checkpoint());
+			contextMap.put("qps", qps);
 			return contextMap;
 		}
 

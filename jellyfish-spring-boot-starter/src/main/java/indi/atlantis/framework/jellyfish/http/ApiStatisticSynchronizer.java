@@ -5,8 +5,8 @@ import java.util.Map;
 
 import indi.atlantis.framework.vortex.common.NioClient;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.metric.NumberMetric;
-import indi.atlantis.framework.vortex.metric.NumberMetrics;
+import indi.atlantis.framework.vortex.metric.BigInt;
+import indi.atlantis.framework.vortex.metric.BigIntMetric;
 import indi.atlantis.framework.vortex.metric.Synchronizer;
 import indi.atlantis.framework.vortex.metric.UserMetric;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +19,13 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class StatisticSynchronizer implements Synchronizer {
+public class ApiStatisticSynchronizer implements Synchronizer {
 
 	private final String topic;
 	private final Environment environment;
 	private final boolean incremental;
 
-	public StatisticSynchronizer(String topic, Environment environment, boolean incremental) {
+	public ApiStatisticSynchronizer(String topic, Environment environment, boolean incremental) {
 		this.topic = topic;
 		this.environment = environment;
 		this.incremental = incremental;
@@ -34,28 +34,28 @@ public class StatisticSynchronizer implements Synchronizer {
 	@Override
 	public void synchronize(NioClient nioClient, SocketAddress remoteAddress) {
 		log.trace("Statistic synchronization begin...");
-		environment.countingMetricSequencer().scan((catalog, metric, data) -> {
-			for (Map.Entry<String, UserMetric<Counter>> entry : data.entrySet()) {
+		environment.getCounterMetricSequencer().scan((catalog, metric, data) -> {
+			for (Map.Entry<String, UserMetric<ApiCounter>> entry : data.entrySet()) {
 				Tuple tuple = forCounter(catalog, metric, entry.getValue());
 				nioClient.send(remoteAddress, tuple);
 			}
 		});
-		environment.httpStatusCountingMetricSequencer().scan((catalog, metric, data) -> {
+		environment.getHttpStatusCounterMetricSequencer().scan((catalog, metric, data) -> {
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : data.entrySet()) {
 				Tuple tuple = forHttpStatusCounter(catalog, metric, entry.getValue());
 				nioClient.send(remoteAddress, tuple);
 			}
 		});
-		environment.longMetricSequencer().scan((catalog, metric, data) -> {
-			for (Map.Entry<String, NumberMetric<Long>> entry : data.entrySet()) {
-				Tuple tuple = forLong(catalog, metric, entry.getValue());
+		environment.getBigIntMetricSequencer().scan((catalog, metric, data) -> {
+			for (Map.Entry<String, UserMetric<BigInt>> entry : data.entrySet()) {
+				Tuple tuple = forBigInt(catalog, metric, entry.getValue());
 				nioClient.send(remoteAddress, tuple);
 			}
 		});
 		log.trace("Statistic synchronization end");
 	}
 
-	private Tuple forCounter(Catalog catalog, String metric, UserMetric<Counter> metricUnit) {
+	private Tuple forCounter(Catalog catalog, String metric, UserMetric<ApiCounter> metricUnit) {
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
@@ -64,7 +64,7 @@ public class StatisticSynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		Counter counter = metricUnit.get();
+		ApiCounter counter = metricUnit.get();
 		long count = counter.getCount();
 		long failedCount = counter.getFailedCount();
 		long timeoutCount = counter.getTimeoutCount();
@@ -75,8 +75,8 @@ public class StatisticSynchronizer implements Synchronizer {
 		tuple.setField("timestamp", timestamp);
 
 		if (incremental) {
-			environment.countingMetricSequencer().update(catalog, metric, timestamp,
-					new CountingMetric(new Counter(count, failedCount, timeoutCount), timestamp, true));
+			environment.getCounterMetricSequencer().update(catalog, metric, timestamp,
+					new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp).resettable());
 		}
 		return tuple;
 	}
@@ -105,13 +105,14 @@ public class StatisticSynchronizer implements Synchronizer {
 		tuple.setField("timestamp", timestamp);
 
 		if (incremental) {
-			environment.httpStatusCountingMetricSequencer().update(catalog, metric, timestamp, new HttpStatusCountingMetric(
-					new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp, true));
+			environment.getHttpStatusCounterMetricSequencer().update(catalog, metric, timestamp,
+					new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx),
+							timestamp).resettable());
 		}
 		return tuple;
 	}
 
-	private Tuple forLong(Catalog catalog, String metric, NumberMetric<Long> metricUnit) {
+	private Tuple forBigInt(Catalog catalog, String metric, UserMetric<BigInt> metricUnit) {
 
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
@@ -121,10 +122,11 @@ public class StatisticSynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		long highestValue = metricUnit.getHighestValue().longValue();
-		long lowestValue = metricUnit.getLowestValue().longValue();
-		long totalValue = metricUnit.getTotalValue().longValue();
-		long count = metricUnit.getCount();
+		BigInt bigInt = metricUnit.get();
+		long highestValue = bigInt.getHighestValue();
+		long lowestValue = bigInt.getLowestValue();
+		long totalValue = bigInt.getTotalValue();
+		long count = bigInt.getCount();
 		long timestamp = metricUnit.getTimestamp();
 		tuple.setField("highestValue", highestValue);
 		tuple.setField("lowestValue", lowestValue);
@@ -133,8 +135,8 @@ public class StatisticSynchronizer implements Synchronizer {
 		tuple.setField("timestamp", timestamp);
 
 		if (incremental) {
-			environment.longMetricSequencer().update(catalog, metric, timestamp,
-					new NumberMetrics.LongMetric(highestValue, lowestValue, totalValue, count, timestamp, true));
+			environment.getBigIntMetricSequencer().update(catalog, metric, timestamp,
+					new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp).resettable());
 		}
 		return tuple;
 	}

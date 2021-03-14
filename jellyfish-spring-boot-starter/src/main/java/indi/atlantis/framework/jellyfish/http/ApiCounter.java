@@ -8,7 +8,7 @@ import lombok.ToString;
 
 /**
  * 
- * Counter
+ * ApiCounter
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -16,17 +16,17 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Counter implements Serializable {
+public class ApiCounter implements Serializable {
 
 	private static final long serialVersionUID = -8870925173668637122L;
 	private long count;
 	private long failedCount;
 	private long timeoutCount;
 
-	public Counter() {
+	public ApiCounter() {
 	}
 
-	public Counter(long count, long failedCount, long timeoutCount) {
+	public ApiCounter(long count, long failedCount, long timeoutCount) {
 		this.count = count;
 		this.failedCount = failedCount;
 		this.timeoutCount = timeoutCount;

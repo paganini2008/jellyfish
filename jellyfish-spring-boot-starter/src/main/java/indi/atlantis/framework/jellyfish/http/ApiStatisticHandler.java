@@ -53,7 +53,7 @@ public class ApiStatisticHandler implements Handler {
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
 		ApiCounterMetric counterMetric = new ApiCounterMetric(failed, timeout, timestamp);
-		MetricSequencer<Catalog, UserMetric<ApiCounter>> counterMetricSequencer = environment.getCounterMetricSequencer();
+		MetricSequencer<Catalog, UserMetric<ApiCounter>> counterMetricSequencer = environment.getApiCounterMetricSequencer();
 		counterMetricSequencer.update(catalog, COUNT, timestamp, counterMetric);
 
 		HttpStatusCounterMetric httpStatusCounterMetric = new HttpStatusCounterMetric(HttpStatus.valueOf(httpStatusCode), timestamp);

@@ -34,7 +34,7 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 	@Override
 	public void synchronize(NioClient nioClient, SocketAddress remoteAddress) {
 		log.trace("Statistic synchronization begin...");
-		environment.getCounterMetricSequencer().scan((catalog, metric, data) -> {
+		environment.getApiCounterMetricSequencer().scan((catalog, metric, data) -> {
 			for (Map.Entry<String, UserMetric<ApiCounter>> entry : data.entrySet()) {
 				Tuple tuple = forCounter(catalog, metric, entry.getValue());
 				nioClient.send(remoteAddress, tuple);
@@ -75,7 +75,7 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		tuple.setField("timestamp", timestamp);
 
 		if (incremental) {
-			environment.getCounterMetricSequencer().update(catalog, metric, timestamp,
+			environment.getApiCounterMetricSequencer().update(catalog, metric, timestamp,
 					new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp).resettable());
 		}
 		return tuple;

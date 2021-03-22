@@ -8,9 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.vortex.metric.BigInt;
-import indi.atlantis.framework.vortex.metric.MetricSequencer;
-import indi.atlantis.framework.vortex.metric.SimpleMetricSequencer;
-import indi.atlantis.framework.vortex.metric.UserMetric;
+import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
 
 /**
  * 
@@ -22,9 +20,9 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
 public final class Environment {
 
 	private final Map<Catalog, ApiSummary> summary = new ConcurrentHashMap<Catalog, ApiSummary>();
-	private final MetricSequencer<Catalog, UserMetric<BigInt>> bigIntMetricSequencer = new SimpleMetricSequencer<Catalog, UserMetric<BigInt>>();
-	private final MetricSequencer<Catalog, UserMetric<ApiCounter>> counterMetricSequencer = new SimpleMetricSequencer<Catalog, UserMetric<ApiCounter>>();
-	private final MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCounterMetricSequencer = new SimpleMetricSequencer<Catalog, UserMetric<HttpStatusCounter>>();
+	private final GenericUserMetricSequencer<Catalog, BigInt> bigIntMetricSequencer = new BigIntMetricSequencer();
+	private final GenericUserMetricSequencer<Catalog, ApiCounter> counterMetricSequencer = new ApiCounterMetricSequencer();
+	private final GenericUserMetricSequencer<Catalog, HttpStatusCounter> httpStatusCounterMetricSequencer = new HttpStatusCounterMetricSequencer();
 
 	public List<Catalog> getCatalogs() {
 		return new ArrayList<Catalog>(summary.keySet());
@@ -34,15 +32,15 @@ public final class Environment {
 		return MapUtils.get(summary, catalog, () -> new ApiSummary());
 	}
 
-	public MetricSequencer<Catalog, UserMetric<BigInt>> getBigIntMetricSequencer() {
+	public GenericUserMetricSequencer<Catalog, BigInt> getBigIntMetricSequencer() {
 		return bigIntMetricSequencer;
 	}
 
-	public MetricSequencer<Catalog, UserMetric<ApiCounter>> getCounterMetricSequencer() {
+	public GenericUserMetricSequencer<Catalog, ApiCounter> getApiCounterMetricSequencer() {
 		return counterMetricSequencer;
 	}
 
-	public MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> getHttpStatusCounterMetricSequencer() {
+	public GenericUserMetricSequencer<Catalog, HttpStatusCounter> getHttpStatusCounterMetricSequencer() {
 		return httpStatusCounterMetricSequencer;
 	}
 

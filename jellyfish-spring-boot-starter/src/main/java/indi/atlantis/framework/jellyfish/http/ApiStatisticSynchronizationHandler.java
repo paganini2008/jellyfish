@@ -39,10 +39,10 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		final String metric = tuple.getField("metric", String.class);
 		switch (metric) {
 		case COUNT:
-			synchronizeCountingMetric(metric, tuple);
+			synchronizeApiCounterMetric(metric, tuple);
 			break;
 		case HTTP_STATUS:
-			synchronizeHttpStatusCountingMetric(metric, tuple);
+			synchronizeHttpStatusCounterMetric(metric, tuple);
 			break;
 		case RT:
 		case CC:
@@ -55,17 +55,17 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		}
 	}
 
-	private void synchronizeCountingMetric(String metric, Tuple tuple) {
+	private void synchronizeApiCounterMetric(String metric, Tuple tuple) {
 		Catalog catalog = Catalog.of(tuple);
 		long timestamp = tuple.getTimestamp();
 		long count = tuple.getField("count", Long.class);
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
-		MetricSequencer<Catalog, UserMetric<ApiCounter>> sequencer = environment.getCounterMetricSequencer();
+		MetricSequencer<Catalog, UserMetric<ApiCounter>> sequencer = environment.getApiCounterMetricSequencer();
 		sequencer.update(catalog, metric, timestamp, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp), merged);
 	}
 
-	private void synchronizeHttpStatusCountingMetric(String metric, Tuple tuple) {
+	private void synchronizeHttpStatusCounterMetric(String metric, Tuple tuple) {
 		Catalog catalog = Catalog.of(tuple);
 		long countOf1xx = tuple.getField("countOf1xx", Long.class);
 		long countOf2xx = tuple.getField("countOf2xx", Long.class);

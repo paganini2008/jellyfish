@@ -16,13 +16,13 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
-import indi.atlantis.framework.jellyfish.http.Environment;
 import indi.atlantis.framework.jellyfish.http.ApiQpsHandler;
 import indi.atlantis.framework.jellyfish.http.ApiStatisticHandler;
 import indi.atlantis.framework.jellyfish.http.ApiStatisticSynchronizationHandler;
 import indi.atlantis.framework.jellyfish.http.ApiStatisticSynchronizer;
 import indi.atlantis.framework.jellyfish.http.ApiSummarySynchronizationHandler;
 import indi.atlantis.framework.jellyfish.http.ApiSummarySynchronizer;
+import indi.atlantis.framework.jellyfish.http.Environment;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
@@ -36,6 +36,7 @@ import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
 import indi.atlantis.framework.vortex.common.Partitioner;
 import indi.atlantis.framework.vortex.metric.FullSynchronizationExecutor;
 import indi.atlantis.framework.vortex.metric.IncrementalSynchronizationExecutor;
+import indi.atlantis.framework.vortex.metric.SynchronizationExecutor;
 import indi.atlantis.framework.vortex.metric.Synchronizer;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
@@ -86,69 +87,69 @@ public class JellyfishAutoConfiguration {
 	}
 
 	@Bean
-	public Handler statisticHandler() {
+	public Handler apiStatisticHandler() {
 		return new ApiStatisticHandler();
 	}
 
 	@Bean
-	public Handler qpsHandler() {
+	public Handler apiQpsHandler() {
 		return new ApiQpsHandler();
 	}
 
 	@Bean
-	public Handler statisticSynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+	public Handler apiStatisticSynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
 		return new ApiStatisticSynchronizationHandler("statistic-", environment, false);
 	}
 
 	@Bean
-	public Handler incrementalStatisticSynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+	public Handler incrementalApiStatisticSynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
 		return new ApiStatisticSynchronizationHandler("statistic+", environment, true);
 	}
 
 	@Bean
-	public Handler summarySynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+	public Handler apiSummarySynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
 		return new ApiSummarySynchronizationHandler("summary-", environment, false);
 	}
 
 	@Bean
-	public Handler incrementalSummarySynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
+	public Handler incrementalApiSummarySynchronizationHandler(@Qualifier("secondaryEnvironment") Environment environment) {
 		return new ApiSummarySynchronizationHandler("summary+", environment, true);
 	}
 
 	@Bean
-	public Synchronizer statisticSynchronizer(@Qualifier("secondaryEnvironment") Environment environment) {
+	public Synchronizer apiStatisticSynchronizer(@Qualifier("secondaryEnvironment") Environment environment) {
 		return new ApiStatisticSynchronizer("statistic-", environment, false);
 	}
 
 	@Bean
-	public Synchronizer incrementalStatisticSynchronizer(@Qualifier("primaryEnvironment") Environment environment) {
+	public Synchronizer incrementalApiStatisticSynchronizer(@Qualifier("primaryEnvironment") Environment environment) {
 		return new ApiStatisticSynchronizer("statistic+", environment, true);
 	}
 
 	@Bean
-	public Synchronizer summarySynchronizer(@Qualifier("secondaryEnvironment") Environment environment) {
+	public Synchronizer apiSummarySynchronizer(@Qualifier("secondaryEnvironment") Environment environment) {
 		return new ApiSummarySynchronizer("summary-", environment, false);
 	}
 
 	@Bean
-	public Synchronizer incrementalSummarySynchronizer(@Qualifier("primaryEnvironment") Environment environment) {
+	public Synchronizer incrementalApiSummarySynchronizer(@Qualifier("primaryEnvironment") Environment environment) {
 		return new ApiSummarySynchronizer("summary+", environment, true);
 	}
 
 	@Bean
-	public FullSynchronizationExecutor fullSynchronizationExecutor(@Qualifier("summarySynchronizer") Synchronizer summarySynchronizer,
-			@Qualifier("statisticSynchronizer") Synchronizer statisticSynchronizer) {
+	public SynchronizationExecutor fullSynchronizationExecutor(@Qualifier("apiSummarySynchronizer") Synchronizer apiSummarySynchronizer,
+			@Qualifier("apiStatisticSynchronizer") Synchronizer apiStatisticSynchronizer) {
 		FullSynchronizationExecutor executor = new FullSynchronizationExecutor();
-		executor.addSynchronizers(summarySynchronizer, statisticSynchronizer);
+		executor.addSynchronizers(apiSummarySynchronizer, apiStatisticSynchronizer);
 		return executor;
 	}
 
 	@Bean
-	public IncrementalSynchronizationExecutor incrementalSynchronizationExecutor(
-			@Qualifier("incrementalSummarySynchronizer") Synchronizer summarySynchronizer,
-			@Qualifier("incrementalStatisticSynchronizer") Synchronizer statisticSynchronizer) {
+	public SynchronizationExecutor incrementalSynchronizationExecutor(
+			@Qualifier("incrementalApiSummarySynchronizer") Synchronizer apiSummarySynchronizer,
+			@Qualifier("incrementalApiStatisticSynchronizer") Synchronizer apiStatisticSynchronizer) {
 		IncrementalSynchronizationExecutor executor = new IncrementalSynchronizationExecutor();
-		executor.addSynchronizers(summarySynchronizer, statisticSynchronizer);
+		executor.addSynchronizers(apiSummarySynchronizer, apiStatisticSynchronizer);
 		return executor;
 	}
 

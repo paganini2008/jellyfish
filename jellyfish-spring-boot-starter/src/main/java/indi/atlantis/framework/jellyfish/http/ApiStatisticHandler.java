@@ -52,26 +52,25 @@ public class ApiStatisticHandler implements Handler {
 		boolean timeout = tuple.getField("timeout", Boolean.class);
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
-		ApiCounterMetric counterMetric = new ApiCounterMetric(failed, timeout, timestamp);
+		ApiCounterMetric apiCounterMetric = new ApiCounterMetric(failed, timeout, timestamp);
 		MetricSequencer<Catalog, UserMetric<ApiCounter>> counterMetricSequencer = environment.getApiCounterMetricSequencer();
-		counterMetricSequencer.update(catalog, COUNT, timestamp, counterMetric);
+		counterMetricSequencer.update(catalog, COUNT, timestamp, apiCounterMetric, true);
 
 		HttpStatusCounterMetric httpStatusCounterMetric = new HttpStatusCounterMetric(HttpStatus.valueOf(httpStatusCode), timestamp);
 		MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCounterMetricSequencer = environment
 				.getHttpStatusCounterMetricSequencer();
-		httpStatusCounterMetricSequencer.update(catalog, HTTP_STATUS, timestamp, httpStatusCounterMetric);
+		httpStatusCounterMetricSequencer.update(catalog, HTTP_STATUS, timestamp, httpStatusCounterMetric, true);
 
 		long elapsed = tuple.getField("elapsed", Long.class);
 		long concurrency = tuple.getField("concurrency", Long.class);
-		MetricSequencer<Catalog, UserMetric<BigInt>> bigIntMetricSequencer = environment.getBigIntMetricSequencer();
-		bigIntMetricSequencer.update(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp));
-		bigIntMetricSequencer.update(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp));
+		MetricSequencer<Catalog, UserMetric<BigInt>> bigIntMetricSequencer = environment.getApiStatisticMetricSequencer();
+		bigIntMetricSequencer.update(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp), true);
+		bigIntMetricSequencer.update(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp), true);
 
-		ApiSummary summary = environment.getSummary(catalog);
-		summary.getCounterMetricCollector().set(COUNT, counterMetric, true);
-		summary.getHttpStatusCounterMetricCollector().set(HTTP_STATUS, httpStatusCounterMetric, true);
-		summary.getBigIntMetricCollector().set(RT, new BigIntMetric(elapsed, timestamp), true);
-		summary.getBigIntMetricCollector().set(CC, new BigIntMetric(concurrency, timestamp), true);
+		environment.update(catalog, COUNT, apiCounterMetric, true);
+		environment.update(catalog, HTTP_STATUS, httpStatusCounterMetric, true);
+		environment.update(catalog, RT, new BigIntMetric(elapsed, timestamp), true);
+		environment.update(catalog, CC, new BigIntMetric(concurrency, timestamp), true);
 	}
 
 	@Override

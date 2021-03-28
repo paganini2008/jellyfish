@@ -17,30 +17,30 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
  */
 public final class ApiSummary {
 
-	private final MetricCollector<UserMetric<BigInt>> bigIntMetricCollector = new SimpleMetricCollector<UserMetric<BigInt>>();
-	private final MetricCollector<UserMetric<ApiCounter>> counterMetricCollector = new SimpleMetricCollector<UserMetric<ApiCounter>>();
+	private final MetricCollector<UserMetric<BigInt>> apiStatisticMetricCollector = new SimpleMetricCollector<UserMetric<BigInt>>();
+	private final MetricCollector<UserMetric<ApiCounter>> apiCounterMetricCollector = new SimpleMetricCollector<UserMetric<ApiCounter>>();
 	private final MetricCollector<UserMetric<HttpStatusCounter>> httpStatusCounterMetricCollector = new SimpleMetricCollector<UserMetric<HttpStatusCounter>>();
 
 	public Map<String, Object> toEntries() {
 		Map<String, Object> data = new HashMap<String, Object>();
-		for (Map.Entry<String, UserMetric<ApiCounter>> entry : counterMetricCollector.all().entrySet()) {
+		for (Map.Entry<String, UserMetric<ApiCounter>> entry : apiCounterMetricCollector.all().entrySet()) {
 			data.put(entry.getKey(), entry.getValue().toEntries());
 		}
 		for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : httpStatusCounterMetricCollector.all().entrySet()) {
 			data.put(entry.getKey(), entry.getValue().toEntries());
 		}
-		for (Map.Entry<String, UserMetric<BigInt>> entry : bigIntMetricCollector.all().entrySet()) {
+		for (Map.Entry<String, UserMetric<BigInt>> entry : apiStatisticMetricCollector.all().entrySet()) {
 			data.put(entry.getKey(), entry.getValue().toEntries());
 		}
 		return data;
 	}
 
-	public MetricCollector<UserMetric<BigInt>> getBigIntMetricCollector() {
-		return bigIntMetricCollector;
+	public MetricCollector<UserMetric<BigInt>> getApiStatisticMetricCollector() {
+		return apiStatisticMetricCollector;
 	}
 
-	public MetricCollector<UserMetric<ApiCounter>> getCounterMetricCollector() {
-		return counterMetricCollector;
+	public MetricCollector<UserMetric<ApiCounter>> getApiCounterMetricCollector() {
+		return apiCounterMetricCollector;
 	}
 
 	public MetricCollector<UserMetric<HttpStatusCounter>> getHttpStatusCounterMetricCollector() {

@@ -7,6 +7,7 @@ import indi.atlantis.framework.vortex.common.NioClient;
 import indi.atlantis.framework.vortex.common.Tuple;
 import indi.atlantis.framework.vortex.metric.BigInt;
 import indi.atlantis.framework.vortex.metric.BigIntMetric;
+import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
 import indi.atlantis.framework.vortex.metric.Synchronizer;
 import indi.atlantis.framework.vortex.metric.UserMetric;
 import lombok.extern.slf4j.Slf4j;
@@ -34,28 +35,63 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 	@Override
 	public void synchronize(NioClient nioClient, SocketAddress remoteAddress) {
 		log.trace("Statistic synchronization begin...");
-		environment.getApiCounterMetricSequencer().scan((catalog, metric, data) -> {
+		GenericUserMetricSequencer<Catalog, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
+		apiCounterSequencer.scan((catalog, metric, data) -> {
+			ApiCounter apiCounter;
+			long timestamp;
 			for (Map.Entry<String, UserMetric<ApiCounter>> entry : data.entrySet()) {
-				Tuple tuple = forCounter(catalog, metric, entry.getValue());
+				apiCounter = entry.getValue().get();
+				timestamp = entry.getValue().getTimestamp();
+				Tuple tuple = synchronizeApiCounter(catalog, metric, apiCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
+				if (incremental) {
+					apiCounterSequencer.update(catalog, metric, timestamp,
+							new ApiCounterMetric(
+									new ApiCounter(apiCounter.getCount(), apiCounter.getFailedCount(), apiCounter.getTimeoutCount()),
+									timestamp).resettable(),
+							true);
+				}
 			}
 		});
-		environment.getHttpStatusCounterMetricSequencer().scan((catalog, metric, data) -> {
+		GenericUserMetricSequencer<Catalog, HttpStatusCounter> httpStatusCounterSequencer = environment
+				.getHttpStatusCounterMetricSequencer();
+		httpStatusCounterSequencer.scan((catalog, metric, data) -> {
+			HttpStatusCounter httpStatusCounter;
+			long timestamp;
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : data.entrySet()) {
-				Tuple tuple = forHttpStatusCounter(catalog, metric, entry.getValue());
+				httpStatusCounter = entry.getValue().get();
+				timestamp = entry.getValue().getTimestamp();
+				Tuple tuple = synchronizeHttpStatusCounter(catalog, metric, httpStatusCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
+				if (incremental) {
+					httpStatusCounterSequencer.update(catalog, metric, timestamp,
+							new HttpStatusCounterMetric(new HttpStatusCounter(httpStatusCounter.getCountOf1xx(),
+									httpStatusCounter.getCountOf2xx(), httpStatusCounter.getCountOf3xx(), httpStatusCounter.getCountOf4xx(),
+									httpStatusCounter.getCountOf5xx()), timestamp).resettable(),
+							true);
+				}
 			}
 		});
-		environment.getBigIntMetricSequencer().scan((catalog, metric, data) -> {
+		GenericUserMetricSequencer<Catalog, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
+		apiStatisticSequencer.scan((catalog, metric, data) -> {
+			BigInt bigInt;
+			long timestamp;
 			for (Map.Entry<String, UserMetric<BigInt>> entry : data.entrySet()) {
-				Tuple tuple = forBigInt(catalog, metric, entry.getValue());
+				bigInt = entry.getValue().get();
+				timestamp = entry.getValue().getTimestamp();
+				Tuple tuple = synchronizeBigInt(catalog, metric, bigInt, timestamp);
 				nioClient.send(remoteAddress, tuple);
+				if (incremental) {
+					apiStatisticSequencer.update(catalog, metric, timestamp, new BigIntMetric(
+							new BigInt(bigInt.getHighestValue(), bigInt.getLowestValue(), bigInt.getTotalValue(), bigInt.getCount()),
+							timestamp).resettable(), true);
+				}
 			}
 		});
 		log.trace("Statistic synchronization end");
 	}
 
-	private Tuple forCounter(Catalog catalog, String metric, UserMetric<ApiCounter> metricUnit) {
+	private Tuple synchronizeApiCounter(Catalog catalog, String metric, ApiCounter apiCounter, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
@@ -64,24 +100,14 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		ApiCounter counter = metricUnit.get();
-		long count = counter.getCount();
-		long failedCount = counter.getFailedCount();
-		long timeoutCount = counter.getTimeoutCount();
-		long timestamp = metricUnit.getTimestamp();
-		tuple.setField("count", count);
-		tuple.setField("failedCount", failedCount);
-		tuple.setField("timeoutCount", timeoutCount);
+		tuple.setField("count", apiCounter.getCount());
+		tuple.setField("failedCount", apiCounter.getFailedCount());
+		tuple.setField("timeoutCount", apiCounter.getTimeoutCount());
 		tuple.setField("timestamp", timestamp);
-
-		if (incremental) {
-			environment.getApiCounterMetricSequencer().update(catalog, metric, timestamp,
-					new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp).resettable());
-		}
 		return tuple;
 	}
 
-	private Tuple forHttpStatusCounter(Catalog catalog, String metric, UserMetric<HttpStatusCounter> metricUnit) {
+	private Tuple synchronizeHttpStatusCounter(Catalog catalog, String metric, HttpStatusCounter counter, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
@@ -90,29 +116,21 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		HttpStatusCounter counter = metricUnit.get();
 		long countOf1xx = counter.getCountOf1xx();
 		long countOf2xx = counter.getCountOf2xx();
 		long countOf3xx = counter.getCountOf3xx();
 		long countOf4xx = counter.getCountOf4xx();
 		long countOf5xx = counter.getCountOf5xx();
-		long timestamp = metricUnit.getTimestamp();
 		tuple.setField("countOf1xx", countOf1xx);
 		tuple.setField("countOf2xx", countOf2xx);
 		tuple.setField("countOf3xx", countOf3xx);
 		tuple.setField("countOf4xx", countOf4xx);
 		tuple.setField("countOf5xx", countOf5xx);
 		tuple.setField("timestamp", timestamp);
-
-		if (incremental) {
-			environment.getHttpStatusCounterMetricSequencer().update(catalog, metric, timestamp,
-					new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx),
-							timestamp).resettable());
-		}
 		return tuple;
 	}
 
-	private Tuple forBigInt(Catalog catalog, String metric, UserMetric<BigInt> metricUnit) {
+	private Tuple synchronizeBigInt(Catalog catalog, String metric, BigInt bigInt, long timestamp) {
 
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
@@ -122,22 +140,15 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		BigInt bigInt = metricUnit.get();
 		long highestValue = bigInt.getHighestValue();
 		long lowestValue = bigInt.getLowestValue();
 		long totalValue = bigInt.getTotalValue();
 		long count = bigInt.getCount();
-		long timestamp = metricUnit.getTimestamp();
 		tuple.setField("highestValue", highestValue);
 		tuple.setField("lowestValue", lowestValue);
 		tuple.setField("totalValue", totalValue);
 		tuple.setField("count", count);
 		tuple.setField("timestamp", timestamp);
-
-		if (incremental) {
-			environment.getBigIntMetricSequencer().update(catalog, metric, timestamp,
-					new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp).resettable());
-		}
 		return tuple;
 	}
 

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.vortex.metric.BigInt;
+import indi.atlantis.framework.vortex.metric.BigIntMetric;
 import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
 
 /**
@@ -19,25 +20,40 @@ import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
  */
 public final class Environment {
 
-	private final Map<Catalog, ApiSummary> summary = new ConcurrentHashMap<Catalog, ApiSummary>();
-	private final GenericUserMetricSequencer<Catalog, BigInt> bigIntMetricSequencer = new BigIntMetricSequencer();
-	private final GenericUserMetricSequencer<Catalog, ApiCounter> counterMetricSequencer = new ApiCounterMetricSequencer();
+	private final Map<Catalog, ApiSummary> summaries = new ConcurrentHashMap<Catalog, ApiSummary>();
+	private final GenericUserMetricSequencer<Catalog, BigInt> apiStatisticMetricSequencer = new ApiStatisticMetricSequencer();
+	private final GenericUserMetricSequencer<Catalog, ApiCounter> apiCounterMetricSequencer = new ApiCounterMetricSequencer();
 	private final GenericUserMetricSequencer<Catalog, HttpStatusCounter> httpStatusCounterMetricSequencer = new HttpStatusCounterMetricSequencer();
 
 	public List<Catalog> getCatalogs() {
-		return new ArrayList<Catalog>(summary.keySet());
+		return new ArrayList<Catalog>(summaries.keySet());
 	}
 
 	public ApiSummary getSummary(Catalog catalog) {
-		return MapUtils.get(summary, catalog, () -> new ApiSummary());
+		return MapUtils.get(summaries, catalog, () -> new ApiSummary());
 	}
 
-	public GenericUserMetricSequencer<Catalog, BigInt> getBigIntMetricSequencer() {
-		return bigIntMetricSequencer;
+	public void update(Catalog catalog, String metric, BigIntMetric bigIntMetric, boolean merged) {
+		ApiSummary summary = getSummary(catalog);
+		summary.getApiStatisticMetricCollector().set(metric, bigIntMetric, merged);
+	}
+
+	public void update(Catalog catalog, String metric, ApiCounterMetric apiCounterMetric, boolean merged) {
+		ApiSummary summary = getSummary(catalog);
+		summary.getApiCounterMetricCollector().set(metric, apiCounterMetric, merged);
+	}
+
+	public void update(Catalog catalog, String metric, HttpStatusCounterMetric httpStatusCounterMetric, boolean merged) {
+		ApiSummary summary = getSummary(catalog);
+		summary.getHttpStatusCounterMetricCollector().set(metric, httpStatusCounterMetric, merged);
+	}
+
+	public GenericUserMetricSequencer<Catalog, BigInt> getApiStatisticMetricSequencer() {
+		return apiStatisticMetricSequencer;
 	}
 
 	public GenericUserMetricSequencer<Catalog, ApiCounter> getApiCounterMetricSequencer() {
-		return counterMetricSequencer;
+		return apiCounterMetricSequencer;
 	}
 
 	public GenericUserMetricSequencer<Catalog, HttpStatusCounter> getHttpStatusCounterMetricSequencer() {

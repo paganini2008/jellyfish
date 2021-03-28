@@ -47,7 +47,7 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		case RT:
 		case CC:
 		case QPS:
-			synchronizeLongMetric(metric, tuple);
+			synchronizeBigIntMetric(metric, tuple);
 			break;
 		default:
 			log.warn("Unknown metric for synchronization: {}", metric);
@@ -62,7 +62,8 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		MetricSequencer<Catalog, UserMetric<ApiCounter>> sequencer = environment.getApiCounterMetricSequencer();
-		sequencer.update(catalog, metric, timestamp, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp), merged);
+		sequencer.update(catalog, metric, timestamp, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp),
+				merged);
 	}
 
 	private void synchronizeHttpStatusCounterMetric(String metric, Tuple tuple) {
@@ -79,14 +80,14 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 				merged);
 	}
 
-	private void synchronizeLongMetric(String metric, Tuple tuple) {
+	private void synchronizeBigIntMetric(String metric, Tuple tuple) {
 		Catalog catalog = Catalog.of(tuple);
 		long timestamp = tuple.getTimestamp();
 		long highestValue = tuple.getField("highestValue", Long.class);
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		MetricSequencer<Catalog, UserMetric<BigInt>> sequencer = environment.getBigIntMetricSequencer();
+		MetricSequencer<Catalog, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
 		sequencer.update(catalog, metric, timestamp, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp),
 				merged);
 	}

@@ -36,23 +36,48 @@ public class ApiSummarySynchronizer implements Synchronizer {
 		log.trace("Summary synchronization begin...");
 		environment.getCatalogs().forEach(catalog -> {
 			ApiSummary summary = environment.getSummary(catalog);
-			for (Map.Entry<String, UserMetric<ApiCounter>> entry : summary.getCounterMetricCollector().all().entrySet()) {
-				Tuple tuple = forCounter(catalog, entry.getKey(), entry.getValue(), summary);
+			String metric;
+			long timestamp;
+			ApiCounter apiCounter;
+			for (Map.Entry<String, UserMetric<ApiCounter>> entry : summary.getApiCounterMetricCollector().all().entrySet()) {
+				metric = entry.getKey();
+				apiCounter = entry.getValue().get();
+				timestamp = entry.getValue().getTimestamp();
+				Tuple tuple = synchronizeApiCounter(catalog, metric, apiCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
+				if (incremental) {
+					summary.getApiCounterMetricCollector().set(metric, new ApiCounterMetric(apiCounter.clone(), timestamp).resettable(),
+							true);
+				}
 			}
+			HttpStatusCounter httpStatusCounter;
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : summary.getHttpStatusCounterMetricCollector().all().entrySet()) {
-				Tuple tuple = forHttpStatusCounter(catalog, entry.getKey(), entry.getValue(), summary);
+				metric = entry.getKey();
+				httpStatusCounter = entry.getValue().get();
+				timestamp = entry.getValue().getTimestamp();
+				Tuple tuple = synchronizeHttpStatusCounter(catalog, metric, httpStatusCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
+				if (incremental) {
+					summary.getHttpStatusCounterMetricCollector().set(metric,
+							new HttpStatusCounterMetric(httpStatusCounter.clone(), timestamp).resettable(), true);
+				}
 			}
-			for (Map.Entry<String, UserMetric<BigInt>> entry : summary.getBigIntMetricCollector().all().entrySet()) {
-				Tuple tuple = forBigInt(catalog, entry.getKey(), entry.getValue(), summary);
+			BigInt bigInt;
+			for (Map.Entry<String, UserMetric<BigInt>> entry : summary.getApiStatisticMetricCollector().all().entrySet()) {
+				metric = entry.getKey();
+				bigInt = entry.getValue().get();
+				timestamp = entry.getValue().getTimestamp();
+				Tuple tuple = synchronizeBigInt(catalog, entry.getKey(), bigInt, timestamp);
 				nioClient.send(remoteAddress, tuple);
+				if (incremental) {
+					summary.getApiStatisticMetricCollector().set(metric, new BigIntMetric(bigInt.clone(), timestamp).resettable(), true);
+				}
 			}
 		});
 		log.trace("Summary synchronization end.");
 	}
 
-	private Tuple forHttpStatusCounter(Catalog catalog, String metric, UserMetric<HttpStatusCounter> metricUnit, ApiSummary summary) {
+	private Tuple synchronizeHttpStatusCounter(Catalog catalog, String metric, HttpStatusCounter httpStatusCounter, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
@@ -61,30 +86,21 @@ public class ApiSummarySynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		long timestamp = metricUnit.getTimestamp();
-		HttpStatusCounter counter = metricUnit.get();
-		long countOf1xx = counter.getCountOf1xx();
-		long countOf2xx = counter.getCountOf2xx();
-		long countOf3xx = counter.getCountOf3xx();
-		long countOf4xx = counter.getCountOf4xx();
-		long countOf5xx = counter.getCountOf5xx();
+		long countOf1xx = httpStatusCounter.getCountOf1xx();
+		long countOf2xx = httpStatusCounter.getCountOf2xx();
+		long countOf3xx = httpStatusCounter.getCountOf3xx();
+		long countOf4xx = httpStatusCounter.getCountOf4xx();
+		long countOf5xx = httpStatusCounter.getCountOf5xx();
 		tuple.setField("countOf1xx", countOf1xx);
 		tuple.setField("countOf2xx", countOf2xx);
 		tuple.setField("countOf3xx", countOf3xx);
 		tuple.setField("countOf4xx", countOf4xx);
 		tuple.setField("countOf5xx", countOf5xx);
 		tuple.setField("timestamp", timestamp);
-
-		if (incremental) {
-			summary.getHttpStatusCounterMetricCollector().set(metric,
-					new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx),
-							timestamp).resettable(),
-					true);
-		}
 		return tuple;
 	}
 
-	private Tuple forCounter(Catalog catalog, String metric, UserMetric<ApiCounter> metricUnit, ApiSummary summary) {
+	private Tuple synchronizeApiCounter(Catalog catalog, String metric, ApiCounter apiCounter, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
@@ -93,24 +109,17 @@ public class ApiSummarySynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		long timestamp = metricUnit.getTimestamp();
-		ApiCounter counter = metricUnit.get();
-		long count = counter.getCount();
-		long failedCount = counter.getFailedCount();
-		long timeoutCount = counter.getTimeoutCount();
+		long count = apiCounter.getCount();
+		long failedCount = apiCounter.getFailedCount();
+		long timeoutCount = apiCounter.getTimeoutCount();
 		tuple.setField("count", count);
 		tuple.setField("failedCount", failedCount);
 		tuple.setField("timeoutCount", timeoutCount);
 		tuple.setField("timestamp", timestamp);
-
-		if (incremental) {
-			summary.getCounterMetricCollector().set(metric,
-					new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp).resettable(), true);
-		}
 		return tuple;
 	}
 
-	private Tuple forBigInt(Catalog catalog, String metric, UserMetric<BigInt> metricUnit, ApiSummary summary) {
+	private Tuple synchronizeBigInt(Catalog catalog, String metric, BigInt bigInt, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
 		tuple.setField("clusterName", catalog.getClusterName());
 		tuple.setField("applicationName", catalog.getApplicationName());
@@ -119,8 +128,6 @@ public class ApiSummarySynchronizer implements Synchronizer {
 		tuple.setField("path", catalog.getPath());
 		tuple.setField("metric", metric);
 
-		BigInt bigInt = metricUnit.get();
-		long timestamp = metricUnit.getTimestamp();
 		long highestValue = bigInt.getHighestValue();
 		long lowestValue = bigInt.getLowestValue();
 		long totalValue = bigInt.getTotalValue();
@@ -130,11 +137,6 @@ public class ApiSummarySynchronizer implements Synchronizer {
 		tuple.setField("totalValue", totalValue);
 		tuple.setField("count", count);
 		tuple.setField("timestamp", timestamp);
-
-		if (incremental) {
-			summary.getBigIntMetricCollector().set(metric,
-					new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp).resettable(), true);
-		}
 		return tuple;
 	}
 

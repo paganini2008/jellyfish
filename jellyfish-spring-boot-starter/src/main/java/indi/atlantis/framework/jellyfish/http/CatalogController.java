@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,9 +37,6 @@ import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
 @RequestMapping("/atlantis/jellyfish/catalog")
 @RestController
 public class CatalogController {
-
-	@Value("${atlantis.framework.jellyfish.ui.metric.sort:true}")
-	private boolean asc;
 
 	@Qualifier("secondaryEnvironment")
 	@Autowired
@@ -72,8 +68,8 @@ public class CatalogController {
 	}
 
 	private Map<String, Map<String, Object>> fetchCombinedMerticData(Catalog catalog) {
-		GenericUserMetricSequencer<Catalog, BigInt> bigIntSequencer = environment.getBigIntMetricSequencer();
-		return bigIntSequencer.sequence(catalog, new String[] { RT, CC, QPS }, asc);
+		GenericUserMetricSequencer<Catalog, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
+		return apiStatisticSequencer.sequence(catalog, new String[] { RT, CC, QPS }, true);
 	}
 
 	private Map<String, Map<String, Object>> fetchMerticData(Catalog catalog, String metric) {
@@ -81,15 +77,15 @@ public class CatalogController {
 		case RT:
 		case CC:
 		case QPS:
-			GenericUserMetricSequencer<Catalog, BigInt> bigIntSequencer = environment.getBigIntMetricSequencer();
-			return bigIntSequencer.sequence(catalog, metric, asc);
+			GenericUserMetricSequencer<Catalog, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
+			return apiStatisticSequencer.sequence(catalog, metric, true);
 		case COUNT:
 			GenericUserMetricSequencer<Catalog, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
-			return apiCounterSequencer.sequence(catalog, metric, asc);
+			return apiCounterSequencer.sequence(catalog, metric, true);
 		case HTTP_STATUS:
 			GenericUserMetricSequencer<Catalog, HttpStatusCounter> httpStatusCounterMetricSequencer = environment
 					.getHttpStatusCounterMetricSequencer();
-			return httpStatusCounterMetricSequencer.sequence(catalog, metric, asc);
+			return httpStatusCounterMetricSequencer.sequence(catalog, metric, true);
 		}
 		return MapUtils.emptyMap();
 	}

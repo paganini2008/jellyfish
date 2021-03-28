@@ -44,11 +44,10 @@ public class ApiQpsHandler implements Handler {
 	private void doCollect(Catalog catalog, Tuple tuple) {
 		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField(QPS, Integer.class);
-		MetricSequencer<Catalog, UserMetric<BigInt>> sequencer = environment.getBigIntMetricSequencer();
-		sequencer.update(catalog, QPS, timestamp, new BigIntMetric(qps, timestamp));
+		MetricSequencer<Catalog, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
+		sequencer.update(catalog, QPS, timestamp, new BigIntMetric(qps, timestamp), true);
 
-		ApiSummary summary = environment.getSummary(catalog);
-		summary.getBigIntMetricCollector().set(QPS, new BigIntMetric(qps, timestamp), true);
+		environment.update(catalog, QPS, new BigIntMetric(qps, timestamp), true);
 	}
 
 	@Override

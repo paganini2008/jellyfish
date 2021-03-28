@@ -18,7 +18,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class HttpStatusCounter implements Serializable {
+public class HttpStatusCounter implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -3704644371457858977L;
 	private long countOf1xx;
@@ -51,6 +51,14 @@ public class HttpStatusCounter implements Serializable {
 		this.countOf3xx = countOf3xx;
 		this.countOf4xx = countOf4xx;
 		this.countOf5xx = countOf5xx;
+	}
+
+	public HttpStatusCounter clone() {
+		try {
+			return (HttpStatusCounter) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 }

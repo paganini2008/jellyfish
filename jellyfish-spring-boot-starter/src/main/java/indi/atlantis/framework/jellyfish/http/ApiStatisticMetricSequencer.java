@@ -9,19 +9,19 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
 
 /**
  * 
- * BigIntMetricSequencer
+ * ApiStatisticMetricSequencer
  * 
  * @author Jimmy Hoff
  *
  * @version 1.0
  */
-public class BigIntMetricSequencer extends GenericUserMetricSequencer<Catalog, BigInt> {
+public class ApiStatisticMetricSequencer extends GenericUserMetricSequencer<Catalog, BigInt> {
 
-	public BigIntMetricSequencer() {
+	public ApiStatisticMetricSequencer() {
 		this(1, SpanUnit.MINUTE, 60);
 	}
 
-	public BigIntMetricSequencer(int span, SpanUnit spanUnit, int bufferSize) {
+	public ApiStatisticMetricSequencer(int span, SpanUnit spanUnit, int bufferSize) {
 		super(span, spanUnit, bufferSize, null);
 	}
 

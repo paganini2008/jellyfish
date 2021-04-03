@@ -33,18 +33,18 @@ public class ApiQpsHandler implements Handler {
 		String category = tuple.getField("category", String.class);
 		String path = tuple.getField("path", String.class);
 
-		doCollect(new Catalog(clusterName, applicationName, host, category, path), tuple);
-		doCollect(new Catalog(clusterName, applicationName, host, category, null), tuple);
-		doCollect(new Catalog(clusterName, applicationName, host, null, null), tuple);
-		doCollect(new Catalog(clusterName, applicationName, null, null, null), tuple);
-		doCollect(new Catalog(clusterName, null, null, null, null), tuple);
+		doCollect(new Api(clusterName, applicationName, host, category, path), tuple);
+		doCollect(new Api(clusterName, applicationName, host, category, null), tuple);
+		doCollect(new Api(clusterName, applicationName, host, null, null), tuple);
+		doCollect(new Api(clusterName, applicationName, null, null, null), tuple);
+		doCollect(new Api(clusterName, null, null, null, null), tuple);
 
 	}
 
-	private void doCollect(Catalog catalog, Tuple tuple) {
+	private void doCollect(Api catalog, Tuple tuple) {
 		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField(QPS, Integer.class);
-		MetricSequencer<Catalog, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
+		MetricSequencer<Api, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
 		sequencer.update(catalog, QPS, timestamp, new BigIntMetric(qps, timestamp), true);
 
 		environment.update(catalog, QPS, new BigIntMetric(qps, timestamp), true);

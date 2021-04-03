@@ -38,32 +38,32 @@ public class ApiStatisticHandler implements Handler {
 		String category = tuple.getField("category", String.class);
 		String path = tuple.getField("path", String.class);
 
-		doCollect(new Catalog(clusterName, applicationName, host, category, path), tuple);
-		doCollect(new Catalog(clusterName, applicationName, host, category, null), tuple);
-		doCollect(new Catalog(clusterName, applicationName, host, null, null), tuple);
-		doCollect(new Catalog(clusterName, applicationName, null, null, null), tuple);
-		doCollect(new Catalog(clusterName, null, null, null, null), tuple);
+		doCollect(new Api(clusterName, applicationName, host, category, path), tuple);
+		doCollect(new Api(clusterName, applicationName, host, category, null), tuple);
+		doCollect(new Api(clusterName, applicationName, host, null, null), tuple);
+		doCollect(new Api(clusterName, applicationName, null, null, null), tuple);
+		doCollect(new Api(clusterName, null, null, null, null), tuple);
 
 	}
 
-	private void doCollect(Catalog catalog, Tuple tuple) {
+	private void doCollect(Api catalog, Tuple tuple) {
 		final long timestamp = tuple.getField("requestTime", Long.class);
 		boolean failed = tuple.getField("failed", Boolean.class);
 		boolean timeout = tuple.getField("timeout", Boolean.class);
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
 		ApiCounterMetric apiCounterMetric = new ApiCounterMetric(failed, timeout, timestamp);
-		MetricSequencer<Catalog, UserMetric<ApiCounter>> counterMetricSequencer = environment.getApiCounterMetricSequencer();
+		MetricSequencer<Api, UserMetric<ApiCounter>> counterMetricSequencer = environment.getApiCounterMetricSequencer();
 		counterMetricSequencer.update(catalog, COUNT, timestamp, apiCounterMetric, true);
 
 		HttpStatusCounterMetric httpStatusCounterMetric = new HttpStatusCounterMetric(HttpStatus.valueOf(httpStatusCode), timestamp);
-		MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> httpStatusCounterMetricSequencer = environment
+		MetricSequencer<Api, UserMetric<HttpStatusCounter>> httpStatusCounterMetricSequencer = environment
 				.getHttpStatusCounterMetricSequencer();
 		httpStatusCounterMetricSequencer.update(catalog, HTTP_STATUS, timestamp, httpStatusCounterMetric, true);
 
 		long elapsed = tuple.getField("elapsed", Long.class);
 		long concurrency = tuple.getField("concurrency", Long.class);
-		MetricSequencer<Catalog, UserMetric<BigInt>> bigIntMetricSequencer = environment.getApiStatisticMetricSequencer();
+		MetricSequencer<Api, UserMetric<BigInt>> bigIntMetricSequencer = environment.getApiStatisticMetricSequencer();
 		bigIntMetricSequencer.update(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp), true);
 		bigIntMetricSequencer.update(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp), true);
 

@@ -54,35 +54,35 @@ public class ApiSummarySynchronizationHandler implements Handler {
 	}
 
 	private void synchronizeCounterMetric(String metric, Tuple tuple) {
-		Catalog catalog = Catalog.of(tuple);
+		Api api = Api.of(tuple);
 		long timestamp = tuple.getTimestamp();
 		long count = tuple.getField("count", Long.class);
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
-		environment.update(catalog, metric, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp), merged);
+		environment.update(api, metric, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp), merged);
 	}
 
 	private void synchronizeHttpStatusCounterMetric(String metric, Tuple tuple) {
-		Catalog catalog = Catalog.of(tuple);
+		Api api = Api.of(tuple);
 		long countOf1xx = tuple.getField("countOf1xx", Long.class);
 		long countOf2xx = tuple.getField("countOf2xx", Long.class);
 		long countOf3xx = tuple.getField("countOf3xx", Long.class);
 		long countOf4xx = tuple.getField("countOf4xx", Long.class);
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
-		environment.update(catalog, metric,
+		environment.update(api, metric,
 				new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp),
 				merged);
 	}
 
 	private void synchronizeBigIntMetric(String metric, Tuple tuple) {
-		Catalog catalog = Catalog.of(tuple);
+		Api api = Api.of(tuple);
 		long timestamp = tuple.getTimestamp();
 		long highestValue = tuple.getField("highestValue", Long.class);
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		environment.update(catalog, metric, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp), merged);
+		environment.update(api, metric, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp), merged);
 	}
 
 	@Override

@@ -56,38 +56,38 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 	}
 
 	private void synchronizeApiCounterMetric(String metric, Tuple tuple) {
-		Catalog catalog = Catalog.of(tuple);
+		Api catalog = Api.of(tuple);
 		long timestamp = tuple.getTimestamp();
 		long count = tuple.getField("count", Long.class);
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
-		MetricSequencer<Catalog, UserMetric<ApiCounter>> sequencer = environment.getApiCounterMetricSequencer();
+		MetricSequencer<Api, UserMetric<ApiCounter>> sequencer = environment.getApiCounterMetricSequencer();
 		sequencer.update(catalog, metric, timestamp, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp),
 				merged);
 	}
 
 	private void synchronizeHttpStatusCounterMetric(String metric, Tuple tuple) {
-		Catalog catalog = Catalog.of(tuple);
+		Api catalog = Api.of(tuple);
 		long countOf1xx = tuple.getField("countOf1xx", Long.class);
 		long countOf2xx = tuple.getField("countOf2xx", Long.class);
 		long countOf3xx = tuple.getField("countOf3xx", Long.class);
 		long countOf4xx = tuple.getField("countOf4xx", Long.class);
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
-		MetricSequencer<Catalog, UserMetric<HttpStatusCounter>> sequencer = environment.getHttpStatusCounterMetricSequencer();
+		MetricSequencer<Api, UserMetric<HttpStatusCounter>> sequencer = environment.getHttpStatusCounterMetricSequencer();
 		sequencer.update(catalog, metric, timestamp,
 				new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp),
 				merged);
 	}
 
 	private void synchronizeBigIntMetric(String metric, Tuple tuple) {
-		Catalog catalog = Catalog.of(tuple);
+		Api catalog = Api.of(tuple);
 		long timestamp = tuple.getTimestamp();
 		long highestValue = tuple.getField("highestValue", Long.class);
 		long lowestValue = tuple.getField("lowestValue", Long.class);
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
-		MetricSequencer<Catalog, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
+		MetricSequencer<Api, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
 		sequencer.update(catalog, metric, timestamp, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp),
 				merged);
 	}

@@ -29,14 +29,14 @@ import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
 
 /**
  * 
- * CatalogController
+ * ApiController
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/atlantis/jellyfish/catalog")
+@RequestMapping("/atlantis/jellyfish/api")
 @RestController
-public class CatalogController {
+public class ApiController {
 
 	@Qualifier("secondaryEnvironment")
 	@Autowired
@@ -44,48 +44,48 @@ public class CatalogController {
 
 	@GetMapping("/list")
 	public Response pathList(@RequestParam(name = "level", required = false, defaultValue = "0") int level) {
-		List<Catalog> catalogs = environment.getCatalogs();
-		catalogs = catalogs.stream().filter(c -> c.getLevel() == level).collect(Collectors.toList());
-		Collections.sort(catalogs);
-		return Response.success(catalogs);
+		List<Api> apiList = environment.apiList();
+		apiList = apiList.stream().filter(c -> c.getLevel() == level).collect(Collectors.toList());
+		Collections.sort(apiList);
+		return Response.success(apiList);
 	}
 
 	@PostMapping("/summary")
-	public Response summary(@RequestBody Catalog catalog) {
-		ApiSummary summary = environment.getSummary(catalog);
+	public Response summary(@RequestBody Api api) {
+		ApiSummary summary = environment.summary(api);
 		return summary != null ? Response.success(summary.toEntries()) : Response.success();
 	}
 
 	@PostMapping("/{metric}/summary")
-	public Response metricSummary(@PathVariable("metric") String metric, @RequestBody Catalog catalog) {
+	public Response metricSummary(@PathVariable("metric") String metric, @RequestBody Api api) {
 		Map<String, Map<String, Object>> data;
 		if (metric.equals("combined")) {
-			data = fetchCombinedMerticData(catalog);
+			data = fetchCombinedMerticData(api);
 		} else {
-			data = fetchMerticData(catalog, metric);
+			data = fetchMerticData(api, metric);
 		}
 		return Response.success(data);
 	}
 
-	private Map<String, Map<String, Object>> fetchCombinedMerticData(Catalog catalog) {
-		GenericUserMetricSequencer<Catalog, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
-		return apiStatisticSequencer.sequence(catalog, new String[] { RT, CC, QPS }, true);
+	private Map<String, Map<String, Object>> fetchCombinedMerticData(Api api) {
+		GenericUserMetricSequencer<Api, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
+		return apiStatisticSequencer.sequence(api, new String[] { RT, CC, QPS }, true);
 	}
 
-	private Map<String, Map<String, Object>> fetchMerticData(Catalog catalog, String metric) {
+	private Map<String, Map<String, Object>> fetchMerticData(Api api, String metric) {
 		switch (metric) {
 		case RT:
 		case CC:
 		case QPS:
-			GenericUserMetricSequencer<Catalog, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
-			return apiStatisticSequencer.sequence(catalog, metric, true);
+			GenericUserMetricSequencer<Api, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
+			return apiStatisticSequencer.sequence(api, metric, true);
 		case COUNT:
-			GenericUserMetricSequencer<Catalog, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
-			return apiCounterSequencer.sequence(catalog, metric, true);
+			GenericUserMetricSequencer<Api, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
+			return apiCounterSequencer.sequence(api, metric, true);
 		case HTTP_STATUS:
-			GenericUserMetricSequencer<Catalog, HttpStatusCounter> httpStatusCounterMetricSequencer = environment
+			GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterMetricSequencer = environment
 					.getHttpStatusCounterMetricSequencer();
-			return httpStatusCounterMetricSequencer.sequence(catalog, metric, true);
+			return httpStatusCounterMetricSequencer.sequence(api, metric, true);
 		}
 		return MapUtils.emptyMap();
 	}

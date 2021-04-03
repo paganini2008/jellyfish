@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import indi.atlantis.framework.jellyfish.http.Catalog;
+import indi.atlantis.framework.jellyfish.http.Api;
 
 /**
  * 
@@ -26,7 +26,7 @@ public class HttpPage {
 
 	@GetMapping("/detail")
 	public String query(@RequestParam("identifier") String identifier, Model ui) {
-		ui.addAttribute("catalog", Catalog.decode(identifier));
+		ui.addAttribute("catalog", Api.decode(identifier));
 		return "stat_detail";
 	}
 }

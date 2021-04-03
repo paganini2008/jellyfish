@@ -20,7 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.github.paganini2008.devtools.net.Urls;
 
 import indi.atlantis.framework.jellyfish.JellyFishConstants;
-import indi.atlantis.framework.jellyfish.http.CatalogController;
+import indi.atlantis.framework.jellyfish.http.ApiController;
 import indi.atlantis.framework.jellyfish.log.LogEntryController;
 
 /**
@@ -31,7 +31,7 @@ import indi.atlantis.framework.jellyfish.log.LogEntryController;
  *
  * @since 1.0
  */
-@Import({ LogEntryController.class, CatalogController.class })
+@Import({ LogEntryController.class, ApiController.class })
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 

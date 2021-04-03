@@ -15,7 +15,7 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  *
  * @version 1.0
  */
-public class ApiStatisticMetricSequencer extends GenericUserMetricSequencer<Catalog, BigInt> {
+public class ApiStatisticMetricSequencer extends GenericUserMetricSequencer<Api, BigInt> {
 
 	public ApiStatisticMetricSequencer() {
 		this(1, SpanUnit.MINUTE, 60);

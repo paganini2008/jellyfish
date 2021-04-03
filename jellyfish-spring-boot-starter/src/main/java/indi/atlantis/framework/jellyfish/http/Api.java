@@ -16,7 +16,7 @@ import lombok.ToString;
 
 /**
  * 
- * Catalog
+ * Api
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -25,7 +25,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-public final class Catalog implements Comparable<Catalog> {
+public final class Api implements Comparable<Api> {
 
 	private static final String IDENTIFIER_PATTERN = "%s+%s+%s+%s+%s";
 	private static final String NULL = "*";
@@ -37,7 +37,7 @@ public final class Catalog implements Comparable<Catalog> {
 	private String category;
 	private String path;
 
-	public Catalog(String clusterName, String applicationName, String host, String category, String path) {
+	public Api(String clusterName, String applicationName, String host, String category, String path) {
 		Assert.hasNoText(clusterName, "ClusterName must not be null");
 		this.clusterName = clusterName;
 		this.applicationName = StringUtils.isNotBlank(applicationName) ? applicationName : NULL;
@@ -46,7 +46,7 @@ public final class Catalog implements Comparable<Catalog> {
 		this.path = StringUtils.isNotBlank(path) ? path : NULL;
 	}
 
-	public Catalog() {
+	public Api() {
 	}
 
 	public int getLevel() {
@@ -68,30 +68,30 @@ public final class Catalog implements Comparable<Catalog> {
 		return Base64Utils.encodeToString(repr.getBytes(DEFAULT_CHARSET));
 	}
 
-	public static Catalog decode(String identifier) {
+	public static Api decode(String identifier) {
 		String repr = new String(Base64Utils.decodeFromString(identifier), DEFAULT_CHARSET);
 		String[] args = repr.split("\\+", 5);
 		if (args.length != 5) {
 			throw new IllegalArgumentException("Invalid identifier: " + repr);
 		}
-		return new Catalog(args[0], args[1], args[2], args[3], args[4]);
+		return new Api(args[0], args[1], args[2], args[3], args[4]);
 	}
 
 	@Override
-	public int compareTo(Catalog other) {
+	public int compareTo(Api other) {
 		String repr = String.format(IDENTIFIER_PATTERN, clusterName, applicationName, host, category, path);
 		String otherRepr = String.format(IDENTIFIER_PATTERN, other.getClusterName(), other.getApplicationName(), other.getHost(),
 				other.getCategory(), other.getPath());
 		return repr.compareTo(otherRepr);
 	}
 
-	public static Catalog of(Tuple tuple) {
+	public static Api of(Tuple tuple) {
 		String clusterName = tuple.getField("clusterName", String.class);
 		String applicationName = tuple.getField("applicationName", String.class);
 		String host = tuple.getField("host", String.class);
 		String category = tuple.getField("category", String.class);
 		String path = tuple.getField("path", String.class);
-		return new Catalog(clusterName, applicationName, host, category, path);
+		return new Api(clusterName, applicationName, host, category, path);
 	}
 
 }

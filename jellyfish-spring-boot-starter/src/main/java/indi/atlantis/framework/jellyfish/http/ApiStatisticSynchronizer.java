@@ -35,69 +35,62 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 	@Override
 	public void synchronize(NioClient nioClient, SocketAddress remoteAddress) {
 		log.trace("Statistic synchronization begin...");
-		GenericUserMetricSequencer<Catalog, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
-		apiCounterSequencer.scan((catalog, metric, data) -> {
+		GenericUserMetricSequencer<Api, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
+		apiCounterSequencer.scan((api, metric, data) -> {
 			ApiCounter apiCounter;
 			long timestamp;
 			for (Map.Entry<String, UserMetric<ApiCounter>> entry : data.entrySet()) {
 				apiCounter = entry.getValue().get();
 				timestamp = entry.getValue().getTimestamp();
-				Tuple tuple = synchronizeApiCounter(catalog, metric, apiCounter, timestamp);
+				Tuple tuple = synchronizeApiCounter(api, metric, apiCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
 				if (incremental) {
-					apiCounterSequencer.update(catalog, metric, timestamp,
-							new ApiCounterMetric(
-									new ApiCounter(apiCounter.getCount(), apiCounter.getFailedCount(), apiCounter.getTimeoutCount()),
-									timestamp).resettable(),
+					apiCounterSequencer.update(api, metric, timestamp, new ApiCounterMetric(apiCounter.clone(), timestamp).resettable(),
 							true);
 				}
 			}
 		});
-		GenericUserMetricSequencer<Catalog, HttpStatusCounter> httpStatusCounterSequencer = environment
+		GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterSequencer = environment
 				.getHttpStatusCounterMetricSequencer();
-		httpStatusCounterSequencer.scan((catalog, metric, data) -> {
+		httpStatusCounterSequencer.scan((api, metric, data) -> {
 			HttpStatusCounter httpStatusCounter;
 			long timestamp;
 			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : data.entrySet()) {
 				httpStatusCounter = entry.getValue().get();
 				timestamp = entry.getValue().getTimestamp();
-				Tuple tuple = synchronizeHttpStatusCounter(catalog, metric, httpStatusCounter, timestamp);
+				Tuple tuple = synchronizeHttpStatusCounter(api, metric, httpStatusCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
 				if (incremental) {
-					httpStatusCounterSequencer.update(catalog, metric, timestamp,
-							new HttpStatusCounterMetric(new HttpStatusCounter(httpStatusCounter.getCountOf1xx(),
-									httpStatusCounter.getCountOf2xx(), httpStatusCounter.getCountOf3xx(), httpStatusCounter.getCountOf4xx(),
-									httpStatusCounter.getCountOf5xx()), timestamp).resettable(),
-							true);
+					httpStatusCounterSequencer.update(api, metric, timestamp,
+							new HttpStatusCounterMetric(httpStatusCounter.clone(), timestamp).resettable(), true);
 				}
 			}
 		});
-		GenericUserMetricSequencer<Catalog, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
-		apiStatisticSequencer.scan((catalog, metric, data) -> {
+		GenericUserMetricSequencer<Api, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
+		apiStatisticSequencer.scan((api, metric, data) -> {
 			BigInt bigInt;
 			long timestamp;
 			for (Map.Entry<String, UserMetric<BigInt>> entry : data.entrySet()) {
 				bigInt = entry.getValue().get();
 				timestamp = entry.getValue().getTimestamp();
-				Tuple tuple = synchronizeBigInt(catalog, metric, bigInt, timestamp);
+				Tuple tuple = synchronizeBigInt(api, metric, bigInt, timestamp);
 				nioClient.send(remoteAddress, tuple);
 				if (incremental) {
-					apiStatisticSequencer.update(catalog, metric, timestamp, new BigIntMetric(
-							new BigInt(bigInt.getHighestValue(), bigInt.getLowestValue(), bigInt.getTotalValue(), bigInt.getCount()),
-							timestamp).resettable(), true);
+					apiStatisticSequencer.update(api, metric, timestamp, new BigIntMetric(bigInt.clone(), timestamp).resettable(),
+							true);
 				}
 			}
 		});
 		log.trace("Statistic synchronization end");
 	}
 
-	private Tuple synchronizeApiCounter(Catalog catalog, String metric, ApiCounter apiCounter, long timestamp) {
+	private Tuple synchronizeApiCounter(Api api, String metric, ApiCounter apiCounter, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
-		tuple.setField("clusterName", catalog.getClusterName());
-		tuple.setField("applicationName", catalog.getApplicationName());
-		tuple.setField("host", catalog.getHost());
-		tuple.setField("category", catalog.getCategory());
-		tuple.setField("path", catalog.getPath());
+		tuple.setField("clusterName", api.getClusterName());
+		tuple.setField("applicationName", api.getApplicationName());
+		tuple.setField("host", api.getHost());
+		tuple.setField("category", api.getCategory());
+		tuple.setField("path", api.getPath());
 		tuple.setField("metric", metric);
 
 		tuple.setField("count", apiCounter.getCount());
@@ -107,13 +100,13 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		return tuple;
 	}
 
-	private Tuple synchronizeHttpStatusCounter(Catalog catalog, String metric, HttpStatusCounter counter, long timestamp) {
+	private Tuple synchronizeHttpStatusCounter(Api api, String metric, HttpStatusCounter counter, long timestamp) {
 		Tuple tuple = Tuple.newOne(topic);
-		tuple.setField("clusterName", catalog.getClusterName());
-		tuple.setField("applicationName", catalog.getApplicationName());
-		tuple.setField("host", catalog.getHost());
-		tuple.setField("category", catalog.getCategory());
-		tuple.setField("path", catalog.getPath());
+		tuple.setField("clusterName", api.getClusterName());
+		tuple.setField("applicationName", api.getApplicationName());
+		tuple.setField("host", api.getHost());
+		tuple.setField("category", api.getCategory());
+		tuple.setField("path", api.getPath());
 		tuple.setField("metric", metric);
 
 		long countOf1xx = counter.getCountOf1xx();
@@ -130,14 +123,14 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		return tuple;
 	}
 
-	private Tuple synchronizeBigInt(Catalog catalog, String metric, BigInt bigInt, long timestamp) {
+	private Tuple synchronizeBigInt(Api api, String metric, BigInt bigInt, long timestamp) {
 
 		Tuple tuple = Tuple.newOne(topic);
-		tuple.setField("clusterName", catalog.getClusterName());
-		tuple.setField("applicationName", catalog.getApplicationName());
-		tuple.setField("host", catalog.getHost());
-		tuple.setField("category", catalog.getCategory());
-		tuple.setField("path", catalog.getPath());
+		tuple.setField("clusterName", api.getClusterName());
+		tuple.setField("applicationName", api.getApplicationName());
+		tuple.setField("host", api.getHost());
+		tuple.setField("category", api.getCategory());
+		tuple.setField("path", api.getPath());
 		tuple.setField("metric", metric);
 
 		long highestValue = bigInt.getHighestValue();

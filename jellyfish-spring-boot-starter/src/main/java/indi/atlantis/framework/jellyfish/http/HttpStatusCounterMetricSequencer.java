@@ -14,7 +14,7 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  *
  * @version 1.0
  */
-public class HttpStatusCounterMetricSequencer extends GenericUserMetricSequencer<Catalog, HttpStatusCounter> {
+public class HttpStatusCounterMetricSequencer extends GenericUserMetricSequencer<Api, HttpStatusCounter> {
 
 	public HttpStatusCounterMetricSequencer() {
 		this(1, SpanUnit.MINUTE, 60);

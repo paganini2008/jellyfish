@@ -53,8 +53,8 @@ public class ApiStatisticHandler implements Handler {
 		int httpStatusCode = tuple.getField("httpStatusCode", Integer.class);
 
 		ApiCounterMetric apiCounterMetric = new ApiCounterMetric(failed, timeout, timestamp);
-		MetricSequencer<Api, UserMetric<ApiCounter>> counterMetricSequencer = environment.getApiCounterMetricSequencer();
-		counterMetricSequencer.update(catalog, COUNT, timestamp, apiCounterMetric, true);
+		MetricSequencer<Api, UserMetric<ApiCounter>> apiCounterMetricSequencer = environment.getApiCounterMetricSequencer();
+		apiCounterMetricSequencer.update(catalog, COUNT, timestamp, apiCounterMetric, true);
 
 		HttpStatusCounterMetric httpStatusCounterMetric = new HttpStatusCounterMetric(HttpStatus.valueOf(httpStatusCode), timestamp);
 		MetricSequencer<Api, UserMetric<HttpStatusCounter>> httpStatusCounterMetricSequencer = environment
@@ -63,9 +63,9 @@ public class ApiStatisticHandler implements Handler {
 
 		long elapsed = tuple.getField("elapsed", Long.class);
 		long concurrency = tuple.getField("concurrency", Long.class);
-		MetricSequencer<Api, UserMetric<BigInt>> bigIntMetricSequencer = environment.getApiStatisticMetricSequencer();
-		bigIntMetricSequencer.update(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp), true);
-		bigIntMetricSequencer.update(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp), true);
+		MetricSequencer<Api, UserMetric<BigInt>> apiStatisticMetricSequencer = environment.getApiStatisticMetricSequencer();
+		apiStatisticMetricSequencer.update(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp), true);
+		apiStatisticMetricSequencer.update(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp), true);
 
 		environment.update(catalog, COUNT, apiCounterMetric, true);
 		environment.update(catalog, HTTP_STATUS, httpStatusCounterMetric, true);
@@ -75,7 +75,7 @@ public class ApiStatisticHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.http.StatisticWatcher";
+		return "indi.atlantis.framework.jellyfish.http.ApiStatisticWatcher";
 	}
 
 }

@@ -10,23 +10,11 @@ $(function(){
 
 var SummaryChartUtils = {
 		
-	loadStatisticChart: function(divId, title, max, values, unit){
+	loadApiStatisticChart: function(divId, title, max, values, unit){
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
-			chart.update({
-				series: [{
-			        name: title,
-			        data: values,
-			        dataLabels: {
-			            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
-			            ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-			            '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
-			        },
-			        tooltip: {
-			            valueSuffix: unit
-			        }
-			    }]
-			});
+			var point = chart.series[0].points[0];
+			point.update(values[0]);
 		}else{
 			var chart = Highcharts.chart(divId, {
 				chart: {
@@ -102,141 +90,117 @@ var SummaryChartUtils = {
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			chart.update({
-				series: [{
-					name: 'Brands',
-					colorByPoint: true,
-					data: [{
-							name: '1xx Count',
-							y: countOf1xx
-					}, {
-						name: '2xx Count',
-						y: countOf2xx,
-						sliced: true,
-						selected: true
-					}, {
-							name: '3xx Count',
-							y: countOf3xx
-					}, {
-						name: '4xx Count',
-						y: countOf4xx
-					}, {
-						name: '5xx Count',
-						y: countOf5xx
-					}]
-				}]
+			    series: [{
+			        type: 'pie',
+			        name: title,
+			        innerSize: '50%',
+			        data: [
+			            ['1xx', countOf1xx],
+			            ['2xx', countOf2xx],
+			            ['3xx', countOf3xx],
+			            ['4xx', countOf4xx],
+			            ['5xx', countOf5xx]
+			        ]
+			    }]
 			});
 		}else{
 			var chart = Highcharts.chart(divId, {
-				chart: {
-					plotBackgroundColor: null,
-					plotBorderWidth: null,
-					plotShadow: false,
-					type: 'pie'
-					},
-					title: {
-							text: title
-					},
-					tooltip: {
-							pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-					},
-					plotOptions: {
-							pie: {
-									allowPointSelect: true,
-									cursor: 'pointer',
-									dataLabels: {
-										enabled: true
-									},
-									showInLegend: true
-							}
-					},
-					series: [{
-							name: 'Brands',
-							colorByPoint: true,
-							data: [{
-								name: '1xx Count',
-								y: countOf1xx
-							}, {
-								name: '2xx Count',
-								y: countOf2xx,
-								sliced: true,
-								selected: true
-							}, {
-								name: '3xx Count',
-								y: countOf3xx
-							}, {
-								name: '4xx Count',
-								y: countOf4xx
-							}, {
-								name: '5xx Count',
-								y: countOf5xx
-							}]
-					}]
+				title: {
+			        text: title,
+			        align: 'center',
+			        verticalAlign: 'middle',
+			        y: 50
+			    },
+			    tooltip: {
+			        headerFormat: '{series.name}<br>',
+			        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+			    },
+			    plotOptions: {
+			        pie: {
+			            dataLabels: {
+			                enabled: true,
+			                distance: -50,
+			                style: {
+			                    fontWeight: 'bold',
+			                    color: 'white',
+			                    textShadow: '0px 1px 2px black'
+			                }
+			            },
+			            startAngle: -90,
+			            endAngle: 90,
+			            center: ['50%', '75%']
+			        }
+			    },
+			    series: [{
+			        type: 'pie',
+			        name: title,
+			        innerSize: '50%',
+			        data: [
+			            ['1xx', countOf1xx],
+			            ['2xx', countOf2xx],
+			            ['3xx', countOf3xx],
+			            ['4xx', countOf4xx],
+			            ['5xx', countOf5xx]
+			        ]
+			    }]
 			});
 			map.put(divId, chart);
 		}
 	},
 		
-	loadCallCountChart: function(divId, title, successCount, failedCount, timeoutCount){
+	loadApiCountChart: function(divId, title, successCount, failedCount, timeoutCount){
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			chart.update({
 				series: [{
-					name: 'Brands',
-					colorByPoint: true,
-					data: [{
-							name: 'Success Count',
-							y: successCount,
-							sliced: true,
-							selected: true
-					}, {
-							name: 'Failed Count',
-							y: failedCount
-					}, {
-							name: 'Timeout Count',
-							y: timeoutCount
-					}]
-				}]
+			        type: 'pie',
+			        name: title,
+			        innerSize: '50%',
+			        data: [
+			            ['Success Count', successCount],
+			            ['Failed Count', failedCount],
+			            ['Timeout Count', timeoutCount]
+			        ]
+			    }]
 			});
 		}else{
 			var chart = Highcharts.chart(divId, {
-				chart: {
-					plotBackgroundColor: null,
-					plotBorderWidth: null,
-					plotShadow: false,
-					type: 'pie'
-					},
-					title: {
-							text: title
-					},
-					tooltip: {
-							pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-					},
-					plotOptions: {
-							pie: {
-									allowPointSelect: true,
-									cursor: 'pointer',
-									dataLabels: {
-										enabled: true
-									},
-									showInLegend: true
-							}
-					},
-					series: [{
-							name: 'Brands',
-							colorByPoint: true,
-							data: [{
-									name: 'Success Count',
-									y: successCount,
-									sliced: true,
-									selected: true
-							}, {
-									name: 'Failed Count',
-									y: failedCount
-							}, {
-									name: 'Timeout Count',
-									y: timeoutCount
-							}]
-					}]
+				title: {
+			        text: title,
+			        align: 'center',
+			        verticalAlign: 'middle',
+			        y: 50
+			    },
+			    tooltip: {
+			        headerFormat: '{series.name}<br>',
+			        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+			    },
+			    plotOptions: {
+			        pie: {
+			            dataLabels: {
+			                enabled: true,
+			                distance: -50,
+			                style: {
+			                    fontWeight: 'bold',
+			                    color: 'white',
+			                    textShadow: '0px 1px 2px black'
+			                }
+			            },
+			            startAngle: -90,
+			            endAngle: 90,
+			            center: ['50%', '75%']
+			        }
+			    },
+			    series: [{
+			        type: 'pie',
+			        name: title,
+			        innerSize: '50%',
+			        data: [
+			            ['Success Count', successCount],
+			            ['Failed Count', failedCount],
+			            ['Timeout Count', timeoutCount]
+			        ]
+			    }]
 			});
 			map.put(divId, chart);
 		}
@@ -245,7 +209,7 @@ var SummaryChartUtils = {
 
 var SequenceChartUtils = {
 
-	loadCallCountChart: function(divId, title, categories, successCount, failedCount, timeoutCount){
+	loadApiCountChart: function(divId, title, categories, successCount, failedCount, timeoutCount){
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			var data = [{
@@ -576,7 +540,7 @@ var SequenceChartUtils = {
 		
 	},
 
-	loadStatisticChart: function(divId, title, categories, highestValues, middleValues, lowestValues, yTitle, tip){
+	loadApiStatisticChart: function(divId, title, categories, highestValues, middleValues, lowestValues, yTitle, tip){
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			var data = [{

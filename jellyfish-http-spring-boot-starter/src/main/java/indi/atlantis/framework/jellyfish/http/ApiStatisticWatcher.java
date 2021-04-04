@@ -23,14 +23,14 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * StatisticWatcher
+ * ApiStatisticWatcher
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class StatisticWatcher extends HttpWatcher {
+public class ApiStatisticWatcher extends ApiWatcher {
 
-	private static final String TOPIC_NAME = StatisticWatcher.class.getName();
+	private static final String TOPIC_NAME = ApiStatisticWatcher.class.getName();
 
 	private final ConcurrentMap<String, AtomicInteger> concurrencies = new ConcurrentHashMap<String, AtomicInteger>();
 
@@ -50,7 +50,7 @@ public class StatisticWatcher extends HttpWatcher {
 	private TransportClient transportClient;
 
 	@Autowired(required = false)
-	private StatisticTracer statisticTracer;
+	private ApiStatisticTracer statisticTracer;
 
 	private String hostName = NetUtils.getLocalHost();
 

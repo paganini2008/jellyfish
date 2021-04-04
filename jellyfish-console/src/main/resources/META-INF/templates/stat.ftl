@@ -36,7 +36,7 @@
 	
 	function renderTable(level){
 		$.ajax({
-			    url: '${contextPath}/atlantis/jellyfish/catalog/list?level=' + level,
+			    url: '${contextPath}/atlantis/jellyfish/api/list?level=' + level,
 				type:'get',
 				contentType: 'application/json;charset=UTF-8',
 				dataType:'json',

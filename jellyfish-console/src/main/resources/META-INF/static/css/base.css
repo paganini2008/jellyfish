@@ -245,7 +245,15 @@ body {
 	overflow-x: hidden;
 }
 
-#infoBox, .summaryBox {
+#infoBox {
+	width: 90%;
+	height: 230px;
+	clear: both;
+	margin: 5px auto;
+	overflow: hidden;
+}
+
+.summaryBox {
 	width: 90%;
 	height: 320px;
 	clear: both;
@@ -253,8 +261,15 @@ body {
 	overflow: hidden;
 }
 
-#catalog p label {
-	width: 120px;
+.summary {
+	width: 25%; 
+	height: auto;
+	display: block;
+	float: left;
+}
+
+.summary p label {
+	width: 110px;
 	display: inline-block;
 	height: 32px;
 	line-height: 32px;
@@ -263,7 +278,7 @@ body {
 	font-weight: bold;
 }
 
-#catalog p span {
+.summary p span {
 	width: calc(100% - 150px);
 	display: inline-block;
 	height: 32px;

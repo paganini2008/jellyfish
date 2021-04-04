@@ -52,7 +52,7 @@ public class ApiQpsHandler implements Handler {
 
 	@Override
 	public String getTopic() {
-		return "indi.atlantis.framework.jellyfish.http.QpsWatcher";
+		return "indi.atlantis.framework.jellyfish.http.ApiQpsWatcher";
 	}
 
 }

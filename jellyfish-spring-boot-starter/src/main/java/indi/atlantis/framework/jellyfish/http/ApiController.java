@@ -56,20 +56,25 @@ public class ApiController {
 		return summary != null ? Response.success(summary.toEntries()) : Response.success();
 	}
 
-	@PostMapping("/{metric}/summary")
-	public Response metricSummary(@PathVariable("metric") String metric, @RequestBody Api api) {
+	@PostMapping("/{metric}/sequence")
+	public Response summary(@PathVariable("metric") String metric, @RequestBody Api api) {
 		Map<String, Map<String, Object>> data;
-		if (metric.equals("combined")) {
-			data = fetchCombinedMerticData(api);
+		if ("latest".equals(metric)) {
+			data = fetchLatestMerticData(api);
 		} else {
 			data = fetchMerticData(api, metric);
 		}
 		return Response.success(data);
 	}
 
-	private Map<String, Map<String, Object>> fetchCombinedMerticData(Api api) {
+	private Map<String, Map<String, Object>> fetchLatestMerticData(Api api) {
 		GenericUserMetricSequencer<Api, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
-		return apiStatisticSequencer.sequence(api, new String[] { RT, CC, QPS }, true);
+		Map<String, Map<String, Object>> latest = apiStatisticSequencer.sequenceLatest(api, new String[] { RT, CC, QPS });
+		GenericUserMetricSequencer<Api, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
+		latest.putAll(apiCounterSequencer.sequenceLatest(api, new String[] { COUNT }));
+		GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterSequencer = environment.getHttpStatusCounterMetricSequencer();
+		latest.putAll(httpStatusCounterSequencer.sequenceLatest(api, new String[] { HTTP_STATUS }));
+		return latest;
 	}
 
 	private Map<String, Map<String, Object>> fetchMerticData(Api api, String metric) {

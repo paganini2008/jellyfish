@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 
 /**
  * 
- * EnableJellyfishHttpWatcher
+ * EnableJellyfishApiWatcher
  * 
  * @author Fred Feng
  *
@@ -19,6 +19,6 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(JellyfishHttpAutoConfiguration.class)
-public @interface EnableJellyfishHttpWatcher {
+@Import(JellyfishApiWatcherAutoConfiguration.class)
+public @interface EnableJellyfishApiWatcher {
 }

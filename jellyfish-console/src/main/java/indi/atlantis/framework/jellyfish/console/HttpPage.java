@@ -26,7 +26,7 @@ public class HttpPage {
 
 	@GetMapping("/detail")
 	public String query(@RequestParam("identifier") String identifier, Model ui) {
-		ui.addAttribute("catalog", Api.decode(identifier));
+		ui.addAttribute("api", Api.decode(identifier));
 		return "stat_detail";
 	}
 }

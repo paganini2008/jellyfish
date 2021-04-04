@@ -22,14 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * JellyfishHttpAutoConfiguration
+ * JellyfishApiWatcherAutoConfiguration
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
 @Configuration(proxyBeanMethods = false)
-public class JellyfishHttpAutoConfiguration {
+public class JellyfishApiWatcherAutoConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean
@@ -38,15 +38,15 @@ public class JellyfishHttpAutoConfiguration {
 	}
 
 	@Bean
-	public StatisticWatcher statisticWatcher() {
-		log.info("Load {}", StatisticWatcher.class.getName());
-		return new StatisticWatcher();
+	public ApiStatisticWatcher apiStatisticWatcher() {
+		log.info("Load {}", ApiStatisticWatcher.class.getName());
+		return new ApiStatisticWatcher();
 	}
 
 	@Bean
-	public QpsWatcher qpsWatcher() {
-		log.info("Load {}", QpsWatcher.class.getName());
-		return new QpsWatcher();
+	public ApiQpsWatcher apiQpsWatcher() {
+		log.info("Load {}", ApiQpsWatcher.class.getName());
+		return new ApiQpsWatcher();
 	}
 
 	@ConditionalOnMissingBean
@@ -57,11 +57,10 @@ public class JellyfishHttpAutoConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean(destroyMethod = "shutdown")
-	public ThreadPoolTaskScheduler taskScheduler(
-			@Value("${atlantis.framework.jellyfish.http.scheduler.maxSize:8}") int maxSize) {
+	public ThreadPoolTaskScheduler taskScheduler(@Value("${atlantis.framework.jellyfish.apiwatcher.scheduler.maxSize:8}") int maxSize) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(maxSize);
-		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-http-task-scheduler-"));
+		threadPoolTaskScheduler.setThreadFactory(new PooledThreadFactory("jellyfish-apiwatcher-task-scheduler-"));
 		threadPoolTaskScheduler.setWaitForTasksToCompleteOnShutdown(true);
 		threadPoolTaskScheduler.setAwaitTerminationSeconds(60);
 		return threadPoolTaskScheduler;
@@ -78,23 +77,22 @@ public class JellyfishHttpAutoConfiguration {
 	@Configuration
 	static class JellyfishHttpWebMvcConfig implements WebMvcConfigurer {
 
-		@Value("#{'${atlantis.framework.jellyfish.http.excludedUrlPatterns:}'.split(',')}")
+		@Value("#{'${atlantis.framework.jellyfish.apiwatcher.excludedUrlPatterns:}'.split(',')}")
 		private List<String> excludedUrlPatterns = new ArrayList<String>();
 
 		@Autowired
-		private StatisticWatcher statisticWriter;
+		private ApiStatisticWatcher apiStatisticWriter;
 
 		@Autowired
-		private QpsWatcher qpsWriter;
+		private ApiQpsWatcher apiQpsWriter;
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			InterceptorRegistration interceptorRegistration = registry.addInterceptor(statisticWriter)
-					.addPathPatterns("/**");
+			InterceptorRegistration interceptorRegistration = registry.addInterceptor(apiStatisticWriter).addPathPatterns("/**");
 			if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
 				interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
 			}
-			interceptorRegistration = registry.addInterceptor(qpsWriter).addPathPatterns("/**");
+			interceptorRegistration = registry.addInterceptor(apiQpsWriter).addPathPatterns("/**");
 			if (CollectionUtils.isNotEmpty(excludedUrlPatterns)) {
 				interceptorRegistration.excludePathPatterns(excludedUrlPatterns);
 			}

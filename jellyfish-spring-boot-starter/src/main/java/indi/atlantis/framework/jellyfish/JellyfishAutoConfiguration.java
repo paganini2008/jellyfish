@@ -16,6 +16,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
+import com.github.paganini2008.springworld.reditools.common.IdGenerator;
+import com.github.paganini2008.springworld.reditools.common.TimeBasedIdGenerator;
+
 import indi.atlantis.framework.jellyfish.http.ApiQpsHandler;
 import indi.atlantis.framework.jellyfish.http.ApiStatisticHandler;
 import indi.atlantis.framework.jellyfish.http.ApiStatisticSynchronizationHandler;
@@ -26,8 +29,6 @@ import indi.atlantis.framework.jellyfish.http.Environment;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
-import indi.atlantis.framework.reditools.common.IdGenerator;
-import indi.atlantis.framework.reditools.common.TimestampIdGenerator;
 import indi.atlantis.framework.tridenter.InstanceId;
 import indi.atlantis.framework.vortex.Handler;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
@@ -90,7 +91,7 @@ public class JellyfishAutoConfiguration {
 	@Bean
 	public IdGenerator logIdGenerator(RedisConnectionFactory redisConnectionFactory) {
 		final String keyPrefix = String.format(idKeyPattern, clusterName);
-		return new TimestampIdGenerator(keyPrefix, redisConnectionFactory);
+		return new TimeBasedIdGenerator(keyPrefix, redisConnectionFactory);
 	}
 
 	@Setter

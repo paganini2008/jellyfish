@@ -51,7 +51,7 @@
 							html += '<td class="tdLeft10" width="10%">' + item.host + '</td>';
 							html += '<td class="tdLeft10" width="10%">' + item.category + '</td>';
 							html += '<td class="tdLeft10">' + item.path + '</td>';
-							html += '<td class="tdRight10" width="10%"><a href="${contextPath}/atlantis/jellyfish/http/detail?identifier=' + item.identifier + '" target="_blank" >View</a></td>';
+							html += '<td class="tdRight10" width="10%"><a href="${contextPath}/jellyfish/http/detail?identifier=' + item.identifier + '" target="_blank" >View</a></td>';
 							html += '</tr>';
 						});
 					}

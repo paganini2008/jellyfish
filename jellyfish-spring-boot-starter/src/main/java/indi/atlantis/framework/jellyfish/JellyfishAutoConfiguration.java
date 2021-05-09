@@ -3,7 +3,6 @@ package indi.atlantis.framework.jellyfish;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,13 +18,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import com.github.paganini2008.springworld.reditools.common.IdGenerator;
 import com.github.paganini2008.springworld.reditools.common.TimeBasedIdGenerator;
 
-import indi.atlantis.framework.jellyfish.http.ApiQpsHandler;
-import indi.atlantis.framework.jellyfish.http.ApiStatisticHandler;
-import indi.atlantis.framework.jellyfish.http.ApiStatisticSynchronizationHandler;
-import indi.atlantis.framework.jellyfish.http.ApiStatisticSynchronizer;
-import indi.atlantis.framework.jellyfish.http.ApiSummarySynchronizationHandler;
-import indi.atlantis.framework.jellyfish.http.ApiSummarySynchronizer;
-import indi.atlantis.framework.jellyfish.http.Environment;
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;
 import indi.atlantis.framework.jellyfish.log.Slf4jHandler;
@@ -35,10 +27,6 @@ import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.HashPartitioner;
 import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
 import indi.atlantis.framework.vortex.common.Partitioner;
-import indi.atlantis.framework.vortex.metric.FullSynchronizationExecutor;
-import indi.atlantis.framework.vortex.metric.IncrementalSynchronizationExecutor;
-import indi.atlantis.framework.vortex.metric.SynchronizationExecutor;
-import indi.atlantis.framework.vortex.metric.Synchronizer;
 import lombok.Setter;
 import redis.clients.jedis.JedisPoolConfig;
 

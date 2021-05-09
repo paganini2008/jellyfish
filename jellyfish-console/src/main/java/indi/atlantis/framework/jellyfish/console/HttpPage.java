@@ -15,7 +15,7 @@ import indi.atlantis.framework.jellyfish.http.Api;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RequestMapping("/atlantis/jellyfish/http")
+@RequestMapping("/jellyfish/http")
 @Controller
 public class HttpPage {
 

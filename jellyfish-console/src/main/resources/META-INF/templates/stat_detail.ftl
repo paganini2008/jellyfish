@@ -79,14 +79,17 @@
 					if(entries != null){
 						dataEntries = entries['rt'];
 						values = [dataEntries['highestValue']];
+						//console.log(values.join(','));
 						SummaryChartUtils.loadApiStatisticChart('rtSummary', 'Response Time', 60000, values, ' ms');
 						
 						dataEntries = entries['qps'];
 						values = [dataEntries['highestValue']];
+						//console.log(values.join(','));
 						SummaryChartUtils.loadApiStatisticChart('qpsSummary', 'QPS', 10000, values, ' Per second');
 						
 						dataEntries = entries['cc'];
 						values = [dataEntries['highestValue']];
+						//console.log(values.join(','));
 						SummaryChartUtils.loadApiStatisticChart('ccSummary', 'Concurrency', 200, values, '');
 					}
 				}
@@ -280,7 +283,7 @@
 						html += '<span>' + successCount + '</span>';
 						html += '</p>';
 						html += '<p>';
-						html += '<label>Failed Count: </label>';
+						html += '<label>Failure Count: </label>';
 						html += '<span>' + failedCount + '</span>';
 						html += '</p>';
 						html += '<p>';

@@ -12,7 +12,7 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
  * 
  * ApiSummary
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public final class ApiSummary {

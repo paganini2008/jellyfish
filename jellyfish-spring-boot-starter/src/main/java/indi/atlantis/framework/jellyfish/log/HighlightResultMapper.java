@@ -43,7 +43,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * 
  * HighlightResultMapper
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * 
  * @since 1.0
  */

@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * ApiQpsWatcher
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Slf4j
@@ -85,7 +85,7 @@ public class ApiQpsWatcher extends ApiWatcher implements InitializingBean {
 	 * 
 	 * CheckpointTask
 	 *
-	 * @author Jimmy Hoff
+	 * @author Fred Feng
 	 * @version 1.0
 	 */
 	class CheckpointTask implements Runnable {
@@ -128,7 +128,7 @@ public class ApiQpsWatcher extends ApiWatcher implements InitializingBean {
 	 * 
 	 * QPS
 	 *
-	 * @author Jimmy Hoff
+	 * @author Fred Feng
 	 * @version 1.0
 	 */
 	static class QPS {

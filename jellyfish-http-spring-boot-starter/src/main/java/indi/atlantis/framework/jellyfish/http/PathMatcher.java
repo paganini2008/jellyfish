@@ -4,7 +4,7 @@ package indi.atlantis.framework.jellyfish.http;
  * 
  * PathMatcher
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class PathMatcher {

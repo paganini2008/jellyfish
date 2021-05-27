@@ -31,7 +31,7 @@ import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
  * 
  * ApiController
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @RequestMapping("/atlantis/jellyfish/api")

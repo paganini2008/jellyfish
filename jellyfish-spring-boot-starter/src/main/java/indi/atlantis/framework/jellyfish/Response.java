@@ -10,7 +10,7 @@ import com.github.paganini2008.devtools.ExceptionUtils;
  * 
  * Response
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @since 1.0
  */
 public class Response extends HashMap<String, Object> {

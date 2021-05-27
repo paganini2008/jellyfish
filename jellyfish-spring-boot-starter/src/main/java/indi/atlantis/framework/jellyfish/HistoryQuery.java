@@ -13,7 +13,7 @@ import lombok.Setter;
  * 
  * HistoryQuery
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Getter

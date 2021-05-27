@@ -10,7 +10,7 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
  * 
  * ApiCounterMetric
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class ApiCounterMetric extends AbstractUserMetric<ApiCounter> {

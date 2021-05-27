@@ -12,7 +12,7 @@ import indi.atlantis.framework.jellyfish.http.Api;
  * 
  * HttpPage
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @RequestMapping("/jellyfish/http")

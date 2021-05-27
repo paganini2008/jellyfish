@@ -14,7 +14,7 @@ import indi.atlantis.framework.jellyfish.SearchResult;
  * 
  * LogEntrySearchService
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class LogEntrySearchService {

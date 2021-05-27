@@ -34,7 +34,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * 
  * JellyfishAutoConfiguration
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @EnableElasticsearchRepositories("indi.atlantis.framework.jellyfish.log")

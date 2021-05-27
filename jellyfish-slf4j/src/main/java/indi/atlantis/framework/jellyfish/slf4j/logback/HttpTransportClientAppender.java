@@ -7,7 +7,7 @@ import indi.atlantis.framework.vortex.common.TransportClient;
  * 
  * HttpTransportClientAppender
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class HttpTransportClientAppender extends TransportClientAppenderBase {

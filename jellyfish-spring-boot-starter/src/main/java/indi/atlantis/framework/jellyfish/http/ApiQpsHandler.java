@@ -16,7 +16,7 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
  * 
  * ApiQpsHandler
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class ApiQpsHandler implements Handler {

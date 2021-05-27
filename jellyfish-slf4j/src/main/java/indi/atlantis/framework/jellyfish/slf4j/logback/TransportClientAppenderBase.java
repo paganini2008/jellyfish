@@ -17,7 +17,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * TransportClientAppenderBase
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class TransportClientAppenderBase extends UnsynchronizedAppenderBase<ILoggingEvent> {

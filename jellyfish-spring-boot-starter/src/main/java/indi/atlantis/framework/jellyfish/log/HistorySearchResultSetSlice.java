@@ -21,7 +21,7 @@ import indi.atlantis.framework.jellyfish.HistoryQuery;
  * 
  * HistorySearchResultSetSlice
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class HistorySearchResultSetSlice extends IndexSearchResultSetSlice {

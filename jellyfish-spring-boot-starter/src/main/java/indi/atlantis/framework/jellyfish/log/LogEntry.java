@@ -16,7 +16,7 @@ import lombok.Setter;
  * 
  * LogEntry
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Getter

@@ -16,7 +16,7 @@ import indi.atlantis.framework.vortex.EnableNioTransport;
  * 
  * EnableJellyfishServer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Retention(RetentionPolicy.RUNTIME)

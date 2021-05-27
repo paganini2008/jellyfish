@@ -11,7 +11,7 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  * 
  * ApiStatisticMetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

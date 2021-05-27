@@ -10,7 +10,7 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  * 
  * ApiCounterMetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

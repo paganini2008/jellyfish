@@ -15,7 +15,7 @@ import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
  * 
  * Environment
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public final class Environment {

@@ -27,7 +27,7 @@ import indi.atlantis.framework.jellyfish.SearchResult;
  * 
  * IndexSearchResultSetSlice
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class IndexSearchResultSetSlice extends PageableResultSetSlice<SearchResult> {

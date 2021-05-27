@@ -14,7 +14,7 @@ import indi.atlantis.framework.jellyfish.EnableJellyfishServer;
  * 
  * JellyfishConsoleServer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @EnableJellyfishServer

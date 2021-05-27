@@ -4,7 +4,7 @@ package indi.atlantis.framework.jellyfish;
  * 
  * JellyFishConstants
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class JellyFishConstants {

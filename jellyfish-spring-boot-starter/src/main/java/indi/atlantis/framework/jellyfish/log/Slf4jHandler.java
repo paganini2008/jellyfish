@@ -13,7 +13,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * LogboxHandler
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class Slf4jHandler implements Handler {

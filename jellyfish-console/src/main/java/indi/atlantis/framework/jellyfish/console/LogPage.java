@@ -13,7 +13,7 @@ import com.github.paganini2008.devtools.date.DateUtils;
  * 
  * LogPage
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @RequestMapping("/jellyfish/log")

@@ -25,7 +25,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * ApiStatisticWatcher
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class ApiStatisticWatcher extends ApiWatcher {

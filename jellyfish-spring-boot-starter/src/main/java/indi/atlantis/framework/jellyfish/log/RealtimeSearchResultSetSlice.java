@@ -20,7 +20,7 @@ import indi.atlantis.framework.jellyfish.SearchResult;
  * 
  * RealtimeSearchResultSetSlice
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class RealtimeSearchResultSetSlice extends IndexSearchResultSetSlice {

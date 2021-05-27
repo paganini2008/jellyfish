@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
  * 
  * MatchAllSearchResultSetSlice
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class MatchAllSearchResultSetSlice extends IndexSearchResultSetSlice {

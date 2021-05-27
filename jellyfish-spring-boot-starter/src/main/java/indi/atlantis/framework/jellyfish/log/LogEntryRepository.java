@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * 
  * LogEntryRepository
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Component

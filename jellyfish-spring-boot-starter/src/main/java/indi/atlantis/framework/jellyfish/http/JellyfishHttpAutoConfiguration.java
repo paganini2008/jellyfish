@@ -1,6 +1,7 @@
 package indi.atlantis.framework.jellyfish.http;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,14 +22,20 @@ import indi.atlantis.framework.vortex.metric.Synchronizer;
 @Configuration(proxyBeanMethods = false)
 public class JellyfishHttpAutoConfiguration {
 
+	@ConditionalOnMissingBean
 	@Bean
-	public Environment primaryEnvironment() {
-		return new Environment();
+	public MetricSequencerFactory defaultMetricSequencerFactory() {
+		return new DefaultMetricSequencerFactory();
 	}
 
 	@Bean
-	public Environment secondaryEnvironment() {
-		return new Environment();
+	public Environment primaryEnvironment(MetricSequencerFactory metricSequencerFactory) {
+		return new Environment(metricSequencerFactory);
+	}
+
+	@Bean
+	public Environment secondaryEnvironment(MetricSequencerFactory metricSequencerFactory) {
+		return new Environment(metricSequencerFactory);
 	}
 
 	@Bean

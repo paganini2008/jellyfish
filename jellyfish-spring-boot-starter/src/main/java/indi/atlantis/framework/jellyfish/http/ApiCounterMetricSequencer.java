@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
+import indi.atlantis.framework.vortex.metric.MetricEvictionHandler;
 import indi.atlantis.framework.vortex.metric.SpanUnit;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 
@@ -16,12 +18,13 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  */
 public class ApiCounterMetricSequencer extends GenericUserMetricSequencer<Api, ApiCounter> {
 
-	public ApiCounterMetricSequencer() {
-		this(1, SpanUnit.MINUTE, 60);
+	public ApiCounterMetricSequencer(MetricEvictionHandler<Api, UserMetric<ApiCounter>> metricEvictionHandler) {
+		this(1, SpanUnit.MINUTE, 60, metricEvictionHandler);
 	}
 
-	public ApiCounterMetricSequencer(int span, SpanUnit spanUnit, int bufferSize) {
-		super(span, spanUnit, bufferSize, null);
+	public ApiCounterMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
+			MetricEvictionHandler<Api, UserMetric<ApiCounter>> metricEvictionHandler) {
+		super(span, spanUnit, bufferSize, metricEvictionHandler);
 	}
 
 	@Override

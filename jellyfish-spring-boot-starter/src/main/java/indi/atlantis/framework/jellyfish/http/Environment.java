@@ -21,9 +21,15 @@ import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
 public final class Environment {
 
 	private final Map<Api, ApiSummary> summaries = new ConcurrentHashMap<Api, ApiSummary>();
-	private final GenericUserMetricSequencer<Api, BigInt> apiStatisticMetricSequencer = new ApiStatisticMetricSequencer();
-	private final GenericUserMetricSequencer<Api, ApiCounter> apiCounterMetricSequencer = new ApiCounterMetricSequencer();
-	private final GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterMetricSequencer = new HttpStatusCounterMetricSequencer();
+	private final GenericUserMetricSequencer<Api, BigInt> apiStatisticMetricSequencer;
+	private final GenericUserMetricSequencer<Api, ApiCounter> apiCounterMetricSequencer;
+	private final GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterMetricSequencer;
+
+	public Environment(MetricSequencerFactory metricSequencerFactory) {
+		this.apiStatisticMetricSequencer = metricSequencerFactory.getApiStatisticMetricSequencer();
+		this.apiCounterMetricSequencer = metricSequencerFactory.getApiCounterMetricSequencer();
+		this.httpStatusCounterMetricSequencer = metricSequencerFactory.getHttpStatusCounterMetricSequencer();
+	}
 
 	public List<Api> apiList() {
 		return new ArrayList<Api>(summaries.keySet());

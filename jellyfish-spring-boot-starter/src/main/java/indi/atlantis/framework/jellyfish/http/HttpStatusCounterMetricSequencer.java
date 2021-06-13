@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
+import indi.atlantis.framework.vortex.metric.MetricEvictionHandler;
 import indi.atlantis.framework.vortex.metric.SpanUnit;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 
@@ -16,12 +18,13 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  */
 public class HttpStatusCounterMetricSequencer extends GenericUserMetricSequencer<Api, HttpStatusCounter> {
 
-	public HttpStatusCounterMetricSequencer() {
-		this(1, SpanUnit.MINUTE, 60);
+	public HttpStatusCounterMetricSequencer(MetricEvictionHandler<Api, UserMetric<HttpStatusCounter>> metricEvictionHandler) {
+		this(1, SpanUnit.MINUTE, 60, metricEvictionHandler);
 	}
 
-	public HttpStatusCounterMetricSequencer(int span, SpanUnit spanUnit, int bufferSize) {
-		super(span, spanUnit, bufferSize, null);
+	public HttpStatusCounterMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
+			MetricEvictionHandler<Api, UserMetric<HttpStatusCounter>> metricEvictionHandler) {
+		super(span, spanUnit, bufferSize, metricEvictionHandler);
 	}
 
 	@Override

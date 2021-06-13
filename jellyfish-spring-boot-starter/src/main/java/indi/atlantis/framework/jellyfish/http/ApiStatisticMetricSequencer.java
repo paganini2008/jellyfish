@@ -5,7 +5,9 @@ import java.util.Map;
 
 import indi.atlantis.framework.vortex.metric.BigInt;
 import indi.atlantis.framework.vortex.metric.GenericUserMetricSequencer;
+import indi.atlantis.framework.vortex.metric.MetricEvictionHandler;
 import indi.atlantis.framework.vortex.metric.SpanUnit;
+import indi.atlantis.framework.vortex.metric.UserMetric;
 
 /**
  * 
@@ -17,12 +19,13 @@ import indi.atlantis.framework.vortex.metric.SpanUnit;
  */
 public class ApiStatisticMetricSequencer extends GenericUserMetricSequencer<Api, BigInt> {
 
-	public ApiStatisticMetricSequencer() {
-		this(1, SpanUnit.MINUTE, 60);
+	public ApiStatisticMetricSequencer(MetricEvictionHandler<Api, UserMetric<BigInt>> metricEvictionHandler) {
+		this(1, SpanUnit.MINUTE, 60, metricEvictionHandler);
 	}
 
-	public ApiStatisticMetricSequencer(int span, SpanUnit spanUnit, int bufferSize) {
-		super(span, spanUnit, bufferSize, null);
+	public ApiStatisticMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
+			MetricEvictionHandler<Api, UserMetric<BigInt>> metricEvictionHandler) {
+		super(span, spanUnit, bufferSize, metricEvictionHandler);
 	}
 
 	@Override

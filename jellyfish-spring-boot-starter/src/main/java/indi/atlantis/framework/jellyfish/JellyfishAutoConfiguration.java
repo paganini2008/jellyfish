@@ -15,8 +15,8 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
-import com.github.paganini2008.springworld.reditools.common.IdGenerator;
-import com.github.paganini2008.springworld.reditools.common.TimeBasedIdGenerator;
+import com.github.paganini2008.springdessert.reditools.common.IdGenerator;
+import com.github.paganini2008.springdessert.reditools.common.TimeBasedIdGenerator;
 
 import indi.atlantis.framework.jellyfish.log.LogEntrySearchService;
 import indi.atlantis.framework.jellyfish.log.LogEntryService;

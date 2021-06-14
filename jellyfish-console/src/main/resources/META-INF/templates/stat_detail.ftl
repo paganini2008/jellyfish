@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jellyfish Http Watcher</title>
+<title>Jellyfish Http Monitor</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -13,12 +13,12 @@
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/map.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/app2.js"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com.cn/highcharts/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com.cn/highcharts/modules/solid-gauge.js"></script>
+<script src="https://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+<script src="https://cdn.highcharts.com.cn/highcharts/highcharts-more.js"></script>
+<script src="https://cdn.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+<script src="https://cdn.highcharts.com.cn/highcharts/modules/solid-gauge.js"></script>
 <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
-<script src="https://code.highcharts.com/themes/dark-unica.js"></script>
+<script src="https://cdn.highcharts.com.cn/highcharts/themes/dark-unica.js"></script>
 </head>
 <script>
 
@@ -79,17 +79,14 @@
 					if(entries != null){
 						dataEntries = entries['rt'];
 						values = [dataEntries['highestValue']];
-						//console.log(values.join(','));
 						SummaryChartUtils.loadApiStatisticChart('rtSummary', 'Response Time', 60000, values, ' ms');
 						
 						dataEntries = entries['qps'];
 						values = [dataEntries['highestValue']];
-						//console.log(values.join(','));
 						SummaryChartUtils.loadApiStatisticChart('qpsSummary', 'QPS', 10000, values, ' Per second');
 						
 						dataEntries = entries['cc'];
 						values = [dataEntries['highestValue']];
-						//console.log(values.join(','));
 						SummaryChartUtils.loadApiStatisticChart('ccSummary', 'Concurrency', 200, values, '');
 					}
 				}

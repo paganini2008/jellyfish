@@ -84,8 +84,8 @@ By the way, each line of log data received by the jellyfish server side from the
 First, the statistics section of http API calls by jellyfish reference the SDK of the metric module of vortex. Therefore, it is based on the time series. The default statistical time window is 1 minute. The first 60 data are saved by rolling. The historical data cannot be stored in default settings, but it can be extended by implementing the <code>MetricEvictionHandler</code> and <code>MetricSequencerFactory</code> to achieve the function.
 
 Your application need to: 
-**1. Install**
 
+**1. Install**
 ``` xml
 <dependency>
 <artifactId>jellyfish-http-spring-boot-starter</artifactId>

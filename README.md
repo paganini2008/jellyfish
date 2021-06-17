@@ -1,106 +1,103 @@
-# A light java application monitoring system based on spring boot framework
+# Jellyfish Series
+## The high performance distributed microservice monitoring system
 
-### It is made up of two parts: 
+Jellyfish is a lightweight distributed real-time monitoring system written in Java, which can seamlessly connect with spring boot or spring cloud project
 
-- Application Log Console
-- Application API Watcher
+### The monitoring function provided by jellyfish is mainly divided into two parts:
 
-## What is the Log Console?
+1. Unified collection and query of application log
+2. Statistics and monitoring of three indicators of HTTP interface of <code>SpringBoot</code> application: request time, error rate, concurrency
 
-Log console can collect and show log data from applications that are configured with **jellyfish-slf4j**. 
+### How to deploy jellyfish?
+Jellyfish is divided into **server side** and **agent side**
 
-It means you need to use slf4j in your application. Only support logback and log4j now
+**The Server Side** generally is an independent <code>SpringBoot</code> application or cluster. The cluster mode is implemented by <code>tridenter</code>, another distributed cooperation framework for microservices. Besides, the server side of jellyfish needs to deploy <code>redis</code> and <code>elasticsearch</code>
 
-<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/jellyfish-log1.png" style="width: 800px;" />
+**The Agent Side** is usually another group of <code>SpringBoot</code> applications or cluster with jellyfish related jar packages, including jellyfish-http-spring-boot-starter or jellyfish-slf4j, which send real-time packets to **the server side**.
 
-If you want to scan past log, It also provide historical log query for you.
+### Features of Jellyfish
 
-<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/jellyfish-log2.png" style="width: 800px;" />
+1. The jellyfish server side is based on the streaming computing framework vortex, which has low latency and high concurrency. It supports two transport protocols, TCP and HTTP
 
+2. The network communication layer of the jellyfish server side relies on vortex framework, supports dynamic horizontal expansion and supports the rule of final data consistency
 
+3. Jellyfish's application interface statistics are quasi real time, and the pure memory calculation. The default statistical time window is 1 minute (support customized). However, the increase of the number of interfaces can affect the real-time performance. After testing, the maximum delay is kept in 1 minute, and the average delay is in seconds.
 
-# How to configure log console?
+### There are four sub projects in the jellyfish series:
 
-Step 1: 
+**1. jellyfish-console**
+The jellyfish web console can run independently, usually as a server. Of course, you can customize the server side. By using the annotation <code>@EnableJellyFishserver</code>
 
-Add jar dependency in your pom.xml
+**2. jellyfish-http-spring-boot-starter**
+Jar package, agent package for data statistics of application http APIs
 
+**3. jellyfish-slf4j**
+Jar package, jellyfish connecting slf4j (only <code>logback</code> is supported at present), and unified application of log collection agent package
+
+**4.  jellyfish-spring-boot-starter** 
+The core jar of jellyfish series, which realizes all the core functions
+
+### How to access slf4j and collect logs uniformly?
+Your Application **(the agent side)** need to: 
+**1. Install**
+
+``` xml
+<dependency>
+<artifactId>jellyfish-slf4j</artifactId>
+<groupId>indi.atlantis.framework</groupId>
+<version>1.0-RC1</version>
+</dependency>
 ```
-		<dependency>
-			<artifactId>jellyfish-slf4j</artifactId>
-			<groupId>indi.atlantis.framework</groupId>
-			<version>1.0-RC1</version>
-		</dependency>
-```
 
-Step 2:
+**2. Modify logback.xml**
 
-Open your **logback.xml** and  append following code:
-
-```
+``` xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-	<appender name="logTracker" class="indi.atlantis.framework.jellyfish.slf4j.logback.HttpTransportClientAppender">
-		<applicationName>tester5</applicationName> <!-- Your application name -->
-		<brokerUrl>http://192.168.159.1:10010</brokerUrl> <!-- Your Jellyfish server location -->
-	</appender>
-	
-	<!-- omit other configuration -->
-	
-	<root level="info">
-		<appender-ref ref="STDOUT" />
-		<appender-ref ref="INFO" />
-		<appender-ref ref="ERROR" />
-		<appender-ref ref="logTracker" />  <!-- Reference your new appender -->
-	</root>
+<!-- Define a new appender -->
+<appender name="logTracker" class="indi.atlantis.framework.jellyfish.slf4j.logback.HttpTransportClientAppender">
+<applicationName>tester5</applicationName><!-- modify the applicationName -->
+<brokerUrl>http://192.168.159.1:10010</brokerUrl> <!-- modify the location of Jellyfish server side -->
+</appender>
+<!-- omit other configuration -->
+
+<root level="info">
+<appender-ref ref="STDOUT" />
+<appender-ref ref="INFO" />
+<appender-ref ref="ERROR" />
+<appender-ref ref="logTracker" />  <!-- refer the new appender -->
+</root>
 </configuration>
 ```
 
-It's done. Very easy.
+**3. Start Jellyfish Console**
+Command：<code>java -jar jellyfish-console-1.0-RC1.jar</code>     
+Location:  http://localhost:6100/jellyfish/log/
 
-## And then what is the API Watcher?
+**4. Start your application**
+Then start your application, and the logs will flow into the jellyfish console constantly. 
+By the way, each line of log data received by the jellyfish server side from the agent side is saved in <code>ElasticSearch</code>
 
-Watch and make a statistic of Web Application API, including these metrics:
 
-- Response Time
-- Concurrency
-- QPS
-- Count (Success Count/Failed Count/Timeout Count)
-- Count of per http status code (1xx/2xx/3xx/4xx/5xx)
 
-Look this:
+### How to access spring boot projects and count HTTP APIs indicators?
+First, the statistics section of http API calls by jellyfish reference the SDK of the metric module of vortex. Therefore, it is based on the time series. The default statistical time window is 1 minute. The first 60 data are saved by rolling. The historical data cannot be stored in default settings, but it can be extended by implementing the <code>MetricEvictionHandler</code> and <code>MetricSequencerFactory</code> to achieve the function.
 
-<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-response-time-summary.png" style="width:800px;" />
+Your application need to: 
+**1. Install**
 
-<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-concurrency-summary.png" style="width:800px;" />
-
-<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-qps-summary.png" style="width:800px;" />
-
-<img src="https://raw.githubusercontent.com/paganini2008/material/main/image/api-combined-summary.png" style="width:800px;" />
-
-## How to configure the API Watcher?
-
-Step  1:
-
-Add jar dependency in your pom.xml
-
-```
-		<dependency>
-			<artifactId>jellyfish-http-spring-boot-starter</artifactId>
-			<groupId>indi.atlantis.framework</groupId>
-			<version>1.0-RC1</version>
-		</dependency>
+``` xml
+<dependency>
+<artifactId>jellyfish-http-spring-boot-starter</artifactId>
+<groupId>indi.atlantis.framework</groupId>
+<version>1.0-RC1</version>
+</dependency>
 ```
 
-Step 2:
+**<code>2. application.properties</code>**
 
-Add one line in your application.properties:
-
-```
-atlantis.framework.jellyfish.brokerUrl=http://192.168.159.1:10010
+``` properties
+atlantis.framework.jellyfish.brokerUrl=http://localhost:6100  #Jellyfish console server location
 ```
 
-That's all.
-
-
-
+**3.  Restart your application**

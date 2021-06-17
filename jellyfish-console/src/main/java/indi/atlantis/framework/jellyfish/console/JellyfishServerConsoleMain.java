@@ -27,14 +27,14 @@ import indi.atlantis.framework.jellyfish.EnableJellyfishServer;
 
 /**
  * 
- * JellyfishConsoleServer
+ * JellyfishServerConsoleMain
  *
  * @author Fred Feng
  * @version 1.0
  */
 @EnableJellyfishServer
 @SpringBootApplication
-public class JellyfishConsoleServer {
+public class JellyfishServerConsoleMain {
 
 	static {
 		System.setProperty("spring.devtools.restart.enabled", "false");
@@ -46,7 +46,7 @@ public class JellyfishConsoleServer {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(JellyfishConsoleServer.class, args);
+		SpringApplication.run(JellyfishServerConsoleMain.class, args);
 		System.out.println(Env.getPid());
 	}
 	

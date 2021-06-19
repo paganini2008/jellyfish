@@ -11,13 +11,13 @@ Jellyfish is a lightweight distributed real-time monitoring system written in Ja
 ### How to deploy jellyfish?
 Jellyfish is divided into **server side** and **agent side**
 
-**The Server Side** generally is an independent <code>SpringBoot</code> application or cluster. The cluster mode is implemented by <code>tridenter</code>, another distributed cooperation framework for microservices. Besides, the server side of jellyfish needs to deploy <code>redis</code> and <code>elasticsearch</code>
+**The Server Side** generally is an independent <code>SpringBoot</code> application or cluster. The cluster mode is implemented by [tridenter](https://github.com/paganini2008/tridenter-spring-boot-starter.git), another distributed cooperation framework for microservices. Besides, the server side of jellyfish needs to deploy <code>redis</code> and <code>elasticsearch</code>
 
 **The Agent Side** is usually another group of <code>SpringBoot</code> applications or cluster with jellyfish related jar packages, including jellyfish-http-spring-boot-starter or jellyfish-slf4j, which send real-time packets to **the server side**.
 
 ### Features of Jellyfish
 
-1. The jellyfish server side is based on the streaming computing framework vortex, which has low latency and high concurrency. It supports two transport protocols, TCP and HTTP
+1. The jellyfish server side is based on the streaming computing framework [vortex](https://github.com/paganini2008/vortex.git), which has low latency and high concurrency. It supports two transport protocols, TCP and HTTP
 
 2. The network communication layer of the jellyfish server side relies on vortex framework, supports dynamic horizontal expansion and supports the rule of final data consistency
 
@@ -39,6 +39,7 @@ The core jar of jellyfish series, which realizes all the core functions
 
 ### How to access slf4j and collect logs uniformly?
 Your Application **(the agent side)** need to: 
+
 **1. Install**
 
 ``` xml

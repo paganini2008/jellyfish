@@ -45,7 +45,7 @@ Your Application **(the agent side)** need to:
 ``` xml
 <dependency>
 <artifactId>jellyfish-slf4j</artifactId>
-<groupId>indi.atlantis.framework</groupId>
+<groupId>com.github.paganini2008.atlantis</groupId>
 <version>1.0-RC1</version>
 </dependency>
 ```
@@ -90,7 +90,7 @@ Your application need to:
 ``` xml
 <dependency>
 <artifactId>jellyfish-http-spring-boot-starter</artifactId>
-<groupId>indi.atlantis.framework</groupId>
+<groupId>com.github.paganini2008.atlantis</groupId>
 <version>1.0-RC1</version>
 </dependency>
 ```

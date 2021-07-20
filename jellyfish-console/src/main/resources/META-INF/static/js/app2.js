@@ -23,29 +23,32 @@ var SummaryChartUtils = {
 			    title: null,
 			    pane: {
 			        center: ['50%', '85%'],
-			        size: '140%',
+			        size: '120%',
 			        startAngle: -90,
 			        endAngle: 90,
 			        background: {
-			            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+			            backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || '#EEE',
 			            innerRadius: '60%',
 			            outerRadius: '100%',
 			            shape: 'arc'
 			        }
+			    },
+			    exporting: {
+			        enabled: false
 			    },
 			    tooltip: {
 			        enabled: true
 			    },
 			    yAxis: {
 			        stops: [
-			            [0.2, '#55BF3B'], // green
+			            [0.1, '#55BF3B'], // green
 			            [0.5, '#DDDF0D'], // yellow
 			            [0.9, '#DF5353'] // red
 			        ],
 			        lineWidth: 0,
-			        minorTickInterval: null,
-			        tickPixelInterval: 100,
 			        tickWidth: 0,
+			        minorTickInterval: null,
+
 			        title: {
 			            y: -70,
 			            text: title
@@ -72,9 +75,8 @@ var SummaryChartUtils = {
 			        name: title,
 			        data: values,
 			        dataLabels: {
-			            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
-			            ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-			            '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
+			            format: '<div style="text-align:center"><span style="font-size:25px;">{y}</span><br/>' +
+			            '<span style="font-size:12px;opacity:0.4;">' + unit + '</span></div>'
 			        },
 			        tooltip: {
 			            valueSuffix: unit
@@ -90,59 +92,86 @@ var SummaryChartUtils = {
 		if(map.containsKey(divId)){
 			var chart = map.get(divId);
 			chart.update({
-			    series: [{
-			        type: 'pie',
-			        name: title,
-			        innerSize: '50%',
-			        data: [
-			            ['1xx', countOf1xx],
-			            ['2xx', countOf2xx],
-			            ['3xx', countOf3xx],
-			            ['4xx', countOf4xx],
-			            ['5xx', countOf5xx]
-			        ]
-			    }]
+				series: [{
+					name: 'Calls/Percentage',
+					colorByPoint: true,
+					data: [
+						{
+							name: '1xx',
+					    	y: countOf1xx
+						},
+						{
+							name: '2xx',
+					    	y: countOf2xx
+						},
+						{
+							name: '3xx',
+					    	y: countOf3xx
+						},
+						{
+							name: '4xx',
+					    	y: countOf4xx
+						},
+						{
+							name: '5xx',
+					    	y: countOf5xx
+						}
+					]
+				}]
 			});
 		}else{
 			var chart = Highcharts.chart(divId, {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie'
+				},
 				title: {
-			        text: title,
-			        align: 'center',
-			        verticalAlign: 'middle',
-			        y: 50
+						text: title
+				},
+				tooltip: {
+					pointFormat: '{series.name}: <b>&nbsp;{point.y}/{point.percentage:.1f} %</b>'
+				},
+			    exporting: {
+			        enabled: false
 			    },
-			    tooltip: {
-			        headerFormat: '{series.name}<br>',
-			        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
-			    },
-			    plotOptions: {
-			        pie: {
-			            dataLabels: {
-			                enabled: true,
-			                distance: -50,
-			                style: {
-			                    fontWeight: 'bold',
-			                    color: 'white',
-			                    textShadow: '0px 1px 2px black'
-			                }
-			            },
-			            startAngle: -90,
-			            endAngle: 90,
-			            center: ['50%', '75%']
-			        }
-			    },
-			    series: [{
-			        type: 'pie',
-			        name: title,
-			        innerSize: '50%',
-			        data: [
-			            ['1xx', countOf1xx],
-			            ['2xx', countOf2xx],
-			            ['3xx', countOf3xx],
-			            ['4xx', countOf4xx],
-			            ['5xx', countOf5xx]
-			        ]
-			    }]
+				plotOptions: {
+					pie: {
+							allowPointSelect: true,
+							cursor: 'pointer',
+							dataLabels: {
+									enabled: true,
+									format: '<b>{point.name}</b>:&nbsp;{point.y}/{point.percentage:.1f} %',
+							}
+					}
+				},
+				series: [{
+						name: 'Calls/Percentage',
+						colorByPoint: true,
+						data: [
+							{
+								name: '1xx',
+						    	y: countOf1xx
+							},
+							{
+								name: '2xx',
+						    	y: countOf2xx
+							},
+							{
+								name: '3xx',
+						    	y: countOf3xx
+							},
+							{
+								name: '4xx',
+						    	y: countOf4xx
+							},
+							{
+								name: '5xx',
+						    	y: countOf5xx
+							}
+						]
+				}]
 			});
 			map.put(divId, chart);
 		}
@@ -153,54 +182,74 @@ var SummaryChartUtils = {
 			var chart = map.get(divId);
 			chart.update({
 				series: [{
-			        type: 'pie',
-			        name: title,
-			        innerSize: '50%',
-			        data: [
-			            ['Success Count', successCount],
-			            ['Failed Count', failedCount],
-			            ['Timeout Count', timeoutCount]
-			        ]
-			    }]
+					name: 'Count/Percentage',
+					colorByPoint: true,
+					data: [
+						{
+							name: 'Success Calls',
+					    	y: successCount
+						},
+						{
+							name: 'Failed Calls',
+					    	y: failedCount
+						},
+						{
+							name: 'Timeout Calls',
+					    	y: timeoutCount
+						}
+					]
+				}]
 			});
 		}else{
 			var chart = Highcharts.chart(divId, {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie'
+				},
 				title: {
-			        text: title,
-			        align: 'center',
-			        verticalAlign: 'middle',
-			        y: 50
+			        text: title
 			    },
-			    tooltip: {
-			        headerFormat: '{series.name}<br>',
-			        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+				tooltip: {
+					pointFormat: '{series.name}: <b>&nbsp;{point.y}/{point.percentage:.1f} %</b>'
+				},
+			    exporting: {
+			        enabled: false
 			    },
-			    plotOptions: {
-			        pie: {
-			            dataLabels: {
-			                enabled: true,
-			                distance: -50,
-			                style: {
-			                    fontWeight: 'bold',
-			                    color: 'white',
-			                    textShadow: '0px 1px 2px black'
-			                }
-			            },
-			            startAngle: -90,
-			            endAngle: 90,
-			            center: ['50%', '75%']
+				accessibility: {
+			        point: {
+			            valueSuffix: '%'
 			        }
 			    },
-			    series: [{
-			        type: 'pie',
-			        name: title,
-			        innerSize: '50%',
-			        data: [
-			            ['Success Count', successCount],
-			            ['Failed Count', failedCount],
-			            ['Timeout Count', timeoutCount]
-			        ]
-			    }]
+			    plotOptions: {
+					pie: {
+							allowPointSelect: true,
+							cursor: 'pointer',
+							dataLabels: {
+									enabled: true,
+									format: '<b>{point.name}</b>:&nbsp;{point.y}/{point.percentage:.1f} %',
+							}
+					}
+			    },
+				series: [{
+					name: 'Calls/Percentage',
+					colorByPoint: true,
+					data: [
+						{
+							name: 'Succes Count',
+					    	y: successCount
+						},
+						{
+							name: 'Failed Count',
+					    	y: failedCount
+						},
+						{
+							name: 'Timeout Count',
+					    	y: timeoutCount
+						}
+					]
+				}]
 			});
 			map.put(divId, chart);
 		}
@@ -225,58 +274,43 @@ var SequenceChartUtils = {
 			chart.update({
 				xAxis: {
 			        categories: categories,
-			        tickmarkPlacement: 'on',
-			        title: {
-			            enabled: false
-			        }
+			        allowDecimals: false
 			    },
 				series: data
 			});
 		}else{
 			var configData = {
-		    chart: {
-		        type: 'area'
-		    },
-		    title: {
-		        text: title
-		    },
-		    xAxis: {
-		        categories: categories,
-		        tickmarkPlacement: 'on',
-		        title: {
-		            enabled: false
-		        }
-		    },
-		    yAxis: {
-		        title: {
-		            text: 'Percent'
-		        }
-		    },
-		    tooltip: {
-		        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
-		        shared: true
-		    },
-		    plotOptions: {
-		        area: {
-		            stacking: 'percent',
-		            lineColor: '#ffffff',
-		            lineWidth: 1,
-		            marker: {
-		                lineWidth: 1,
-		                lineColor: '#ffffff'
-		            }
-		        }
-		    },
-		    series: [{
-			        name: 'Success Count',
-			        data: successCount
-			    }, {
-			        name: 'Failed Count',
-			        data: failedCount
-			    }, {
-			        name: 'Timeout Count',
-			        data: timeoutCount
-			    }]
+			    chart: {
+			        type: 'area'
+			    },
+			    title: {
+			        text: title
+			    },
+			    xAxis: {
+			        categories: categories,
+			        allowDecimals: false
+			    },
+			    yAxis: {
+			        title: {
+			            text: 'Http Request Calls'
+			        }
+			    },
+			    tooltip: {
+			    	pointFormat: '{series.name}: <b>{point.y:,.0f}</b>'
+			    },
+			    exporting: {
+			        enabled: false
+			    },
+			    series: [{
+				        name: 'Success Count',
+				        data: successCount
+				    }, {
+				        name: 'Failed Count',
+				        data: failedCount
+				    }, {
+				        name: 'Timeout Count',
+				        data: timeoutCount
+				    }]
 			};
 			var chart = Highcharts.chart(divId, configData);
 			map.put(divId, chart);
@@ -305,10 +339,7 @@ var SequenceChartUtils = {
 			chart.update({
 				xAxis: {
 			        categories: categories,
-			        tickmarkPlacement: 'on',
-			        title: {
-			            enabled: false
-			        }
+			        allowDecimals: false
 			    },
 				series: data
 			});
@@ -322,35 +353,18 @@ var SequenceChartUtils = {
 				    },
 				    xAxis: {
 				        categories: categories,
-				        tickmarkPlacement: 'on',
-				        title: {
-				            enabled: false
-				        }
+				        allowDecimals: false
 					},
 				    yAxis: {
 				        title: {
-				            text: 'Calls'
-				        },
-				        labels: {
-				            formatter: function () {
-				                return this.value / 1000;
-				            }
+				            text: 'Http Request Calls'
 				        }
 				    },
 				    tooltip: {
-				        split: true,
-				        valueSuffix: ' calls'
+				    	pointFormat: '{series.name}: <b>{point.y:,.0f}</b>'
 				    },
-				    plotOptions: {
-				        area: {
-				            stacking: 'normal',
-				            lineColor: '#666666',
-				            lineWidth: 1,
-				            marker: {
-				                lineWidth: 1,
-				                lineColor: '#666666'
-				            }
-				        }
+				    exporting: {
+				        enabled: false
 				    },
 				    series: [{
 				        name: '1xx',
@@ -555,44 +569,33 @@ var SequenceChartUtils = {
 			    }];
 			chart.update({
 				xAxis: {
-			        categories: categories
+			        categories: categories,
+			        allowDecimals: false
 			    },
 				series: data
 			});
 		}else{
 			var chart = Highcharts.chart(divId, {
 			    chart: {
-			        type: 'areaspline'
+			        type: 'area'
 			    },
 			    title: {
 			        text: title
 			    },
-			    legend: {
-			        layout: 'vertical',
-			        align: 'right',
-			        verticalAlign: 'top',
-			        x: -50,
-			        y: 0,
-			        floating: true,
-			        borderWidth: 1,
-			        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-			    },
 			    xAxis: {
-			        categories: categories
+			        categories: categories,
+			        allowDecimals: false
 			    },
 			    yAxis: {
 			        title: {
 			            text: yTitle
 			        }
 			    },
-			    tooltip: {
-			        shared: true,
-			        valueSuffix: tip
+				tooltip: {
+			        pointFormat: '{series.name}: <b>{point.y:,.0f}</b>'
 			    },
-			    plotOptions: {
-			        areaspline: {
-			            fillOpacity: 0.5
-			        }
+			    exporting: {
+			        enabled: false
 			    },
 			    series: [{
 			        name: 'Highest Value',

@@ -22,10 +22,10 @@
 		});
 	
 		$('#groupBox ul li').click(function(){
-			$(this).siblings().css({'font-weight':'normal','background-color':''});
+			$(this).siblings().css({'background-color':''});
 			var index = $('#groupBox ul li').index($(this));
 			$('#groupBox ul li').slice(0, index + 1).each(function(){
-				$(this).css({'font-weight':'bold','background-color':'red'});
+				$(this).css({'background-color':'red'});
 			});
 			renderTable(index);
 		});

@@ -1,3 +1,3 @@
 <div id="foot">
-	Atlantis Framework 1.0
+	Copyright @2018-2021 Fred Feng. All Rights Reserved.
 </div>

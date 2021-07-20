@@ -12,13 +12,13 @@
 <script type="text/javascript" src="${contextPath}/static/js/lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/map.js"></script>
-<script type="text/javascript" src="${contextPath}/static/js/app2.js"></script>
-<script src="https://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
-<script src="https://cdn.highcharts.com.cn/highcharts/highcharts-more.js"></script>
-<script src="https://cdn.highcharts.com.cn/highcharts/modules/exporting.js"></script>
-<script src="https://cdn.highcharts.com.cn/highcharts/modules/solid-gauge.js"></script>
-<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
-<script src="https://cdn.highcharts.com.cn/highcharts/themes/dark-unica.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="${contextPath}/static/js/app2.js"></script> 
 </head>
 <script>
 
@@ -34,13 +34,13 @@
 			loadApiLatestChart();
 		},5000);
 		
-		loadApiStatisticChart('rt','rt','API Response Time Summary','Response Time (ms)',' ms');
-		loadApiStatisticChart('cc', 'cc','API Concurrency Summary', 'Concurrency', '');
-		loadApiStatisticChart('qps', 'qps','API QPS Summary', 'QPS', '');
+		loadApiStatisticChart('rt','rt','Response Time Statistics','Response Time (ms)',' ms');
+		loadApiStatisticChart('cc', 'cc','Concurrency Statistics', 'Concurrency', '');
+		loadApiStatisticChart('qps', 'qps','QPS Statistics', 'QPS', '');
 		setInterval(function(){
-			loadApiStatisticChart('rt','rt','API Response Time Summary','Response Time (ms)',' ms');
-			loadApiStatisticChart('cc', 'cc','API Concurrency Summary', 'Concurrency', '');
-			loadApiStatisticChart('qps', 'qps','API QPS Summary', 'QPS', '');
+			loadApiStatisticChart('rt','rt','Response Time Statistics','Response Time (ms)',' ms');
+			loadApiStatisticChart('cc', 'cc','Concurrency Statistics', 'Concurrency', '');
+			loadApiStatisticChart('qps', 'qps','QPS Statistics', 'QPS', '');
 		},5000);
 		
 		loadApiCountChart();
@@ -78,15 +78,15 @@
 					var entries = data.data;
 					if(entries != null){
 						dataEntries = entries['rt'];
-						values = [dataEntries['highestValue']];
+						values = [dataEntries['middleValue']];
 						SummaryChartUtils.loadApiStatisticChart('rtSummary', 'Response Time', 60000, values, ' ms');
 						
 						dataEntries = entries['qps'];
-						values = [dataEntries['highestValue']];
-						SummaryChartUtils.loadApiStatisticChart('qpsSummary', 'QPS', 10000, values, ' Per second');
+						values = [dataEntries['middleValue']];
+						SummaryChartUtils.loadApiStatisticChart('qpsSummary', 'QPS', 10000, values, ' Per Second');
 						
 						dataEntries = entries['cc'];
-						values = [dataEntries['highestValue']];
+						values = [dataEntries['middleValue']];
 						SummaryChartUtils.loadApiStatisticChart('ccSummary', 'Concurrency', 200, values, '');
 					}
 				}
@@ -115,7 +115,7 @@
 						var successCount=dataEntries['successCount'];
 						var failedCount=dataEntries['failedCount'];
 						var timeoutCount=dataEntries['timeoutCount'];
-						SummaryChartUtils.loadApiCountChart('apiCountSummary','API Count Summary', successCount, failedCount, timeoutCount);
+						SummaryChartUtils.loadApiCountChart('apiCountSummary','Execution Result Statistics', successCount, failedCount, timeoutCount);
 						
 						dataEntries = entries['httpStatus'];
 						var countOf1xx=dataEntries['countOf1xx'];
@@ -123,7 +123,7 @@
 						var countOf3xx=dataEntries['countOf3xx'];
 						var countOf4xx=dataEntries['countOf4xx'];
 						var countOf5xx=dataEntries['countOf5xx'];
-						SummaryChartUtils.loadHttpStatusCountChart('httpStatusCountSummary','API Http Status Summary', countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
+						SummaryChartUtils.loadHttpStatusCountChart('httpStatusCountSummary','Execution Status Statistics', countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
 					
 					}
 				}
@@ -157,7 +157,7 @@
 							countOf4xx.push(entries[category]['httpStatus']['countOf4xx']);
 							countOf5xx.push(entries[category]['httpStatus']['countOf5xx']);
 						}
-						SequenceChartUtils.loadHttpStatusCountChart('httpStatus','API Http Status Count Summary', categories, countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
+						SequenceChartUtils.loadHttpStatusCountChart('httpStatus','Execution Status Statistics', categories, countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx);
 					}
 				}
 		    });
@@ -188,7 +188,7 @@
 							failedCount.push(entries[category]['count']['failedCount']);
 							timeoutCount.push(entries[category]['count']['timeoutCount']);
 						}
-						SequenceChartUtils.loadApiCountChart('count','API Count Summary',categories, successCount, failedCount, timeoutCount);
+						SequenceChartUtils.loadApiCountChart('count','Execution Result Statistics',categories, successCount, failedCount, timeoutCount);
 					}
 				}
 		    });
@@ -328,9 +328,10 @@
 	<#include "top.ftl">
 	<div id="container">
 		<div id="chartBox">
-			<div style="height: 30px; "></div>
 			<div id="infoBox">
-				<div class="summary" id="catalog">
+				<fieldset>
+				<legend>API Health Information</legend>
+				<div class="summary" id="api">
 					<p>
 						<label>Cluster Name: </label>
 						<span>${(api.clusterName)!}</span>
@@ -358,11 +359,12 @@
 				</div>
 				<div class="summary">
 				</div>
-
+				</fieldset>
 			</div>
+
 			<div class="summaryBox">
-				<div id="rtSummary" style="width: 35%; height:320px; float: right;"></div>
-				<div id="qpsSummary" style="width: 35%; height:320px; float: right;"></div>
+				<div id="rtSummary" style="width: 35%; height:320px; float: left;margin-right: 5px;"></div>
+				<div id="qpsSummary" style="width: calc(35% - 10px); height:320px; float: left;margin-right: 5px;"></div>
 				<div id="ccSummary" style="width: 30%; height:320px; float: right;"></div>
 			</div>
 			<div class="summaryBox">

@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Application Log Collector</title>
+<title>Application Logging</title>
 <link rel="shortcut icon" href="#"/>
 <script type="text/javascript">
 	var $contextPath = '${contextPath}';
@@ -39,6 +39,8 @@
 	<div id="container">
 		<div id="searchBox">
 			<form id="searchFrm" action="${contextPath}/atlantis/jellyfish/log/entry/search" method="post">
+				<fieldset>
+				<legend>Input Query Condition</legend>
 				<div class="searchCondition">
 					<span>
 						<label>Cluster Name: </label>
@@ -77,11 +79,19 @@
 						<input type="text" value="" name="keyword" id="keyword"/>
 					</span>
 					<span style="width: 25%">
+						<label>&nbsp;</label>
 						<b>Asc</b><input type="radio" value="true" name="asc" checked="true"/>
 						<b>Desc</b><input type="radio" value="false" name="asc"/>
-						<input type="button" id="searchBtn" value="Search It"/>
 					</span>
 				</div>
+				<div class="searchCondition">
+					<span style="width: 75%">
+					</span>
+					<span style="width: 25%">
+						<input type="button" id="searchBtn" value="Search"/>
+					</span>
+				</div>
+				</fieldset>
 			</form>
 		</div>
 		<div id="logBox">

@@ -42,6 +42,8 @@
 	<div id="container">
 		<div id="searchBox">
 			<form id="searchFrm" action="${contextPath}/atlantis/jellyfish/log/history/search" method="post">
+				<fieldset>
+				<legend>Input Query Condition</legend>
 				<div class="searchCondition">
 					<span>
 						<label>Cluster Name: </label>
@@ -80,9 +82,9 @@
 						<input type="text" value="" name="keyword" id="keyword"/>
 					</span>
 					<span style="width: 25%">
+						<label>&nbsp;</label>
 						<b>Asc</b><input type="radio" value="true" name="asc" checked="true"/>
 						<b>Desc</b><input type="radio" value="false" name="asc"/>
-						<input type="button" id="searchHistoryBtn" value="Search It"/>
 					</span>
 				</div>
 				<div class="searchCondition">
@@ -95,10 +97,12 @@
 						<input type="text" value="${endDate!}" name="endDate" id="endDate" />
 					</span>
 					<span style="width: 50%">
+						<input type="button" id="searchHistoryBtn" value="Search"/>
 					</span>
 				</div>
 				<input type="hidden" value="1" name="page" id="page" />
 				<input type="hidden" value="" name="totalPages" id="totalPages" />
+				</fieldset>
 			</form>
 		</div>
 		<div id="logBox">

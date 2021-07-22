@@ -15,20 +15,13 @@
 */
 package indi.atlantis.framework.jellyfish;
 
-import java.time.Duration;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 import com.github.paganini2008.springdessert.reditools.common.IdGenerator;
 import com.github.paganini2008.springdessert.reditools.common.TimeBasedIdGenerator;
@@ -42,8 +35,6 @@ import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.HashPartitioner;
 import indi.atlantis.framework.vortex.common.NamedSelectionPartitioner;
 import indi.atlantis.framework.vortex.common.Partitioner;
-import lombok.Setter;
-import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * 
@@ -74,7 +65,7 @@ public class JellyfishAutoConfiguration {
 		final String subNamePrefix = clusterName + ":" + instanceId.get();
 		bufferZone.setCollectionNamePrefix(BufferZone.DEFAULT_COLLECTION_NAME_PREFIX, subNamePrefix);
 	}
-	
+
 	@Bean
 	public Handler slf4jHandler() {
 		return new Slf4jHandler();
@@ -95,45 +86,6 @@ public class JellyfishAutoConfiguration {
 	public IdGenerator logIdGenerator(RedisConnectionFactory redisConnectionFactory) {
 		final String keyPrefix = String.format(idKeyPattern, clusterName);
 		return new TimeBasedIdGenerator(keyPrefix, redisConnectionFactory);
-	}
-
-	@Setter
-	@Configuration
-	@ConfigurationProperties(prefix = "spring.redis")
-	public class RedisConfig {
-
-		private String host = "localhost";
-		private String password;
-		private int port = 6379;
-		private int dbIndex = 0;
-
-		@ConditionalOnMissingBean
-		@Bean
-		public RedisConnectionFactory redisConnectionFactory() {
-			RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-			redisStandaloneConfiguration.setHostName(host);
-			redisStandaloneConfiguration.setPort(port);
-			redisStandaloneConfiguration.setDatabase(dbIndex);
-			redisStandaloneConfiguration.setPassword(RedisPassword.of(password));
-			JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
-			jedisClientConfiguration.connectTimeout(Duration.ofMillis(60000)).readTimeout(Duration.ofMillis(60000)).usePooling()
-					.poolConfig(jedisPoolConfig());
-			JedisConnectionFactory factory = new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build());
-			return factory;
-		}
-
-		@ConditionalOnMissingBean
-		@Bean
-		public JedisPoolConfig jedisPoolConfig() {
-			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-			jedisPoolConfig.setMinIdle(1);
-			jedisPoolConfig.setMaxIdle(10);
-			jedisPoolConfig.setMaxTotal(200);
-			jedisPoolConfig.setMaxWaitMillis(-1);
-			jedisPoolConfig.setTestWhileIdle(true);
-			return jedisPoolConfig;
-		}
-
 	}
 
 }

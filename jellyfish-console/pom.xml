@@ -47,6 +47,17 @@
 			<groupId>com.github.paganini2008.atlantis</groupId>
 			<artifactId>jellyfish-spring-boot-starter</artifactId>
 			<version>1.0-RC1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.lettuce</groupId>
+					<artifactId>lettuce-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 		</dependency>
 
 	</dependencies>

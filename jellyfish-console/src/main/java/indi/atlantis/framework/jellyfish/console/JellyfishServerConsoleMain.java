@@ -39,6 +39,7 @@ import indi.atlantis.framework.jellyfish.EnableJellyfishServer;
 public class JellyfishServerConsoleMain {
 
 	static {
+		System.setProperty("es.set.netty.runtime.available.processors", "false");
 		System.setProperty("spring.devtools.restart.enabled", "false");
 		File logDir = FileUtils.getFile(FileUtils.getUserDirectory(), "logs", "indi", "atlantis", "framework", "jellyfish", "console");
 		if (!logDir.exists()) {
@@ -51,5 +52,5 @@ public class JellyfishServerConsoleMain {
 		SpringApplication.run(JellyfishServerConsoleMain.class, args);
 		System.out.println(Env.getPid());
 	}
-	
+
 }

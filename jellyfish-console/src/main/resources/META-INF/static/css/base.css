@@ -143,6 +143,7 @@ body {
 	text-decoration: underline;
 	border-radius: 6px;
 	margin-right: 5px;
+	font-weight: 800;
 }
 
 #tableBox {
@@ -246,7 +247,7 @@ body {
 
 #chartBox {
 	width: 100%;
-	height: calc(100% - 100px);
+	height: calc(100% - 10px);
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
@@ -454,7 +455,7 @@ img {
 .tblCom thead tr td {
 	height: 38px;
 	line-height: 38px;
-	font-weight: bold;
+	font-weight: 800;
 	color: #fff;
 	border-left: 1px solid #BEBEBE;
 	border-top: 1px solid #BEBEBE;

@@ -28,7 +28,7 @@ import indi.atlantis.framework.jellyfish.http.Api;
  * HttpPage
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 @RequestMapping("/jellyfish/http")
 @Controller

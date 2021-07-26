@@ -41,7 +41,7 @@ import indi.atlantis.framework.vortex.common.Partitioner;
  * JellyfishAutoConfiguration
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 @EnableElasticsearchRepositories("indi.atlantis.framework.jellyfish.log")
 @Configuration(proxyBeanMethods = false)

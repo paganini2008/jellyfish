@@ -60,7 +60,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *
  * @author Fred Feng
  * 
- * @since 1.0
+ * @since 2.0.1
  */
 public class HighlightResultMapper extends AbstractResultMapper {
 

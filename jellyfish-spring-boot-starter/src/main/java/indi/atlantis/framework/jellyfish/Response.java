@@ -26,7 +26,7 @@ import com.github.paganini2008.devtools.ExceptionUtils;
  * Response
  *
  * @author Fred Feng
- * @since 1.0
+ * @since 2.0.1
  */
 public class Response extends HashMap<String, Object> {
 

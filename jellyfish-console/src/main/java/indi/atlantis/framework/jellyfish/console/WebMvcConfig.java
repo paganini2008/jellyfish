@@ -44,7 +44,7 @@ import indi.atlantis.framework.jellyfish.log.LogEntryController;
  * 
  * @author Fred Feng
  *
- * @since 1.0
+ * @since 2.0.1
  */
 @Import({ LogEntryController.class, ApiController.class })
 @Configuration
@@ -89,7 +89,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	 * 
 	 * @author Fred Feng
 	 *
-	 * @since 1.0
+	 * @since 2.0.1
 	 */
 	public static class BasicHandlerInterceptor implements HandlerInterceptor {
 

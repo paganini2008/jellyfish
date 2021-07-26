@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * LogEntryRepository
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 @Component
 public interface LogEntryRepository extends ElasticsearchRepository<LogEntry, Long>{

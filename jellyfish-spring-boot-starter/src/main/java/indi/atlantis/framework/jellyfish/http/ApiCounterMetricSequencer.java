@@ -29,7 +29,7 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
  * 
  * @author Fred Feng
  *
- * @version 1.0
+ * @since 2.0.1
  */
 public class ApiCounterMetricSequencer extends GenericUserMetricSequencer<Api, ApiCounter> {
 

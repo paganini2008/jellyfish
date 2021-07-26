@@ -24,7 +24,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
  * MatchAllSearchResultSetSlice
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public class MatchAllSearchResultSetSlice extends IndexSearchResultSetSlice {
 

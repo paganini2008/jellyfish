@@ -28,7 +28,7 @@ import indi.atlantis.framework.vortex.metric.UserMetric;
  * HttpStatusCounterMetric
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public class HttpStatusCounterMetric extends AbstractUserMetric<HttpStatusCounter> {
 

@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.github.paganini2008.devtools.Env;
 import com.github.paganini2008.devtools.io.FileUtils;
-import com.github.paganini2008.springdessert.reditools.common.EnableRedisClient;
 
 import indi.atlantis.framework.jellyfish.EnableJellyfishServer;
 
@@ -33,10 +32,9 @@ import indi.atlantis.framework.jellyfish.EnableJellyfishServer;
  * @author Fred Feng
  * @since 2.0.1
  */
-@EnableRedisClient
 @EnableJellyfishServer
 @SpringBootApplication
-public class JellyfishServerConsoleMain {
+public class JellyfishServerConsoleMain { 
 
 	static {
 		System.setProperty("es.set.netty.runtime.available.processors", "false");

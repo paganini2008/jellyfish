@@ -58,7 +58,7 @@ function doSearch(){
 				dataType:'json',
 				data: JSON.stringify(param),
 				success: function(data){
-					var log = 'No search result';
+					var log = 'No Search Result';
 				    if(data.data.results!=null && data.data.results.length > 0){
 				    	log = '';
 				    	$.each(data.data.results, function(i, item){
@@ -66,16 +66,19 @@ function doSearch(){
 				    		if(item.marker && item.marker.length > 0){
 				    			str += ', marker=' + item.marker;
 				    		}
-							var logEntry = '<div class="logEntry"><pre>';
-							logEntry += '<font color="#FF0000"><b>[logEntry[' + str + ']]: </b></font>';
-							logEntry += item.datetime + ' <b class="' + item.level.toLowerCase() + '">[' + item.level.toUpperCase() + ' ]</b> ' + item.loggerName + ' - ' + item.message;
+							var logEntry = '<div class="logEntry">';
+							logEntry += '<div class="logLine">';
+							logEntry += '<span class="logHeader">[' + str + ']:&nbsp;</span>';
+							logEntry += '<span class="logMessage">' + item.datetime + ' <b class="' + item.level.toLowerCase() + '">[' + item.level.toUpperCase() + ' ]</b> ' + item.loggerName + ' - ' + item.message + '</span>';
+							logEntry += '</div>';
 							if(item.stackTraces.length > 0){
-								logEntry += '<br />';
+								logEntry += '<div class="logStackTraces"><pre>';
 								$.each(item.stackTraces, function(j, stackTrace){
 									logEntry += stackTrace + '<br/>';
 								});
+								logEntry += '</pre></div>';
 							}
-							logEntry += '</pre></div>';
+							logEntry += '</div>';
 							log += logEntry;
 						});
 				    }
@@ -116,16 +119,19 @@ function doSearchAndAppend(){
 				    		if(item.marker && item.marker.length > 0){
 				    			str += ', marker=' + item.marker;
 				    		}
-							var logEntry = '<div class="logEntry"><pre>';
-							logEntry += '<font color="#FF0000"><b>[logEntry[' + str + ']]: </b></font>';
-							logEntry += item.datetime + ' <b class="' + item.level.toLowerCase() + '">[' + item.level.toUpperCase() + ' ]</b> ' + item.loggerName + ' - ' + item.message;
+				    		var logEntry = '<div class="logEntry">';
+							logEntry += '<div class="logLine">';
+							logEntry += '<span class="logHeader">[' + str + ']:  </span>';
+							logEntry += '<span class="logMessage">' + item.datetime + ' <b class="' + item.level.toLowerCase() + '">[' + item.level.toUpperCase() + ' ]</b> ' + item.loggerName + ' - ' + item.message + '</span>';
+							logEntry += '</div>';
 							if(item.stackTraces.length > 0){
-								logEntry += '<br />';
+								logEntry += '<div class="logStackTraces"><pre>';
 								$.each(item.stackTraces, function(j, stackTrace){
 									logEntry += stackTrace + '<br/>';
 								});
+								logEntry += '</pre></div>';
 							}
-							logEntry += '</pre></div>';
+							logEntry += '</div>';
 							log += logEntry;
 						});
 				    }

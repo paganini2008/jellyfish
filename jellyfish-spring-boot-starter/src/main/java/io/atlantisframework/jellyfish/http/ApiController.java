@@ -84,11 +84,11 @@ public class ApiController {
 
 	private Map<String, Map<String, Object>> fetchLatestMerticData(Api api) {
 		GenericUserMetricSequencer<Api, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
-		Map<String, Map<String, Object>> latest = apiStatisticSequencer.sequenceLatest(api, new String[] { RT, CC, QPS });
+		Map<String, Map<String, Object>> latest = apiStatisticSequencer.sequenceLatest(api, new String[] { RT, CC, QPS }, null);
 		GenericUserMetricSequencer<Api, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
-		latest.putAll(apiCounterSequencer.sequenceLatest(api, new String[] { COUNT }));
+		latest.putAll(apiCounterSequencer.sequenceLatest(api, new String[] { COUNT }, null));
 		GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterSequencer = environment.getHttpStatusCounterMetricSequencer();
-		latest.putAll(httpStatusCounterSequencer.sequenceLatest(api, new String[] { HTTP_STATUS }));
+		latest.putAll(httpStatusCounterSequencer.sequenceLatest(api, new String[] { HTTP_STATUS }, null));
 		return latest;
 	}
 

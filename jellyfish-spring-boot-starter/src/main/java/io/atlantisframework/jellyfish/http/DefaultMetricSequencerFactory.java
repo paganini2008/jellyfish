@@ -15,9 +15,9 @@
 */
 package io.atlantisframework.jellyfish.http;
 
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.GenericUserMetricSequencer;
 import io.atlantisframework.vortex.metric.LoggingMetricEvictionHandler;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.GenericUserMetricSequencer;
 
 /**
  * 

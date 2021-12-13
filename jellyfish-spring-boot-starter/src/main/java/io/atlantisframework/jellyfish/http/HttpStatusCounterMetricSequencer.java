@@ -18,10 +18,10 @@ package io.atlantisframework.jellyfish.http;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.atlantisframework.vortex.metric.GenericUserMetricSequencer;
-import io.atlantisframework.vortex.metric.MetricEvictionHandler;
-import io.atlantisframework.vortex.metric.SpanUnit;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.GenericUserMetricSequencer;
+import io.atlantisframework.vortex.metric.api.MetricEvictionHandler;
+import io.atlantisframework.vortex.metric.api.TimeWindowUnit;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 
@@ -34,12 +34,12 @@ import io.atlantisframework.vortex.metric.UserMetric;
 public class HttpStatusCounterMetricSequencer extends GenericUserMetricSequencer<Api, HttpStatusCounter> {
 
 	public HttpStatusCounterMetricSequencer(MetricEvictionHandler<Api, UserMetric<HttpStatusCounter>> metricEvictionHandler) {
-		this(1, SpanUnit.MINUTE, 60, metricEvictionHandler);
+		this(1, TimeWindowUnit.MINUTE, 60, metricEvictionHandler);
 	}
 
-	public HttpStatusCounterMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
+	public HttpStatusCounterMetricSequencer(int span, TimeWindowUnit timeWindowUnit, int bufferSize,
 			MetricEvictionHandler<Api, UserMetric<HttpStatusCounter>> metricEvictionHandler) {
-		super(span, spanUnit, bufferSize, metricEvictionHandler);
+		super(span, timeWindowUnit, bufferSize, metricEvictionHandler);
 	}
 
 	@Override

@@ -34,7 +34,7 @@ import com.github.paganini2008.devtools.SystemPropertyUtils;
 import com.github.paganini2008.devtools.net.NetUtils;
 
 import io.atlantisframework.vortex.common.HttpTransportClient;
-import io.atlantisframework.vortex.common.NamedSelectionPartitioner;
+import io.atlantisframework.vortex.common.MultipleChoicePartitioner;
 import io.atlantisframework.vortex.common.TcpTransportClient;
 import io.atlantisframework.vortex.common.TransportClient;
 import io.atlantisframework.vortex.common.Tuple;
@@ -96,7 +96,7 @@ public class TransportClientAppender extends AbstractAppender {
 			break;
 		case "tcp":
 			TcpTransportClient transportClient = new TcpTransportClient(brokerUrl);
-			transportClient.setPartitioner(new NamedSelectionPartitioner());
+			transportClient.setPartitioner(new MultipleChoicePartitioner());
 			this.transportClient = transportClient;
 			break;
 		default:

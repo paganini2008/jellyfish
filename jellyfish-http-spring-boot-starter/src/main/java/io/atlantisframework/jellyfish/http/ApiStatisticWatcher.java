@@ -33,8 +33,8 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.net.NetUtils;
 
 import io.atlantisframework.vortex.common.HashPartitioner;
+import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.TransportClient;
-import io.atlantisframework.vortex.common.Tuple;
 
 /**
  * 
@@ -98,7 +98,7 @@ public class ApiStatisticWatcher extends ApiWatcher {
 		String category = pathMatcher.matchCategory(path);
 		String decorator = pathMatcher.matchDecoration(path);
 		Map<String, Object> contextMap = new HashMap<String, Object>();
-		contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
+		contextMap.put(Partitioner.class.getName(), HashPartitioner.class.getName());
 		contextMap.put("requestId", requestId);
 		contextMap.put("clusterName", clusterName);
 		contextMap.put("applicationName", applicationName);

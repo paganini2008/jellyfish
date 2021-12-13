@@ -39,8 +39,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import io.atlantisframework.jellyfish.Response;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.GenericUserMetricSequencer;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.GenericUserMetricSequencer;
 
 /**
  * 
@@ -98,14 +98,14 @@ public class ApiController {
 		case CC:
 		case QPS:
 			GenericUserMetricSequencer<Api, BigInt> apiStatisticSequencer = environment.getApiStatisticMetricSequencer();
-			return apiStatisticSequencer.sequence(api, metric, true);
+			return apiStatisticSequencer.sequence(api, metric, true, null);
 		case COUNT:
 			GenericUserMetricSequencer<Api, ApiCounter> apiCounterSequencer = environment.getApiCounterMetricSequencer();
-			return apiCounterSequencer.sequence(api, metric, true);
+			return apiCounterSequencer.sequence(api, metric, true, null);
 		case HTTP_STATUS:
 			GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterMetricSequencer = environment
 					.getHttpStatusCounterMetricSequencer();
-			return httpStatusCounterMetricSequencer.sequence(api, metric, true);
+			return httpStatusCounterMetricSequencer.sequence(api, metric, true, null);
 		}
 		return MapUtils.emptyMap();
 	}

@@ -16,15 +16,16 @@
 package io.atlantisframework.jellyfish.http;
 
 import java.net.SocketAddress;
+import java.time.Instant;
 import java.util.Map;
 
 import io.atlantisframework.vortex.common.NioClient;
 import io.atlantisframework.vortex.common.Tuple;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
-import io.atlantisframework.vortex.metric.GenericUserMetricSequencer;
 import io.atlantisframework.vortex.metric.Synchronizer;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.GenericUserMetricSequencer;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -54,29 +55,28 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		apiCounterSequencer.scan((api, metric, data) -> {
 			ApiCounter apiCounter;
 			long timestamp;
-			for (Map.Entry<String, UserMetric<ApiCounter>> entry : data.entrySet()) {
+			for (Map.Entry<Instant, UserMetric<ApiCounter>> entry : data.entrySet()) {
 				apiCounter = entry.getValue().get();
 				timestamp = entry.getValue().getTimestamp();
 				Tuple tuple = synchronizeApiCounter(api, metric, apiCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
 				if (incremental) {
-					apiCounterSequencer.update(api, metric, timestamp, new ApiCounterMetric(apiCounter.clone(), timestamp).resettable(),
+					apiCounterSequencer.trace(api, metric, timestamp, new ApiCounterMetric(apiCounter.clone(), timestamp).resettable(),
 							true);
 				}
 			}
 		});
-		GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterSequencer = environment
-				.getHttpStatusCounterMetricSequencer();
+		GenericUserMetricSequencer<Api, HttpStatusCounter> httpStatusCounterSequencer = environment.getHttpStatusCounterMetricSequencer();
 		httpStatusCounterSequencer.scan((api, metric, data) -> {
 			HttpStatusCounter httpStatusCounter;
 			long timestamp;
-			for (Map.Entry<String, UserMetric<HttpStatusCounter>> entry : data.entrySet()) {
+			for (Map.Entry<Instant, UserMetric<HttpStatusCounter>> entry : data.entrySet()) {
 				httpStatusCounter = entry.getValue().get();
 				timestamp = entry.getValue().getTimestamp();
 				Tuple tuple = synchronizeHttpStatusCounter(api, metric, httpStatusCounter, timestamp);
 				nioClient.send(remoteAddress, tuple);
 				if (incremental) {
-					httpStatusCounterSequencer.update(api, metric, timestamp,
+					httpStatusCounterSequencer.trace(api, metric, timestamp,
 							new HttpStatusCounterMetric(httpStatusCounter.clone(), timestamp).resettable(), true);
 				}
 			}
@@ -85,14 +85,13 @@ public class ApiStatisticSynchronizer implements Synchronizer {
 		apiStatisticSequencer.scan((api, metric, data) -> {
 			BigInt bigInt;
 			long timestamp;
-			for (Map.Entry<String, UserMetric<BigInt>> entry : data.entrySet()) {
+			for (Map.Entry<Instant, UserMetric<BigInt>> entry : data.entrySet()) {
 				bigInt = entry.getValue().get();
 				timestamp = entry.getValue().getTimestamp();
 				Tuple tuple = synchronizeBigInt(api, metric, bigInt, timestamp);
 				nioClient.send(remoteAddress, tuple);
 				if (incremental) {
-					apiStatisticSequencer.update(api, metric, timestamp, new BigIntMetric(bigInt.clone(), timestamp).resettable(),
-							true);
+					apiStatisticSequencer.trace(api, metric, timestamp, new BigIntMetric(bigInt.clone(), timestamp).resettable(), true);
 				}
 			}
 		});

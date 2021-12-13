@@ -22,10 +22,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import io.atlantisframework.vortex.Handler;
 import io.atlantisframework.vortex.common.Tuple;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
-import io.atlantisframework.vortex.metric.MetricSequencer;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.MetricSequencer;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 
@@ -60,7 +60,7 @@ public class ApiQpsHandler implements Handler {
 		final long timestamp = tuple.getTimestamp();
 		int qps = tuple.getField(QPS, Integer.class);
 		MetricSequencer<Api, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
-		sequencer.update(catalog, QPS, timestamp, new BigIntMetric(qps, timestamp), true);
+		sequencer.trace(catalog, QPS, timestamp, new BigIntMetric(qps, timestamp), true);
 
 		environment.update(catalog, QPS, new BigIntMetric(qps, timestamp), true);
 	}

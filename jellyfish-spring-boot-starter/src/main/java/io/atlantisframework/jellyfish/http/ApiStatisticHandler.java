@@ -26,10 +26,10 @@ import org.springframework.http.HttpStatus;
 
 import io.atlantisframework.vortex.Handler;
 import io.atlantisframework.vortex.common.Tuple;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
-import io.atlantisframework.vortex.metric.MetricSequencer;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.MetricSequencer;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 
@@ -69,18 +69,18 @@ public class ApiStatisticHandler implements Handler {
 
 		ApiCounterMetric apiCounterMetric = new ApiCounterMetric(failed, timeout, timestamp);
 		MetricSequencer<Api, UserMetric<ApiCounter>> apiCounterMetricSequencer = environment.getApiCounterMetricSequencer();
-		apiCounterMetricSequencer.update(catalog, COUNT, timestamp, apiCounterMetric, true);
+		apiCounterMetricSequencer.trace(catalog, COUNT, timestamp, apiCounterMetric, true);
 
 		HttpStatusCounterMetric httpStatusCounterMetric = new HttpStatusCounterMetric(HttpStatus.valueOf(httpStatusCode), timestamp);
 		MetricSequencer<Api, UserMetric<HttpStatusCounter>> httpStatusCounterMetricSequencer = environment
 				.getHttpStatusCounterMetricSequencer();
-		httpStatusCounterMetricSequencer.update(catalog, HTTP_STATUS, timestamp, httpStatusCounterMetric, true);
+		httpStatusCounterMetricSequencer.trace(catalog, HTTP_STATUS, timestamp, httpStatusCounterMetric, true);
 
 		long elapsed = tuple.getField("elapsed", Long.class);
 		long concurrency = tuple.getField("concurrency", Long.class);
 		MetricSequencer<Api, UserMetric<BigInt>> apiStatisticMetricSequencer = environment.getApiStatisticMetricSequencer();
-		apiStatisticMetricSequencer.update(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp), true);
-		apiStatisticMetricSequencer.update(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp), true);
+		apiStatisticMetricSequencer.trace(catalog, RT, timestamp, new BigIntMetric(elapsed, timestamp), true);
+		apiStatisticMetricSequencer.trace(catalog, CC, timestamp, new BigIntMetric(concurrency, timestamp), true);
 
 		environment.update(catalog, COUNT, apiCounterMetric, true);
 		environment.update(catalog, HTTP_STATUS, httpStatusCounterMetric, true);

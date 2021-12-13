@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-import io.atlantisframework.vortex.metric.AbstractUserMetric;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.AbstractUserMetric;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 

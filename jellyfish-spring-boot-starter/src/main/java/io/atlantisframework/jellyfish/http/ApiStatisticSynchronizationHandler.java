@@ -23,10 +23,10 @@ import static io.atlantisframework.jellyfish.http.MetricNames.RT;
 
 import io.atlantisframework.vortex.Handler;
 import io.atlantisframework.vortex.common.Tuple;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
-import io.atlantisframework.vortex.metric.MetricSequencer;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.MetricSequencer;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -77,7 +77,7 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		long failedCount = tuple.getField("failedCount", Long.class);
 		long timeoutCount = tuple.getField("timeoutCount", Long.class);
 		MetricSequencer<Api, UserMetric<ApiCounter>> sequencer = environment.getApiCounterMetricSequencer();
-		sequencer.update(catalog, metric, timestamp, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp),
+		sequencer.trace(catalog, metric, timestamp, new ApiCounterMetric(new ApiCounter(count, failedCount, timeoutCount), timestamp),
 				merged);
 	}
 
@@ -90,7 +90,7 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		long countOf5xx = tuple.getField("countOf5xx", Long.class);
 		long timestamp = tuple.getTimestamp();
 		MetricSequencer<Api, UserMetric<HttpStatusCounter>> sequencer = environment.getHttpStatusCounterMetricSequencer();
-		sequencer.update(catalog, metric, timestamp,
+		sequencer.trace(catalog, metric, timestamp,
 				new HttpStatusCounterMetric(new HttpStatusCounter(countOf1xx, countOf2xx, countOf3xx, countOf4xx, countOf5xx), timestamp),
 				merged);
 	}
@@ -103,7 +103,7 @@ public class ApiStatisticSynchronizationHandler implements Handler {
 		long totalValue = tuple.getField("totalValue", Long.class);
 		long count = tuple.getField("count", Long.class);
 		MetricSequencer<Api, UserMetric<BigInt>> sequencer = environment.getApiStatisticMetricSequencer();
-		sequencer.update(catalog, metric, timestamp, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp),
+		sequencer.trace(catalog, metric, timestamp, new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp),
 				merged);
 	}
 

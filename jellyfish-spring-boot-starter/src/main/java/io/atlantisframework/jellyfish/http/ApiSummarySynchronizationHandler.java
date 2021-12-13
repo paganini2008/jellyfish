@@ -23,8 +23,8 @@ import static io.atlantisframework.jellyfish.http.MetricNames.RT;
 
 import io.atlantisframework.vortex.Handler;
 import io.atlantisframework.vortex.common.Tuple;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**

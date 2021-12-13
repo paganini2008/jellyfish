@@ -35,8 +35,8 @@ import com.github.paganini2008.devtools.multithreads.AtomicLongSequence;
 import com.github.paganini2008.devtools.net.NetUtils;
 
 import io.atlantisframework.vortex.common.HashPartitioner;
+import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.TransportClient;
-import io.atlantisframework.vortex.common.Tuple;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -129,7 +129,7 @@ public class ApiQpsWatcher extends ApiWatcher implements InitializingBean {
 			String category = pathMatcher.matchCategory(path);
 			String decorator = pathMatcher.matchDecoration(path);
 			Map<String, Object> contextMap = new HashMap<String, Object>();
-			contextMap.put(Tuple.PARTITIONER_NAME, HashPartitioner.class.getName());
+			contextMap.put(Partitioner.class.getName(), HashPartitioner.class.getName());
 			contextMap.put("clusterName", clusterName);
 			contextMap.put("applicationName", applicationName);
 			contextMap.put("host", host);

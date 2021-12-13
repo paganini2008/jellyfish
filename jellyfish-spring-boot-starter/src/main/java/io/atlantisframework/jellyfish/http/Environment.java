@@ -22,9 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
-import io.atlantisframework.vortex.metric.GenericUserMetricSequencer;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.GenericUserMetricSequencer;
 
 /**
  * 

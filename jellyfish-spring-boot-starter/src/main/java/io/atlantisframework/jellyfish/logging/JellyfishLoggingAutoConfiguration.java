@@ -32,7 +32,7 @@ import io.atlantisframework.tridenter.InstanceId;
 import io.atlantisframework.vortex.Handler;
 import io.atlantisframework.vortex.buffer.BufferZone;
 import io.atlantisframework.vortex.common.HashPartitioner;
-import io.atlantisframework.vortex.common.NamedSelectionPartitioner;
+import io.atlantisframework.vortex.common.MultipleChoicePartitioner;
 import io.atlantisframework.vortex.common.Partitioner;
 
 /**
@@ -55,10 +55,10 @@ public class JellyfishLoggingAutoConfiguration {
 
 	@Autowired
 	public void addPartitioner(Partitioner partitioner) {
-		NamedSelectionPartitioner namedSelectionPartitioner = (NamedSelectionPartitioner) partitioner;
+		MultipleChoicePartitioner multipleChoicePartitioner = (MultipleChoicePartitioner) partitioner;
 		final String[] fieldNames = { "clusterName", "applicationName", "host", "category", "path" };
 		HashPartitioner hashPartitioner = new HashPartitioner(fieldNames);
-		namedSelectionPartitioner.addPartitioner(hashPartitioner);
+		multipleChoicePartitioner.addPartitioner(hashPartitioner);
 	}
 
 	@Autowired

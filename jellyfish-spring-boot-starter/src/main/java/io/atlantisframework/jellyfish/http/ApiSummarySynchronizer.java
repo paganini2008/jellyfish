@@ -20,10 +20,10 @@ import java.util.Map;
 
 import io.atlantisframework.vortex.common.NioClient;
 import io.atlantisframework.vortex.common.Tuple;
-import io.atlantisframework.vortex.metric.BigInt;
-import io.atlantisframework.vortex.metric.BigIntMetric;
 import io.atlantisframework.vortex.metric.Synchronizer;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetric;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**

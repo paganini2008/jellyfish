@@ -18,8 +18,8 @@ package io.atlantisframework.jellyfish.http;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.atlantisframework.vortex.metric.AbstractUserMetric;
-import io.atlantisframework.vortex.metric.UserMetric;
+import io.atlantisframework.vortex.metric.api.AbstractUserMetric;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 

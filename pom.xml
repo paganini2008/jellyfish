@@ -10,7 +10,7 @@
 		<module>jellyfish-slf4j</module>
 		<module>jellyfish-spring-boot-starter</module>
 		<module>jellyfish-http-spring-boot-starter</module>
-		<!-- <module>jellyfish-console</module> -->
+		<module>jellyfish-console</module>
     </modules>
 	
     <packaging>pom</packaging>

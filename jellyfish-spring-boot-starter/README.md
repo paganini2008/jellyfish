@@ -14,7 +14,7 @@ The Core class of Jellyfish Series, which provides all functions of whole framew
 
 
 
-## Structure
+## Functions
 
 * Application Log Collecting
 * Http API Statistic and Monitoring, including  http-request-time, http-request-concurrency,http-response-status-code

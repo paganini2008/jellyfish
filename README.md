@@ -4,8 +4,8 @@ A lightweight distributed microservice  monitoring system, which can seamlessly 
 
 ## Functions
 
-* Application Log Collecting
-* Http API Statistic and Monitoring, including  http-request-time, http-request-concurrency,http-response-status-code, qps
+* Application log collecting （based on logback or log4j2）
+* Http API metrics data statistic, including  http-request-time, http-request-concurrency,http-response-status-code and QPS
 
 ## Compatibility
 
@@ -26,10 +26,10 @@ A lightweight distributed microservice  monitoring system, which can seamlessly 
 ## Modules
 
 ####  jellyfish-console
-An independent  web application for collecting log data and monitoring metrics data and  realtime display log items and HTTP API statistic result.
+*An independent  web application for collecting log data and monitoring metrics data from other applications,  displaying log items and HTTP API statistic result in real-time.*
 
 #### jellyfish-http-spring-boot-starter
-Client APIs provided for  making current application quietly send monitoring data packet to remote Jellyfish console. The data packet contains some monitoring metrics like http-request-time, http-request-concurrency,http-response-status-code
+*Client APIs provided for  making current application quietly send monitoring data packet to remote Jellyfish console. The data packet contains some monitoring metrics like http-request-time, http-request-concurrency,http-response-status-code*
 
 **Install**
 
@@ -42,7 +42,7 @@ Client APIs provided for  making current application quietly send monitoring dat
 ```
 
 #### jellyfish-slf4j
-Client APIs provided for sending log data packet in background to Jellyfish console. It means there is an extra <code>Appender Component</code> defined in slf4j configuration file. Currently, logback and log4j2 is supported. 
+*Client APIs provided for sending log data packet in background to Jellyfish console. It means there is an extra <code>Appender Component</code> defined in slf4j configuration file. Currently, logback and log4j2 is supported.*
 
 **Install**
 
@@ -54,8 +54,8 @@ Client APIs provided for sending log data packet in background to Jellyfish cons
 </dependency>
 ```
 
-**4.  jellyfish-spring-boot-starter** 
-The core class of Jellyfish Series, which provides all functions of whole framework.
+#### jellyfish-spring-boot-starter
+*The core class of Jellyfish Series, which provides all functions of whole framework.*
 
 **Install**
 

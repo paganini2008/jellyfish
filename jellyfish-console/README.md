@@ -1,11 +1,11 @@
 # Jellyfish-console
 
-Jellyfish series provides an independent  web application for collecting log data and monitoring metrics data and  realtime display log items and HTTP API statistic result.
+Jellyfish series provides an independent  web application for collecting log data and monitoring metrics data from other applications,  displaying log items and HTTP API statistic result in real-time.
 
 ## Functions
 
-* Application Log Collecting
-* Http API Statistic and Monitoring, including  http-request-time, http-request-concurrency,http-response-status-code,qps
+* Application log collecting （based on logback or log4j2）
+* Http API metrics data statistic, including  http-request-time, http-request-concurrency,http-response-status-code and qps
 
 ## Compatibility
 

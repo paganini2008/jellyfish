@@ -16,7 +16,7 @@ Modify <code>pom.xml</code> and add dependency to current classpath
 
 ## Configure
 
-Modify <code>logback.xml</code> and add an appender and make it works
+Modify <code>logback.xml</code> and add an extra appender and make it works
 
 ``` xml
 <?xml version="1.0" encoding="utf-8" ?>

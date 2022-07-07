@@ -1,10 +1,10 @@
 # Jellyfish-http-spring-boot-starter
 
-Jellyfish series provides agent APIs let current application quietly send monitoring data packet to remote Jellyfish console. The data packet contains some monitoring metrics like http-request-time, http-request-concurrency,http-response-status-code
+Jellyfish series provides client APIs let current application quietly send monitoring data packet to remote Jellyfish console. The data packet contains some monitoring metrics like http-request-time, http-request-concurrency,http-response-status-code
 
 ## Install
 
-Modfiy pom.xml to add dependency jar to current classpath
+Modfiy pom.xml and add dependency to current classpath
 
 ``` xml
 <dependency>

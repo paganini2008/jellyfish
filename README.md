@@ -1,7 +1,8 @@
 # Jellyfish Series
-## High performance distributed microservice monitoring system
 
-Jellyfish is a lightweight distributed real-time monitoring system written in Java, which can seamlessly connect with spring boot or spring cloud project, besides, using jellyfish API can easily customize your applications
+A lightweight distributed microservice  monitoring system, which can seamlessly intergrate with spring boot or spring cloud framework and easily customize your applications.
+
+
 
 ### The monitoring function provided by jellyfish is mainly divided into two parts:
 

@@ -1,6 +1,6 @@
 # Jellyfish Framework
 
-A lightweight distributed microservice  monitoring system, which can seamlessly intergrate with spring boot or spring cloud framework and easily customize your applications. 
+A lightweight distributed microservice log collecting and monitoring tools, which can seamlessly intergrate with spring boot or spring cloud framework and easily customize your applications. 
 
 ## Functions
 

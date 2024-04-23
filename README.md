@@ -1,4 +1,4 @@
-# Jellyfish Series
+# Jellyfish Framework
 
 A lightweight distributed microservice  monitoring system, which can seamlessly intergrate with spring boot or spring cloud framework and easily customize your applications. 
 
